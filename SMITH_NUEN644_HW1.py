@@ -4,7 +4,7 @@ NUEN/MEEN 644 HW1
 Due 6 February 2024
 '''
 import numpy as np
-import matplotlib as mlp
+import matplotlib as plt
 
 ######## Problem #1 (a) ###########
 
@@ -44,7 +44,32 @@ print(tspan)
 
 ######## Problem #1 (c) ###########
 
+# Create scatter plot
+plt.scatter(x, y, color='blue', label='Random Data Points')
+
+# Add labels and title
+plt.xlabel('Time [s]')
+plt.ylabel('Angular displacment [rad]')
+plt.title('Scatter Plot of 5 Random Data Points')
+
+# Display legend
+plt.legend()
+
+# Display the plot
+plt.show()
+
 ######## Problem #1 (d) ###########
 
-######## Problem #1 (e) ###########
+# Create scatter plot
+plt.scatter(x, y, color='blue', label='Random Data Points')
 
+# Add labels and title
+plt.xlabel('Time [s]')
+plt.ylabel('Angular velocity [rad/s]')
+plt.title('Scatter Plot of 5 Random Data Points')
+
+# Display legend
+plt.legend()
+
+# Display the plot
+plt.show()
