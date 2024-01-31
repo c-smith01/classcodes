@@ -4,7 +4,7 @@ NUEN/MEEN 644 HW1
 Due 6 February 2024
 '''
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 
 ###################################
@@ -15,16 +15,20 @@ import matplotlib as plt
 l = 1 #m
 m = 1 #kg
 g = 9.81 #m/s^2
-theta_0 = np.pi/12
-theta_dot = 0
+theta_init = [(np.pi)/12, 0]
 
 # Initialize array of zeros for solution
 theta = np.zeros(6)
 
-def euler_expl(h,ts,thetas):
-    theta_n = [theta_0]
-    for i in range(0,2/h):
-        theta_n[i+1] = theta[i] - (g/l)*np.sin(theta[i])
+def euler_expl(stepsize,ts,thetas):
+    theta_n = np.zeros(len(ts))
+    dot_theta_n = np.zeros(len(ts))
+    theta_n[0] = thetas[0]
+    dot_theta_n[0] = thetas[1]
+    for i in range(1,len(ts)):
+        theta_n[i] = theta_n[i-1] + dot_theta_n[i-1]*stepsize - (g/l)*np.sin(theta_n[i-1])*(stepsize*stepsize)/2
+        dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
+    return theta_n, dot_theta_n
 
 def euler_full_impl(t,thetas):
     theta[i + 1] = theta -(g/l)*np.sin(t)
@@ -35,27 +39,49 @@ def rk_sncd(t,thetas):
 def rk_frth(t,thetas):
     theta[i + 1] = theta -(g/l)*np.sin(t)
 
+# Additional exact solution method for sanity check purposes
+def exact(stepsize,ts,thetas):
+    theta_n = np.zeros(len(ts))
+    dot_theta_n = np.zeros(len(ts))
+    theta_n[0] = thetas[0]
+    dot_theta_n[0] = thetas[1]
+    for i in range(1,len(ts)):
+        theta_n[i] = (theta_n[0])*np.cos(np.sqrt((g/l))*i)
+        dot_theta_n[i] = -(theta_n[0])*np.sqrt(g/l)*np.sin(np.sqrt(g/l)*i)
+    return theta_n, dot_theta_n
+
 
 ###################################
 ######## Problem #1 (b) ###########
 ###################################
 
-h = 0.05 #s
+# Define step size
+h = 0.05 #s, should be 0.05s
+
+# Define timespan of interest
 tspan = np.arange(0,2 + h,h)
-print(tspan)
+#print(tspan)
+
+# Call ODE Solver Methods
+euler_esol = euler_expl(h,tspan,theta_init)
+print(euler_esol)
+
+exact_sol = exact(h,tspan,theta_init)
 
 
 ###################################
 ######## Problem #1 (c) ###########
 ###################################
 
+
 # Create scatter plot of angular displacement vs. time
-plt.scatter(x, y, color='blue', label='Random Data Points')
+plt.plot(tspan, euler_esol[0], color='blue', label='Explicit Euler')
+plt.plot(tspan, exact_sol[0], color='red', label='Exact')
 
 # Add labels and title
 plt.xlabel('Time [s]')
 plt.ylabel('Angular displacment [rad]')
-plt.title('Scatter Plot of 5 Random Data Points')
+plt.title('Angular Displacement as a Function of Time for Various Numerical Methods')
 
 # Display legend
 plt.legend()
@@ -68,12 +94,12 @@ plt.show()
 ###################################
 
 # Create scatter plot
-plt.scatter(x, y, color='blue', label='Random Data Points')
-
+plt.plot(tspan, euler_esol[1], color='blue', label='Explicit Euler')
+plt.plot(tspan, exact_sol[1], color='red', label='Exact')
 # Add labels and title
 plt.xlabel('Time [s]')
 plt.ylabel('Angular velocity [rad/s]')
-plt.title('Scatter Plot of 5 Random Data Points')
+plt.title('Angular Velocity as a Function of Time for Various Numerical Methods')
 
 # Display legend
 plt.legend()
