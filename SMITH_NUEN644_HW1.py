@@ -31,12 +31,24 @@ def euler_expl(stepsize,ts,thetas):
     return theta_n, dot_theta_n
 
 def euler_full_impl(t,thetas):
+    theta_n = np.zeros(len(ts))
+    dot_theta_n = np.zeros(len(ts))
+    theta_n[0] = thetas[0]
+    dot_theta_n[0] = thetas[1]
     theta[i + 1] = theta -(g/l)*np.sin(t)
 
 def rk_sncd(t,thetas):
+    theta_n = np.zeros(len(ts))
+    dot_theta_n = np.zeros(len(ts))
+    theta_n[0] = thetas[0]
+    dot_theta_n[0] = thetas[1]
     theta[i + 1] = theta -(g/l)*np.sin(t)
 
 def rk_frth(t,thetas):
+    theta_n = np.zeros(len(ts))
+    dot_theta_n = np.zeros(len(ts))
+    theta_n[0] = thetas[0]
+    dot_theta_n[0] = thetas[1]
     theta[i + 1] = theta -(g/l)*np.sin(t)
 
 # Additional exact solution method for sanity check purposes
