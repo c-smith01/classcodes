@@ -46,6 +46,8 @@ def rk_scnd(t,thetas):
     theta_n[0] = thetas[0]
     dot_theta_n[0] = thetas[1]
     for i in range(1,len(ts)):
+        k1 = []
+        k2 = []
         theta_n[i] = theta_n[i-1] + dot_theta_n[i-1]*stepsize - (g/l)*np.sin(theta_n[i-1])*(stepsize*stepsize)/2
         dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
     return theta_n, dot_theta_n
@@ -56,6 +58,10 @@ def rk_frth(t,thetas):
     theta_n[0] = thetas[0]
     dot_theta_n[0] = thetas[1]
     for i in range(1,len(ts)):
+        k1 = []
+        k2 = []
+        k3 = []
+        k4 = []
         theta_n[i] = theta_n[i-1] + dot_theta_n[i-1]*stepsize - (g/l)*np.sin(theta_n[i-1])*(stepsize*stepsize)/2
         dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
     return theta_n, dot_theta_n
