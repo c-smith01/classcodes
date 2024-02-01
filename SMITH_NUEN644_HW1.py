@@ -35,21 +35,27 @@ def euler_full_impl(t,thetas):
     dot_theta_n = np.zeros(len(ts))
     theta_n[0] = thetas[0]
     dot_theta_n[0] = thetas[1]
-    theta[i + 1] = theta -(g/l)*np.sin(t)
+    for i in range(1,len(ts)):
+        theta_n[i] = theta_n[i-1] + dot_theta_n[i-1]*stepsize - (g/l)*np.sin(theta_n[i-1])*(stepsize*stepsize)/2
+        dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
 
 def rk_sncd(t,thetas):
     theta_n = np.zeros(len(ts))
     dot_theta_n = np.zeros(len(ts))
     theta_n[0] = thetas[0]
     dot_theta_n[0] = thetas[1]
-    theta[i + 1] = theta -(g/l)*np.sin(t)
+    for i in range(1,len(ts)):
+        theta_n[i] = theta_n[i-1] + dot_theta_n[i-1]*stepsize - (g/l)*np.sin(theta_n[i-1])*(stepsize*stepsize)/2
+        dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
 
 def rk_frth(t,thetas):
     theta_n = np.zeros(len(ts))
     dot_theta_n = np.zeros(len(ts))
     theta_n[0] = thetas[0]
     dot_theta_n[0] = thetas[1]
-    theta[i + 1] = theta -(g/l)*np.sin(t)
+    for i in range(1,len(ts)):
+        theta_n[i] = theta_n[i-1] + dot_theta_n[i-1]*stepsize - (g/l)*np.sin(theta_n[i-1])*(stepsize*stepsize)/2
+        dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
 
 # Additional exact solution method for sanity check purposes
 def exact(stepsize,ts,thetas):
