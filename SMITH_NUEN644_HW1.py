@@ -40,7 +40,7 @@ def euler_full_impl(t,thetas):
         dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
     return theta_n, dot_theta_n
 
-def rk_sncd(t,thetas):
+def rk_scnd(t,thetas):
     theta_n = np.zeros(len(ts))
     dot_theta_n = np.zeros(len(ts))
     theta_n[0] = thetas[0]
