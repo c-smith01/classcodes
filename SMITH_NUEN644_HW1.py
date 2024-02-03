@@ -30,7 +30,7 @@ def euler_expl(stepsize,ts,thetas):
         dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize - (g/l)*np.sin(theta_n[i-2])*stepsize/2
     return theta_n, dot_theta_n
 
-def euler_full_impl(t,thetas):
+def euler_full_impl(stepsize,t,thetas):
     theta_n = np.zeros(len(ts))
     dot_theta_n = np.zeros(len(ts))
     theta_n[0] = thetas[0]
@@ -40,7 +40,7 @@ def euler_full_impl(t,thetas):
         dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
     return theta_n, dot_theta_n
 
-def rk_scnd(t,thetas):
+def rk_scnd(stepsize,t,thetas):
     theta_n = np.zeros(len(ts))
     dot_theta_n = np.zeros(len(ts))
     theta_n[0] = thetas[0]
@@ -52,7 +52,7 @@ def rk_scnd(t,thetas):
         dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
     return theta_n, dot_theta_n
 
-def rk_frth(t,thetas):
+def rk_frth(stepsize,t,thetas):
     theta_n = np.zeros(len(ts))
     dot_theta_n = np.zeros(len(ts))
     theta_n[0] = thetas[0]
