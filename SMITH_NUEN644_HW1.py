@@ -17,9 +17,6 @@ m = 1 #kg
 g = 9.81 #m/s^2
 theta_init = [(np.pi)/12, 0]
 
-# Initialize array of zeros for solution
-theta = np.zeros(6)
-
 def euler_expl(stepsize,ts,thetas):
     theta_n = np.zeros(len(ts))
     dot_theta_n = np.zeros(len(ts))
@@ -36,8 +33,8 @@ def euler_full_impl(stepsize,ts,thetas):
     theta_n[0] = thetas[0]
     dot_theta_n[0] = thetas[1]
     for i in range(1,len(ts)):
-        theta_n[i] = theta_n[i-1] + dot_theta_n[i-1]*stepsize - (g/l)*np.sin(theta_n[i-1])*(stepsize*stepsize)/2
-        dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
+        dot_theta_n[i] = (dot_theta_n[i-1]-(stepsize*g*theta_n[i-1])/l) / (1 + (stepsize*g/l))
+        theta_n[i] = theta_n[i-1] + stepsize*dot_theta_n[i]
     return theta_n, dot_theta_n
 
 def rk_scnd(stepsize,ts,thetas):
