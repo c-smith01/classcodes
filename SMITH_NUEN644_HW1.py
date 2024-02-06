@@ -61,10 +61,10 @@ def rk_frth(stepsize,ts,thetas):
         k12 = -(g/l)*np.sin(theta_n[i-1])
         k21 = (dot_theta_n[i-1] + k12*stepsize)/2
         k22 = -(g/l)*np.sin(theta_n[i-1]+stepsize*dot_theta_n[i-1])
-        k31 = []
-        k32 = []
-        k41 = []
-        k42 = []
+        k31 = dot_theta_n[i-1] + k22*stepsize/2
+        k32 = 
+        k41 = dot_theta_n[i-1] + k32*stepsize/2
+        k42 = 
         theta_n[i] = theta_n[i-1] + (stepsize/6)*(k11+2*k21+2*k31+k41)
         dot_theta_n[i] = dot_theta_n[i-1] + (stepsize/6)*(k12+2*k22+2*k32+k42)
     return theta_n, dot_theta_n
