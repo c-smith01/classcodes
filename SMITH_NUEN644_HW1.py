@@ -27,10 +27,10 @@ def euler_expl(stepsize,ts,thetas):
     dot_theta_n[0] = thetas[1]
     for i in range(1,len(ts)):
         theta_n[i] = theta_n[i-1] + dot_theta_n[i-1]*stepsize
-        dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize - (g/l)*np.sin(theta_n[i-2])*stepsize/2
+        dot_theta_n[i] = dot_theta_n[i-1] - (g/l)*np.sin(theta_n[i-2])*stepsize/2
     return theta_n, dot_theta_n
 
-def euler_full_impl(stepsize,t,thetas):
+def euler_full_impl(stepsize,ts,thetas):
     theta_n = np.zeros(len(ts))
     dot_theta_n = np.zeros(len(ts))
     theta_n[0] = thetas[0]
@@ -40,7 +40,7 @@ def euler_full_impl(stepsize,t,thetas):
         dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
     return theta_n, dot_theta_n
 
-def rk_scnd(stepsize,t,thetas):
+def rk_scnd(stepsize,ts,thetas):
     theta_n = np.zeros(len(ts))
     dot_theta_n = np.zeros(len(ts))
     theta_n[0] = thetas[0]
@@ -52,7 +52,7 @@ def rk_scnd(stepsize,t,thetas):
         dot_theta_n[i] = (theta_n[i-2]-theta_n[i-1])/stepsize + (g/l)*np.sin(dot_theta_n[i-2])*stepsize/2
     return theta_n, dot_theta_n
 
-def rk_frth(stepsize,t,thetas):
+def rk_frth(stepsize,ts,thetas):
     theta_n = np.zeros(len(ts))
     dot_theta_n = np.zeros(len(ts))
     theta_n[0] = thetas[0]
@@ -73,8 +73,8 @@ def exact(stepsize,ts,thetas):
     theta_n[0] = thetas[0]
     dot_theta_n[0] = thetas[1]
     for i in range(1,len(ts)):
-        theta_n[i] = (theta_n[0])*np.cos(np.sqrt((g/l))*i)
-        dot_theta_n[i] = -(theta_n[0])*np.sqrt(g/l)*np.sin(np.sqrt(g/l)*i)
+        theta_n[i] = (theta_n[0])*np.cos(np.sqrt((g/l))*(i*stepsize))
+        dot_theta_n[i] = -(theta_n[0])*np.sqrt(g/l)*np.sin(np.sqrt(g/l)*(i*stepsize))
     return theta_n, dot_theta_n
 
 
@@ -91,7 +91,10 @@ tspan = np.arange(0,2 + h,h)
 
 # Call ODE Solver Methods
 euler_esol = euler_expl(h,tspan,theta_init)
-print(euler_esol)
+#print(euler_esol)
+
+euler_isol = euler_full_impl(h,tspan,theta_init)
+#print(euler_isol)
 
 exact_sol = exact(h,tspan,theta_init)
 
@@ -103,6 +106,7 @@ exact_sol = exact(h,tspan,theta_init)
 
 # Create scatter plot of angular displacement vs. time
 plt.plot(tspan, euler_esol[0], color='blue', label='Explicit Euler')
+plt.plot(tspan, euler_isol[0], color='green', label='Implicit Euler')
 plt.plot(tspan, exact_sol[0], color='red', label='Exact')
 
 # Add labels and title
@@ -122,6 +126,7 @@ plt.show()
 
 # Create scatter plot
 plt.plot(tspan, euler_esol[1], color='blue', label='Explicit Euler')
+plt.plot(tspan, euler_isol[0], color='green', label='Implicit Euler')
 plt.plot(tspan, exact_sol[1], color='red', label='Exact')
 # Add labels and title
 plt.xlabel('Time [s]')
