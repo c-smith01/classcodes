@@ -7,12 +7,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define constants
-L     = 20   # cm
+L     = 0.20 # cm -> m
 k     = 50   # W/m*C
 beta  = 100  # W/m^2*C
 T_0   = 100  # deg C
 T_inf = 30   # deg C
-q_in  = 10E3 # W/m
+q_in  = 10E3 # W/m 
 
 NCV = 10
 
@@ -37,11 +37,12 @@ S_P = q_in
 b_P = S_P*delx
 
 i=0
-while i < 10:
+while i < 10009:
     for P in range(1,NCV+1):
-        T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) / a_P
+        T[P] = (a_W*T_old_TDMA[P-1] + a_W*T_old_TDMA[P+1] + b_P) / a_P
 
-    T[NCV+1] = (a_W*T[NCV] + beta*T_inf) / (a_W + beta)
+        T[NCV+1] = (a_W*T_old_TDMA[NCV] + beta*T_inf) / (a_W + beta)
+    T_old_TDMA = T
     i+=1
 
 
@@ -67,13 +68,10 @@ T_old = np.zeros(NCV+2)
 iterlim = 100
 iternum = 1
 
-while np.max(T_old-T) > conv_tol and iternum<iterlim:
-    for P in range(1,NCV+1):
-    T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) / a_P
-    iternum+=1
-
-
-
+# while np.max(T_old-T) > conv_tol and iternum<iterlim:
+#     for P in range(1,NCV+1):
+#     T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) / a_P
+#     iternum+=1
 
 ###################################
 ######## Problem #2 (a) ###########
