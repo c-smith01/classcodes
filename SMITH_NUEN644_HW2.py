@@ -27,7 +27,7 @@ delx = capdelx/2
 x = np.linspace(0,L,12)
 print(x)
 T = np.zeros(NCV+2)
-T_new = np.zeros(NCV+2)
+T_old_TDMA = np.zeros(NCV+2)
 T[0] = T_0
 
 a_W = k/delx
@@ -36,11 +36,14 @@ a_P = a_W + a_E
 S_P = q_in
 b_P = S_P*delx
 
+i=0
+while i < 10:
+    for P in range(1,NCV+1):
+        T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) / a_P
 
-for P in range(1,NCV+1):
-    T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) / a_P
+    T[NCV+1] = (a_W*T[NCV] + beta*T_inf) / (a_W + beta)
+    i+=1
 
-T[NCV+1] = (a_W*T[NCV] + beta*T_inf) / (a_W + beta)
 
 print(T)
 
