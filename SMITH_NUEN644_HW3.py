@@ -7,22 +7,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define constants
-L        = 1 # m
-k        = 386   # W/m*K
-beta     = 100  # W/m^2*C
-T_0      = 100  # deg C
-T_boundS = 50 # 
-T_boundN = 50 #
-T_inf    = 30   # deg C
-q_in     = 10E3 # W/m
-omega    = 1.1
-N_CVs    = 5
+L     = 0.20 # cm -> m
+k     = 386   # W/m*K
+beta  = 100  # W/m^2*C
+T_0   = 100  # deg C
+T_inf = 30   # deg C
+q_in  = 10E3 # W/m
+omega = 1.1
+R_t   = 1E-5
 
 ###################################
 #########  Problem #1 #############
 ###################################
 
+# Set matrix containing nodes for 5x5 CVs
+ITCV = 5
+ITMAX = ITCV + 2
+Ts_dim = (ITMAX, ITMAX)
+Ts = np.zeros(Ts_dim)
 
+# Set boundary conditions for problem
+Ts[:,0] = 50
+Ts[ITMAX-1,:] = 50
+Ts[0,:] = 100
+
+
+print(Ts)
 
 ###################################
 #########  Problem #2 #############
@@ -38,7 +48,7 @@ New_South = 100 # deg C
 #########  Problem #4 #############
 ###################################
 
-N_other_CVs = [25,35,49]
+N_CVs = [5,25,35,49]
 
 ###################################
 #########  Problem #5 #############
