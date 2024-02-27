@@ -14,12 +14,25 @@ T_0   = 100  # deg C
 T_inf = 30   # deg C
 q_in  = 10E3 # W/m
 omega = 1.1
+R_t   = 1E-5
 
 ###################################
 #########  Problem #1 #############
 ###################################
 
+# Set matrix containing nodes for 5x5 CVs
+ITCV = 5
+ITMAX = ITCV + 2
+Ts_dim = (ITMAX, ITMAX)
+Ts = np.zeros(Ts_dim)
 
+# Set boundary conditions for problem
+Ts[:,0] = 50
+Ts[ITMAX-1,:] = 50
+Ts[0,:] = 100
+
+
+print(Ts)
 
 ###################################
 #########  Problem #2 #############
