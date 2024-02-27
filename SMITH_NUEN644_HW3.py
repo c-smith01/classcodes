@@ -22,7 +22,9 @@ R_t   = 1E-5
 
 # Set matrix containing nodes for 5x5 CVs
 ITCV = 5
+JTCV = ITCV
 ITMAX = ITCV + 2
+JTMAX = ITMAX
 Ts_dim = (ITMAX, ITMAX)
 Ts = np.zeros(Ts_dim)
 
@@ -30,9 +32,13 @@ Ts = np.zeros(Ts_dim)
 Ts[:,0] = 50
 Ts[ITMAX-1,:] = 50
 Ts[0,:] = 100
-
-
 print(Ts)
+
+while np.min(np.abs()) <= R_t:
+    for j in range(1,JTCV):
+        for i in range(1,ITCV):
+            Ts[i,j] = (Ts[i-1,j] + Ts[i+1,j] + Ts[i,j+1] + Ts[i,j-1])/4 
+
 
 ###################################
 #########  Problem #2 #############
