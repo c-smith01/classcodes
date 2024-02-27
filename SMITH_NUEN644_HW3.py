@@ -26,6 +26,8 @@ JTCV = ITCV
 ITMAX = ITCV + 2
 JTMAX = ITMAX
 Ts_dim = (ITMAX, ITMAX)
+
+# Initialize matrix of zeroes to represent nodes
 Ts = np.zeros(Ts_dim)
 
 # Set boundary conditions for problem
@@ -34,10 +36,10 @@ Ts[ITMAX-1,:] = 50
 Ts[0,:] = 100
 print(Ts)
 
-while np.min(np.abs()) <= R_t:
-    for j in range(1,JTCV):
-        for i in range(1,ITCV):
-            Ts[i,j] = (Ts[i-1,j] + Ts[i+1,j] + Ts[i,j+1] + Ts[i,j-1])/4 
+# while np.min(np.abs()) <= R_t:
+#     for j in range(1,JTCV):
+#         for i in range(1,ITCV):
+#             Ts[i,j] = (Ts[i-1,j] + Ts[i+1,j] + Ts[i,j+1] + Ts[i,j-1])/4 
 
 
 ###################################
@@ -45,6 +47,13 @@ while np.min(np.abs()) <= R_t:
 ###################################
 
 New_South = 100 # deg C
+
+Ts_2 = np.zeros(Ts_dim)
+
+Ts_2[:,0] = 50
+Ts_2[ITMAX-1,:] = 100
+Ts_2[0,:] = 100
+print(Ts_2)
 
 ###################################
 #########  Problem #3 #############
