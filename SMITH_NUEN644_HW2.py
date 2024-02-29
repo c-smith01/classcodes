@@ -36,16 +36,6 @@ a_P = a_W + a_E
 S_P = q_in
 b_P = S_P*delx
 
-i=0
-while i < 10000:
-    for P in range(1,NCV+1):
-        T[P] = (a_W*T_old_TDMA[P-1] + a_W*T_old_TDMA[P+1] + b_P) / a_P
-
-        T[NCV+1] = (a_W*T_old_TDMA[NCV] + beta*T_inf) / (a_W + beta)
-    T_old_TDMA = T
-    i+=1
-
-
 print(T)
 
 # Plot the data with red triangles
@@ -67,6 +57,15 @@ conv_tol = 1E-5
 T_old = np.zeros(NCV+2)
 iterlim = 100
 iternum = 1
+
+# i=0
+# while i < 10000:
+#     for P in range(1,NCV+1):
+#         T[P] = (a_W*T_old_TDMA[P-1] + a_W*T_old_TDMA[P+1] + b_P) / a_P
+
+#         T[NCV+1] = (a_W*T_old_TDMA[NCV] + beta*T_inf) / (a_W + beta)
+#     T_old_TDMA = T
+#     i+=1
 
 # while np.max(T_old-T) > conv_tol and iternum<iterlim:
 #     for P in range(1,NCV+1):
