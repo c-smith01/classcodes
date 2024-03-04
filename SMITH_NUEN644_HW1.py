@@ -96,16 +96,16 @@ tspan = np.arange(0,2 + h,h)
 
 # Call ODE Solver Methods
 euler_esol = euler_expl(h,tspan,theta_init)
-#print(euler_esol)
+print("Now printing Euler Explicit: ", euler_esol)
 
 euler_isol = euler_full_impl(h,tspan,theta_init)
-#print(euler_isol)
+print("Now printing Euler Implicit: ", euler_isol)
 
 rk2_sol = rk_scnd(h,tspan,theta_init)
-#print(rk2_sol)
+print("Now printing RK-2: ", rk2_sol)
 
 rk4_sol = rk_frth(h,tspan,theta_init)
-#print(rk2_sol)
+print("Now printing RK-4: ", rk4_sol)
 
 exact_sol = exact(h,tspan,theta_init)
 
