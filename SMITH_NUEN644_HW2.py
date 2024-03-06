@@ -26,8 +26,7 @@ delx = capdelx/2
 
 x = np.linspace(0,L,12)
 print(x)
-T = np.zeros(NCV+2)
-T_old_TDMA = np.zeros(NCV+2)
+T = np.zeros(NCV+2,NCV+2)
 T[0] = T_0
 
 a_W = k/delx
@@ -57,20 +56,16 @@ conv_tol = 1E-5
 T_old = np.zeros(NCV+2)
 iterlim = 100
 iternum = 1
+R_t = 1
 
-# i=0
-# while i < 10000:
-#     for P in range(1,NCV+1):
-#         T[P] = (a_W*T_old_TDMA[P-1] + a_W*T_old_TDMA[P+1] + b_P) / a_P
+i=0
+while i < 10000 and R_t > conv_tol:
+    for P in range(1,NCV+1):
+        T[P] = (a_W*T_old_TDMA[P-1] + a_W*T_old_TDMA[P+1] + b_P) / a_P
 
-#         T[NCV+1] = (a_W*T_old_TDMA[NCV] + beta*T_inf) / (a_W + beta)
-#     T_old_TDMA = T
-#     i+=1
-
-# while np.max(T_old-T) > conv_tol and iternum<iterlim:
-#     for P in range(1,NCV+1):
-#     T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) / a_P
-#     iternum+=1
+        T[NCV+1] = (a_W*T_old_TDMA[NCV] + beta*T_inf) / (a_W + beta)
+    T_old_TDMA = T
+    i+=1
 
 ###################################
 ######## Problem #2 (a) ###########
