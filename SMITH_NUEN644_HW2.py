@@ -36,6 +36,8 @@ a_P = a_W + a_E
 S_P = q_in
 b_P = S_P*delx
 
+
+
 print(T)
 
 # Plot the data with red triangles
