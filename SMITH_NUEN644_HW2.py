@@ -12,7 +12,7 @@ k     = 50   # W/m*C
 beta  = 100  # W/m^2*C
 T_0   = 100  # deg C
 T_inf = 30   # deg C
-q_in  = 10E3 # W/m 
+q_in  = 1E3 # W/m 
 
 NCV = 10
 
@@ -50,18 +50,26 @@ for j in range(0,9):
         i+=1
 
 print(T_TDMA)
+
+bp_TDMA[8] = b_P + a_W*T_0
 print(bp_TDMA)
 
 T_TDMA_Sol = np.linalg.solve(T_TDMA,bp_TDMA)
 print(T_TDMA_Sol)
+
+for k in range(1,NCV-2):
+    T[k] = T_TDMA_Sol[k-1,0]
+
+print(T)
+    
         
 # Plot the data with red triangles
-# plt.plot(x, T, 'r^')  # 'r^' specifies red triangles
-# plt.xlabel('X-axis')
-# plt.ylabel('Y-axis')
-# plt.title('Temperature Profile Along X')
-# plt.grid(True)
-# plt.show()
+plt.plot(x, T, 'r^')  # 'r^' specifies red triangles
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.title('Temperature Profile Along X')
+plt.grid(True)
+plt.show()
 
 
 ###################################
