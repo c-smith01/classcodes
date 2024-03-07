@@ -30,9 +30,9 @@ delx = capdelx/2
 x = np.linspace(0,L,12)
 T = np.zeros(NCV+2)
 T[0] = T_0
-TDMA_dim = (NCV, NCV)
+TDMA_dim = (NCV+1, NCV+1)
 T_TDMA = np.zeros(TDMA_dim)
-bp_TDMA_dim = (NCV,1)
+bp_TDMA_dim = (NCV+1,1)
 bp_TDMA = np.zeros(bp_TDMA_dim)
 
 a_W = k/delx
@@ -42,10 +42,10 @@ S_P = q_in
 b_P = S_P*delx
 
 i=0
-for j in range(0,10):
+for j in range(0,11):
         bp_TDMA[j] = b_P
         T_TDMA[i,j] = a_P
-        if i!=9:
+        if i!=10:
             T_TDMA[i+1,j] = a_E
         
         if i!=0:
@@ -55,13 +55,13 @@ for j in range(0,10):
 print(T_TDMA)
 
 bp_TDMA[0] = b_P + a_W*T_0
-bp_TDMA[9] = a_E*T_inf
+bp_TDMA[10] = b_P + a_E*T_inf
 print(bp_TDMA)
 
 T_TDMA_Sol = np.linalg.solve(T_TDMA, bp_TDMA)
 print(T_TDMA_Sol)
 
-for k in range(1,NCV+1):
+for k in range(1,NCV+2):
     T[k] = T_TDMA_Sol[k-1,0]
 
 print(T)
@@ -86,17 +86,19 @@ conv_tol = 1E-5
 T_old = np.zeros(NCV+2)
 iterlim = 100
 iternum = 1
+n_conv = []
 
-#for alpha in alpha_set:
-while np.max(T_old-T) > conv_tol and iternum<iterlim:
-    for P in range(1,NCV+1):
-        T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) / a_P
-        iternum+=1
+for alpha in alpha_set:
+    while np.max(T_old-T) > conv_tol and iternum<iterlim:
+        for P in range(1,NCV+1):
+            T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) * alpha / a_P
+            iternum+=1
+    n_conv.append(iternum)
+    iternum = 0
 
 ###################################
 ######## Problem #2 (a) ###########
 ###################################
-n_conv = np.zeros(9)
 
 # Plot the number of iterations required for convergence vs. alpha
 # plt.plot(alpha_set, n_conv, 'r^')  # 'r^' specifies red triangles
