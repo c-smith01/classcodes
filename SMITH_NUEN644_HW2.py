@@ -3,8 +3,11 @@ Created by Coleman Smith on 1/23/24
 NUEN/MEEN 644 HW1
 Due 15 February 2024
 '''
+import os
 import numpy as np
 import matplotlib.pyplot as plt
+
+os.system('cls') #tabula rasa
 
 # Define constants
 L     = 0.20 # cm -> m
@@ -27,9 +30,9 @@ delx = capdelx/2
 x = np.linspace(0,L,12)
 T = np.zeros(NCV+2)
 T[0] = T_0
-TDMA_dim = (NCV-1, NCV-1)
+TDMA_dim = (NCV, NCV)
 T_TDMA = np.zeros(TDMA_dim)
-bp_TDMA_dim = (NCV-1,1)
+bp_TDMA_dim = (NCV,1)
 bp_TDMA = np.zeros(bp_TDMA_dim)
 
 a_W = k/delx
@@ -39,10 +42,10 @@ S_P = q_in
 b_P = S_P*delx
 
 i=0
-for j in range(0,9):
+for j in range(0,10):
         bp_TDMA[j] = b_P
         T_TDMA[i,j] = a_P
-        if i!=8:
+        if i!=9:
             T_TDMA[i+1,j] = a_E
         
         if i!=0:
@@ -51,13 +54,14 @@ for j in range(0,9):
 
 print(T_TDMA)
 
-bp_TDMA[8] = b_P + a_W*T_0
+bp_TDMA[0] = b_P + a_W*T_0
+bp_TDMA[9] = T_inf
 print(bp_TDMA)
 
-T_TDMA_Sol = np.linalg.solve(T_TDMA,bp_TDMA)
+T_TDMA_Sol = np.linalg.solve(T_TDMA, bp_TDMA)
 print(T_TDMA_Sol)
 
-for k in range(1,NCV-2):
+for k in range(1,NCV):
     T[k] = T_TDMA_Sol[k-1,0]
 
 print(T)
@@ -83,19 +87,10 @@ T_old = np.zeros(NCV+2)
 iterlim = 100
 iternum = 1
 
-# i=0
-# while i < 10000:
-#     for P in range(1,NCV+1):
-#         T[P] = (a_W*T_old_TDMA[P-1] + a_W*T_old_TDMA[P+1] + b_P) / a_P
-
-#         T[NCV+1] = (a_W*T_old_TDMA[NCV] + beta*T_inf) / (a_W + beta)
-#     T_old_TDMA = T
-#     i+=1
-
-# while np.max(T_old-T) > conv_tol and iternum<iterlim:
-#     for P in range(1,NCV+1):
-#     T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) / a_P
-#     iternum+=1
+while np.max(T_old-T) > conv_tol and iternum<iterlim:
+    for P in range(1,NCV+1):
+        T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) / a_P
+        iternum+=1
 
 ###################################
 ######## Problem #2 (a) ###########
