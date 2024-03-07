@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # Define constants and initial conditions
 l = 1 #m
 m = 1 #kg
-g = 9.81 #m/s^2
+g = 9.8 #m/s^2
 theta_init = [(np.pi)/12, 0]
 
 def euler_expl(stepsize,ts,thetas):
@@ -46,7 +46,7 @@ def rk_scnd(stepsize,ts,thetas):
         k11 = dot_theta_n[i-1]
         k12 = -(g/l)*np.sin(theta_n[i-1])
         k21 = dot_theta_n[i-1] + k12*stepsize
-        k22 = -(g/l)*np.sin(theta_n[i-1]+stepsize*dot_theta_n[i-1])
+        k22 = -(g/l)*np.sin(theta_n[i-1]+stepsize*k11)
         theta_n[i] = theta_n[i-1] + (stepsize/2)*(k11+k21)
         dot_theta_n[i] = dot_theta_n[i-1] + (stepsize/2)*(k12+k22)
     return theta_n, dot_theta_n
@@ -58,15 +58,17 @@ def rk_frth(stepsize,ts,thetas):
     dot_theta_n[0] = thetas[1]
     for i in range(1,len(ts)):
         k11 = dot_theta_n[i-1]
-        k12 = -(g/l)*np.sin(theta_n[i-1])
-        k21 = dot_theta_n[i-1] + (k12*stepsize/2)
-        k22 = -(g/l)*np.sin(theta_n[i-1] + (stepsize*k11/2))
-        k31 = dot_theta_n[i-1] + (k22*stepsize/2)
-        k32 = -(g/l)*np.sin(theta_n[i-1] + (k21*stepsize/2))
-        k41 = dot_theta_n[i-1] + k32*stepsize
-        k42 = -(g/l)*np.sin(theta_n[i-1] + (k31*stepsize))
-        theta_n[i] = theta_n[i-1] + (stepsize/6)*(k11 + (2*k21) + (2*k31) + k41)
-        dot_theta_n[i] = dot_theta_n[i-1] + (stepsize/6)*(k12 + (2*k22) + (2*k32) + k42)
+        k12 = -(g/l) * np.sin(theta_n[i-1])
+        k21 = (dot_theta_n[i-1] + (k12 * stepsize/2))
+        k22 = -(g/l) * np.sin((theta_n[i-1] + (k11 * stepsize/2)))
+        k31 = (dot_theta_n[i-1] + (k22 * stepsize/2))
+        k32 = -(g/l) * np.sin((theta_n[i-1] + (k21 * stepsize/2)))
+        k41 = (dot_theta_n[i-1] + (k32 * stepsize))
+        k42 = -(g/l) * np.sin((theta_n[i-1] + (k31 * stepsize)))
+        theta_n[i] = theta_n[i-1] + ((stepsize/6) * (k11 + (2*k21) + (2*k31) + k41))
+        dot_theta_n[i] = dot_theta_n[i-1] + ((stepsize/6) * (k12 + (2*k22) + (2*k32) + k42))
+        
+    print(theta_n, dot_theta_n)
     return theta_n, dot_theta_n
 
 # Additional exact solution method for sanity check purposes
@@ -94,16 +96,16 @@ tspan = np.arange(0,2 + h,h)
 
 # Call ODE Solver Methods
 euler_esol = euler_expl(h,tspan,theta_init)
-#print(euler_esol)
+print("Now printing Euler Explicit: ", euler_esol)
 
 euler_isol = euler_full_impl(h,tspan,theta_init)
-#print(euler_isol)
+print("Now printing Euler Implicit: ", euler_isol)
 
 rk2_sol = rk_scnd(h,tspan,theta_init)
-#print(rk2_sol)
+print("Now printing RK-2: ", rk2_sol)
 
 rk4_sol = rk_frth(h,tspan,theta_init)
-#print(rk2_sol)
+print("Now printing RK-4: ", rk4_sol)
 
 exact_sol = exact(h,tspan,theta_init)
 
