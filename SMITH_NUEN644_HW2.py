@@ -25,24 +25,22 @@ delx = capdelx/2
 ###################################
 
 x = np.linspace(0,L,12)
-print(x)
 T = np.zeros(NCV+2)
 T[0] = T_0
-print(T)
 TDMA_dim = (NCV-1, NCV-1)
 T_TDMA = np.zeros(TDMA_dim)
-print(T_TDMA)
+bp_TDMA_dim = (NCV-1,1)
+bp_TDMA = np.zeros(bp_TDMA_dim)
 
-#a_W = k/delx
-a_W = 2
-#a_E = k/delx
-a_E = 1
+a_W = k/delx
+a_E = k/delx
 a_P = a_W + a_E
 S_P = q_in
 b_P = S_P*delx
 
 i=0
-for j in range(0,8):
+for j in range(0,9):
+        bp_TDMA[j] = b_P
         T_TDMA[i,j] = a_P
         if i!=8:
             T_TDMA[i+1,j] = a_E
@@ -52,14 +50,18 @@ for j in range(0,8):
         i+=1
 
 print(T_TDMA)
+print(bp_TDMA)
+
+T_TDMA_Sol = np.linalg.solve(T_TDMA,bp_TDMA)
+print(T_TDMA_Sol)
         
 # Plot the data with red triangles
-plt.plot(x, T, 'r^')  # 'r^' specifies red triangles
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.title('Temperature Profile Along X')
-plt.grid(True)
-plt.show()
+# plt.plot(x, T, 'r^')  # 'r^' specifies red triangles
+# plt.xlabel('X-axis')
+# plt.ylabel('Y-axis')
+# plt.title('Temperature Profile Along X')
+# plt.grid(True)
+# plt.show()
 
 
 ###################################
@@ -93,12 +95,12 @@ iternum = 1
 n_conv = np.zeros(9)
 
 # Plot the number of iterations required for convergence vs. alpha
-plt.plot(alpha_set, n_conv, 'r^')  # 'r^' specifies red triangles
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.title('Temperature Profile Along X')
-plt.grid(True)
-plt.show()
+# plt.plot(alpha_set, n_conv, 'r^')  # 'r^' specifies red triangles
+# plt.xlabel('X-axis')
+# plt.ylabel('Y-axis')
+# plt.title('Temperature Profile Along X')
+# plt.grid(True)
+# plt.show()
 
 ###################################
 ######## Problem #2 (b) ###########
@@ -106,9 +108,9 @@ plt.show()
 T_cent = np.zeros(9)
 
 # Plot the centerline temperature vs. alpha
-plt.plot(alpha_set, T_cent, 'r^')  # 'r^' specifies red triangles
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.title('Temperature Profile Along X')
-plt.grid(True)
-plt.show()
+# plt.plot(alpha_set, T_cent, 'r^')  # 'r^' specifies red triangles
+# plt.xlabel('X-axis')
+# plt.ylabel('Y-axis')
+# plt.title('Temperature Profile Along X')
+# plt.grid(True)
+# plt.show()
