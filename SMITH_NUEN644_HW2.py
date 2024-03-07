@@ -55,13 +55,13 @@ for j in range(0,10):
 print(T_TDMA)
 
 bp_TDMA[0] = b_P + a_W*T_0
-bp_TDMA[9] = T_inf
+bp_TDMA[9] = a_E*T_inf
 print(bp_TDMA)
 
 T_TDMA_Sol = np.linalg.solve(T_TDMA, bp_TDMA)
 print(T_TDMA_Sol)
 
-for k in range(1,NCV):
+for k in range(1,NCV+1):
     T[k] = T_TDMA_Sol[k-1,0]
 
 print(T)
@@ -87,6 +87,7 @@ T_old = np.zeros(NCV+2)
 iterlim = 100
 iternum = 1
 
+#for alpha in alpha_set:
 while np.max(T_old-T) > conv_tol and iternum<iterlim:
     for P in range(1,NCV+1):
         T[P] = (a_W*T[P-1] + a_W*T[P+1] + b_P) / a_P
