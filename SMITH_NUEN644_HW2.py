@@ -27,19 +27,32 @@ delx = capdelx/2
 x = np.linspace(0,L,12)
 print(x)
 T = np.zeros(NCV+2)
-T_old_TDMA = np.zeros(NCV+2)
 T[0] = T_0
+print(T)
+TDMA_dim = (NCV-1, NCV-1)
+T_TDMA = np.zeros(TDMA_dim)
+print(T_TDMA)
 
-a_W = k/delx
-a_E = k/delx
+#a_W = k/delx
+a_W = 2
+#a_E = k/delx
+a_E = 1
 a_P = a_W + a_E
 S_P = q_in
 b_P = S_P*delx
 
+i=0
+for j in range(0,8):
+        T_TDMA[i,j] = a_P
+        if i!=8:
+            T_TDMA[i+1,j] = a_E
+        
+        if i!=0:
+            T_TDMA[i-1,j] = a_W
+        i+=1
 
-
-print(T)
-
+print(T_TDMA)
+        
 # Plot the data with red triangles
 plt.plot(x, T, 'r^')  # 'r^' specifies red triangles
 plt.xlabel('X-axis')
