@@ -70,7 +70,7 @@ T_TDMA_Sol = np.linalg.solve(T_TDMA, bp_TDMA)
 for k in range(1,NCV+2):
     T[k] = T_TDMA_Sol[k-1,0]
 
-#print(T)
+print(T)
         
 # # Plot the data with red triangles
 plt.plot(x, T, 'r^')  # 'r^' specifies red triangles
@@ -106,10 +106,10 @@ for alpha in alpha_set:
             if P < NCV:
                 T_GS_new[P] = T_GS_old[P] + ((alpha/a_P) * (b_P + a_E*T_GS_old[P+1] + a_W*T_GS_new[P-1] - a_P*T_GS_old[P]))
             elif P == NCV:
-                bp_end = R_th*T_inf + b_P
-                a_P_end = (k/delx) + R_th
-                T_GS_new[P] = T_GS_old[P] + ((alpha/a_P_end) * (bp_end + a_W*T_GS_new[P-1] - a_P_end*T_GS_old[P]))
-                #T_GS_new[P] = 50
+                #bp_end = R_th*T_inf + b_P
+                #a_P_end = (k/delx) + R_th
+                #T_GS_new[P] = T_GS_old[P] + ((alpha/a_P_end) * (bp_end + a_W*T_GS_new[P-1] - a_P_end*T_GS_old[P]))
+                T_GS_new[P] = 60
         R_t = np.linalg.norm(T_GS_new - T_GS_old)
         T_GS_old = np.copy(T_GS_new)
         #print(R_t)
@@ -133,8 +133,8 @@ for alpha in alpha_set:
 # Plot the number of iterations required for convergence vs. alpha
 plt.plot(alpha_set, n_conv, 'r^')  # 'r^' specifies red triangles
 plt.xlabel('alpha')
-plt.ylabel('iterations to convergence')
-plt.title('iterations to convergence as a function of alpha')
+plt.ylabel('Iterations to convergence')
+plt.title('Iterations to convergence as a function of alpha')
 plt.grid(True)
 plt.show()
 
@@ -152,7 +152,7 @@ print(T_cent)
 # Plot the centerline temperature vs. alpha
 plt.plot(alpha_set, T_cent, 'r^')  # 'r^' specifies red triangles
 plt.xlabel('alpha')
-plt.ylabel('(T_6+T_7)/2')
-plt.title('Centerline Temperature Profile Along X')
+plt.ylabel('(T_5+T_6)/2')
+plt.title('Centerline temperature profile along x')
 plt.grid(True)
 plt.show()
