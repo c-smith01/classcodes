@@ -118,10 +118,10 @@ Ts[ITMAX-1,:] = 50
 Ts[0,:] = 100
 #print(Ts)
 
-v = 0
-conv_tol = 1
 for CVdims in N_CVs:
-
+    
+    v = 0
+    conv_tol = 1
     ITCV      = CVdims
     JTCV      = ITCV
     ITMAX     = ITCV + 2
@@ -158,35 +158,47 @@ for CVdims in N_CVs:
     X, Y = np.meshgrid(x, y)
 
     # Plotting the contour map
-    plt.figure(figsize=(8, 6))
-    contour = plt.contourf(X, Y, Ts_3, cmap='viridis', levels=100)
-    plt.colorbar(contour)  # Add a colorbar to show the temperature scale
-    plt.title(f'Problem 3 Temperature Contour Plot for a {CVdims} by {CVdims} matrix')
-    plt.xlabel('X Coordinate')
-    plt.ylabel('Y Coordinate')
-    plt.show()
+    # plt.figure(figsize=(8, 6))
+    # contour = plt.contourf(X, Y, Ts_3, cmap='viridis', levels=100)
+    # plt.colorbar(contour)  # Add a colorbar to show the temperature scale
+    # plt.title(f'Problem 3 Temperature Contour Plot for a {CVdims} by {CVdims} matrix')
+    # plt.xlabel('X Coordinate')
+    # plt.ylabel('Y Coordinate')
+    # plt.show()
 
 
 ###################################
 #########  Problem #4 #############
 ###################################
+centertemps = []
 for mtrxs in sol_storage:
+    middle = int(np.sqrt(np.size(mtrxs))/2)
+    #print(middle)
+    centertemps.append(mtrxs[middle,middle])
+    #print(centertemps)
 
 
 
-plt.figure(figsize=(8, 6))
-plt.plot(N_CVs, )  # Add a colorbar to show the temperature scale
-plt.title(f'Problem 3 Temperature Contour Plot for a {CVdims} by {CVdims} matrix')
-plt.xlabel('X Coordinate')
-plt.ylabel('Y Coordinate')
-plt.show()
+# plt.figure(figsize=(8, 6))
+# plt.plot(N_CVs, centertemps, 'r^')
+# plt.title(f'Problem 4 Plot of Center Temperatures')
+# plt.xlabel('Grid Size [dim x dim]')
+# plt.ylabel('Center Temperature')
+# plt.show()
 
 ###################################
 #########  Problem #5 #############
 ###################################
+F_S = 3 # Safety Factor
 
-stepsizes = []
-centertemps = []
+r_1 = 35/25
+e_1 = (centertemps[2]-centertemps[1])/((r_1**2)-1)
+GCI_1 = 1
 
-p = []
-GCI = []
+r_2 = 49/35
+e_2 = (centertemps[2]-centertemps[1])/((r_1**2)-1)
+GCI_2 = 2
+
+print(centertemps)
+#p = ln
+
