@@ -7,8 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define constants
-L     = 0.20 # cm -> m
-k     = 386   # W/m*K
+L     = 1    # m
+k     = 386  # W/m*K
 beta  = 100  # W/m^2*C
 T_0   = 100  # deg C
 T_inf = 30   # deg C
@@ -21,12 +21,20 @@ R_t   = 1E-5
 ###################################
 
 # Set matrix containing nodes for 5x5 CVs
-ITCV = 5
-JTCV = ITCV
-ITMAX = ITCV + 2
-JTMAX = ITMAX
-Ts_dim = (ITMAX, ITMAX)
-a = k/L
+ITCV      = 5
+JTCV      = ITCV
+ITMAX     = ITCV + 2
+JTMAX     = ITMAX + 2
+Ts_dim    = (ITMAX, ITMAX)
+capdelx   = L/ITCV
+delx      = capdelx/2
+capdely   = L/ITCV
+dely      = capdely/2
+
+a_N = k/dely
+a_S = a_N
+a_W = k/delx
+a_E = a_W
 
 # Initialize matrix of zeroes to represent nodes
 Ts = np.zeros(Ts_dim)
@@ -37,13 +45,22 @@ Ts[ITMAX-1,:] = 50
 Ts[0,:] = 100
 #print(Ts)
 
-k = 0
+v = 0
 conv_tol = 1
-while k < 2000 and conv_tol > R_t:
+while v < 2000 and conv_tol > R_t:
     for j in range(1,JTCV):
         for i in range(1,ITCV):
-            Ts[i,j] = (omega/(4*a))*(a*Ts[i-1,j] + a*Ts[i+1,j] + a*Ts[i,j+1] + a*Ts[i,j-1])
-    k+=1
+            if j == JTCV-1:
+                Ts[i,j] = (omega/(4*a))*(a*Ts[i-1,j] + a*Ts[i+1,j] + a*Ts[i,j+1] + a*Ts[i,j-1])
+            elif i == ITCV-1:
+                Ts[i,j] = (omega/(4*a))*(a*Ts[i-1,j] + a*Ts[i+1,j] + a*Ts[i,j+1] + a*Ts[i,j-1])
+            elif i == ITCV-1 and j == JTCV-1:
+                Ts[i,j] = (omega/(4*a))*(a*Ts[i-1,j] + a*Ts[i+1,j] + a*Ts[i,j+1] + a*Ts[i,j-1])
+            elif i == ITCV-1:
+                Ts[i,j] = (omega/(4*a))*(a*Ts[i-1,j] + a*Ts[i+1,j] + a*Ts[i,j+1] + a*Ts[i,j-1])
+            else:
+                Ts[i,j] = (omega/(4*a))*(a*Ts[i-1,j] + a*Ts[i+1,j] + a*Ts[i,j+1] + a*Ts[i,j-1])
+    v+=1
 
 print(Ts)
 
