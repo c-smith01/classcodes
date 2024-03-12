@@ -7,13 +7,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define constants
-L     = 0.20 # cm -> m
-k     = 386   # W/m*K
-beta  = 100  # W/m^2*C
-T_0   = 100  # deg C
-T_inf = 30   # deg C
-q_in  = 10E3 # W/m
-omega = 1.1
+L     = 1       #m
+Ru_tol = 1E-6
+Rv_tol = Ru_tol
+R_p_tol = 1E-5
+omega = 0.5     # Reccomended relaxation factor
+Re = 100        # Unitless Reynolds #
 R_t   = 1E-5
 
 ###################################
@@ -67,7 +66,7 @@ print(Ts_2)
 #########  Problem #4 #############
 ###################################
 
-N_CVs = [5,25,35,49]
+N_CVs = [5,8,16,64, 128, 256]
 
 
 
