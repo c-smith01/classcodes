@@ -1,10 +1,15 @@
 '''
 Created by Coleman Smith on 1/23/24
 NUEN/MEEN 644 HW1
-Due 15 February 2024
+Due 05 April 2024
 '''
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import os
+
+os.system('cls')
+os.system('clear')
+
 
 # Define constants
 L     = 1       #m
