@@ -12,13 +12,16 @@ os.system('clear')
 
 
 # Define constants
-L     = 1       #m
-Ru_tol = 1E-6
-Rv_tol = Ru_tol
-R_p_tol = 1E-5
-omega = 0.5     # Reccomended relaxation factor
-Re = 100        # Unitless Reynolds #
-R_t   = 1E-5
+L       = 1       #m
+omega   = 0.5     # Reccomended relaxation factor
+T_H2O   = 20      # Deg C
+Ru_tol  = 1E-6   # Tolerance for u-vel residual
+Rv_tol  = Ru_tol # Tolerance for v-vel residual
+R_p_tol = 1E-5  # Tolerance for Pressure residual
+Re      = 100        # Unitless Reynolds #
+rho_H2O = 998.3 # kg/m^3
+mu_H2O  = 1.002E-3 #N*s/m^2
+N_CVs   = [5,8,16,64, 128, 256]
 
 ###################################
 #########  Problem #1 #############
@@ -49,7 +52,7 @@ while np.min(np.abs()) <= R_t:
 ###################################
 #########  Problem #2 #############
 ###################################
-
+            
 New_South = 100 # deg C
 
 Ts_2 = np.zeros(Ts_dim)
@@ -58,26 +61,6 @@ Ts_2[:,0] = 50
 Ts_2[ITMAX-1,:] = 100
 Ts_2[0,:] = 100
 print(Ts_2)
-
-
-
-###################################
-#########  Problem #3 #############
-###################################
-
-
-
-###################################
-#########  Problem #4 #############
-###################################
-
-N_CVs = [5,8,16,64, 128, 256]
-
-
-
-###################################
-#########  Problem #5 #############
-###################################
 
 stepsizes = []
 centertemps = []
