@@ -7,7 +7,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-os.system('cls') #tabula rasa
+os.system('cls')
+os.system('clear') #tabula rasa
 
 # Define constants
 L     = 0.20 # cm -> m
