@@ -47,27 +47,35 @@ Ru = 1 # Start all residuals at one to force at least one iteration
 Rv = Ru
 Rp = Ru
 
-while Ru>Ru_tol and Rv>Rv_tol and Rp>Rp_tol :
-    for j in range(1,JTCV):
-        for i in range(1,ITCV):
-            Ts[i,j] = (Ts[i-1,j] + Ts[i+1,j] + Ts[i,j+1] + Ts[i,j-1])/4
+def SIMPLE_sol(gridsize):
+
+    dims = (gridsize+2,gridsize+2)
+    p_star = np.ones(dims)
+    u_star = np.ones(dims)
+    v_star = np.ones(dims)
+    
+    while Ru>Ru_tol and Rv>Rv_tol and Rp>Rp_tol :
+        for j in range(1,gridsize+1):
+            for i in range(1,gridsize+1):
+
+                # Guess pressure field (p*)
+
+                # Solve for u* & v* using p*
+
+                # Calculate d_u & d_v
+
+                # Solve pressure correction (p')
+
+                # Calculate velocity corrections (u' & v')
+
+                # Solve for any other relevant scalar quantities
+
+                # Convergence Check
 
 
 ###################################
 #########  Problem #2 #############
 ###################################
-            
-New_South = 100 # deg C
 
-Ts_2 = np.zeros(Ts_dim)
-
-Ts_2[:,0] = 50
-Ts_2[ITMAX-1,:] = 100
-Ts_2[0,:] = 100
-print(Ts_2)
-
-stepsizes = []
-centertemps = []
-
-p = []
-GCI = []
+for griddims in N_CVs:
+    print(griddims)
