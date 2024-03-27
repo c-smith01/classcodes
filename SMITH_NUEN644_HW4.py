@@ -71,6 +71,7 @@ def SIMPLE_sol(gridsize,iterlim):
     aN      = np.ones(dims)
     aS      = np.ones(dims)
     aP      = np.ones(dims)
+    bP      = np.ones(dims)
     p       = np.ones(dims)
     u       = np.ones(dims)
     v       = np.ones(dims)
@@ -124,7 +125,10 @@ def SIMPLE_sol(gridsize,iterlim):
 
                     # Calculate velocity corrections (u' & v')
 
-                    # Convergence Check
+                    # Convergence check 
+                    Ru = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
+                    Rv = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
+                    Rp = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
 
                     # Zero correction terms
                     p_star = np.zeros(dims)
