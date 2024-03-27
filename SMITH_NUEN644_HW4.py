@@ -47,30 +47,89 @@ Ru = 1 # Start all residuals at one to force at least one iteration
 Rv = Ru
 Rp = Ru
 
-def SIMPLE_sol(gridsize):
+itermax = 100 # define maximum allowable iterations of SIMPLE algorithm in event of runaway
 
-    dims = (gridsize+2,gridsize+2)
-    p_star = np.ones(dims)
-    u_star = np.ones(dims)
-    v_star = np.ones(dims)
+def SIMPLE_sol(gridsize,iterlim):
+
+    dims    = (gridsize+2,gridsize+2)
+    dx      = L/gridsize
+    dy      = dx
+    Fe      = np.ones(dims)
+    Fw      = np.ones(dims)
+    Fn      = np.ones(dims)
+    Fs      = np.ones(dims)
+    De      = np.ones(dims)
+    Dw      = np.ones(dims)
+    Dn      = np.ones(dims)
+    Ds      = np.ones(dims)
+    Pe      = np.ones(dims)
+    Pw      = np.ones(dims)
+    Pn      = np.ones(dims)
+    Ps      = np.ones(dims)
+    aE      = np.ones(dims)
+    aW      = np.ones(dims)
+    aN      = np.ones(dims)
+    aS      = np.ones(dims)
+    aP      = np.ones(dims)
+    p       = np.ones(dims)
+    u       = np.ones(dims)
+    v       = np.ones(dims)
+    p_star  = np.ones(dims)
+    u_star  = np.ones(dims)
+    v_star  = np.ones(dims)
+    p_prm  = np.ones(dims)
+    u_prm  = np.ones(dims)
+    v_prm  = np.ones(dims)
+    iternum = 0
     
-    while Ru>Ru_tol and Rv>Rv_tol and Rp>Rp_tol :
-        for j in range(1,gridsize+1):
-            for i in range(1,gridsize+1):
+    while Ru>Ru_tol and Rv>Rv_tol and Rp>Rp_tol and iternum<iterlim:
+        for j in range(0,gridsize+2):
+            for i in range(0,gridsize+2):
 
-                # Guess pressure field (p*)
+                if i == 0 or j == 0 or i == gridsize+1 or gridsize+1:
+                    print('volume is a corner or boundary CV')
+                else:
+                    # Calculate flow strengths
+                    Fe[i,j] = rho_H2O*(0.5*(u[i,j] + u[i+1,j]))*dy
+                    Fw[i,j] = rho_H2O*(0.5*(u[i,j] + u[i-1,j]))*dy
+                    Fn[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
+                    Fs[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
 
-                # Solve for u* & v* using p*
+                    # Calculate diffusion strengths
+                    De[i,j] = mu_H2O*dy/dx
+                    Dw[i,j] = mu_H2O*dy/dx
+                    Dn[i,j] = mu_H2O*dy/dx
+                    Ds[i,j] = mu_H2O*dy/dx
 
-                # Calculate d_u & d_v
+                    # Calculate Peclet #s
+                    Pe[i,j] = Fe[i,j]/De[i,j]
+                    Pw[i,j] = Fw[i,j]/Dw[i,j]
+                    Pn[i,j] = Fn[i,j]/Dn[i,j]
+                    Ps[i,j] = Fs[i,j]/Ds[i,j]
 
-                # Solve pressure correction (p')
+                    # Calcuate coeffs
+                    aE[i,j] = De[i,j]*np.max(0,(1-0.1*np.abs(Pe[i,j]))^5) + np.max(0,(-Fe[i,j]))
+                    aW[i,j] = Dw[i,j]*np.max(0,(1-0.1*np.abs(Pw[i,j]))^5) + np.max(0,(-Fw[i,j]))
+                    aN[i,j] = Dn[i,j]*np.max(0,(1-0.1*np.abs(Pn[i,j]))^5) + np.max(0,(-Fn[i,j]))
+                    aS[i,j] = Ds[i,j]*np.max(0,(1-0.1*np.abs(Ps[i,j]))^5) + np.max(0,(-Fs[i,j]))
+                    aP[i,j] = aE[i,j]+aW[i,j]+aN[i,j]+aS[i,j]
 
-                # Calculate velocity corrections (u' & v')
+                    # Guess pressure field (p*)
 
-                # Solve for any other relevant scalar quantities
+                    # Solve for u* & v* using p*
 
-                # Convergence Check
+                    # Calculate d_u & d_v
+
+                    # Solve pressure correction (p')
+
+                    # Calculate velocity corrections (u' & v')
+
+                    # Convergence Check
+
+                    # Zero correction terms
+                    p_star = np.zeros(dims)
+                    u_star = np.zeros(dims)
+                    v_star = np.zeros(dims)
 
 
 ###################################
