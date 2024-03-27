@@ -83,7 +83,7 @@ def SIMPLE_sol(gridsize,iterlim):
     v_prm  = np.ones(dims)
     iternum = 0
     
-    while Ru>Ru_tol and Rv>Rv_tol and Rp>Rp_tol and iternum<iterlim:
+    while Ru>Ru_tol or Rv>Rv_tol or Rp>Rp_tol and iternum<iterlim:
         for j in range(0,gridsize+2):
             for i in range(0,gridsize+2):
 
@@ -125,10 +125,15 @@ def SIMPLE_sol(gridsize,iterlim):
 
                     # Calculate velocity corrections (u' & v')
 
+                    # Correct p, u, & v
+                    p = p + (alpha_p*p_prm)
+                    u = u + (alpha_u*u_prm)
+                    v = v + (alpha_v*v_prm)
+
                     # Convergence check 
+                    Rp = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
                     Ru = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
                     Rv = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
-                    Rp = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
 
                     # Zero correction terms
                     p_star = np.zeros(dims)
