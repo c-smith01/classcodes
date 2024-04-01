@@ -51,6 +51,7 @@ itermax = 100 # define maximum allowable iterations of SIMPLE algorithm in event
 
 def SIMPLE_sol(gridsize,iterlim):
 
+    # Initialize all necessary grids, add array of grids for coefficients calculated for u, v, and P at each iteration
     dims    = (gridsize+2,gridsize+2)
     dx      = L/gridsize
     dy      = dx
@@ -120,10 +121,22 @@ def SIMPLE_sol(gridsize,iterlim):
                     # Solve for u* & v* using p*
 
                     # Calculate d_u & d_v
+                    du[i,j] = dy/auP[i,j]
+                    dv[i,j] = dx/auP[i,j]
 
                     # Solve pressure correction (p')
+                    b[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
+                    aE[i,j] = De[i,j]*np.max(0,(1-0.1*np.abs(Pe[i,j]))^5) + np.max(0,(-Fe[i,j]))
+                    aW[i,j] = Dw[i,j]*np.max(0,(1-0.1*np.abs(Pw[i,j]))^5) + np.max(0,(-Fw[i,j]))
+                    aN[i,j] = Dn[i,j]*np.max(0,(1-0.1*np.abs(Pn[i,j]))^5) + np.max(0,(-Fn[i,j]))
+                    aS[i,j] = Ds[i,j]*np.max(0,(1-0.1*np.abs(Ps[i,j]))^5) + np.max(0,(-Fs[i,j]))
+                    aP[i,j] = aE[i,j]+aW[i,j]+aN[i,j]+aS[i,j]
+                    
+                    p_prm[i,j] = 1
 
                     # Calculate velocity corrections (u' & v')
+                    u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
+                    v_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
 
                     # Correct p, u, & v
                     p = p + (alpha_p*p_prm)
