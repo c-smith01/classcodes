@@ -21,6 +21,7 @@ Rp_tol = 1E-5      # Tolerance for Pressure residual
 Re      = 100      # Unitless Reynolds #
 rho_H2O = 998.3    # kg/m^3
 mu_H2O  = 1.002E-3 # N*s/m^2
+u_0     = (Re*mu_H2O)/(rho_H2O*L)
 N_CVs   = [5,8,16,64, 128, 256]
 
 ###################################
