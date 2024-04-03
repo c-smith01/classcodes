@@ -22,7 +22,7 @@ Re      = 100      # Unitless Reynolds #
 rho_H2O = 998.3    # kg/m^3
 mu_H2O  = 1.002E-3 # N*s/m^2
 u_0     = (Re*mu_H2O)/(rho_H2O*L)
-N_CVs   = [5,8,16,64, 128, 256]
+N_CVs   = [5, 8, 16, 64, 128, 256]
 
 ###################################
 #########  Problem #1 #############
@@ -64,6 +64,8 @@ def SIMPLE_sol(gridsize,iterlim):
     Dw      = np.ones(dims)
     Dn      = np.ones(dims)
     Ds      = np.ones(dims)
+    du      = np.ones(dims)
+    dv      = np.ones(dims)
     Pe      = np.ones(dims)
     Pw      = np.ones(dims)
     Pn      = np.ones(dims)
@@ -90,69 +92,96 @@ def SIMPLE_sol(gridsize,iterlim):
             for i in range(0,gridsize+2):
 
                 if i == 0 or j == 0 or i == gridsize+1 or gridsize+1:
-                    print('volume is a corner or boundary CV')
+                    # Calculate diffusion strengths
+                    De[i,j] = mu_H2O*dy/dx
+                    Dw[i,j] = mu_H2O*dy/dx
+                    Dn[i,j] = mu_H2O*dy/dx
+                    Ds[i,j] = mu_H2O*dy/dx
+                elif:
+                    # Calculate diffusion strengths
+                    De[i,j] = mu_H2O*dy/dx
+                    Dw[i,j] = mu_H2O*dy/dx
+                    Dn[i,j] = mu_H2O*dy/dx
+                    Ds[i,j] = mu_H2O*dy/dx
                 else:
-                    # Calculate flow strengths
-                    Fe[i,j] = rho_H2O*(0.5*(u[i,j] + u[i+1,j]))*dy
-                    Fw[i,j] = rho_H2O*(0.5*(u[i,j] + u[i-1,j]))*dy
-                    Fn[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
-                    Fs[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
-
                     # Calculate diffusion strengths
                     De[i,j] = mu_H2O*dy/dx
                     Dw[i,j] = mu_H2O*dy/dx
                     Dn[i,j] = mu_H2O*dy/dx
                     Ds[i,j] = mu_H2O*dy/dx
 
-                    # Calculate Peclet #s
-                    Pe[i,j] = Fe[i,j]/De[i,j]
-                    Pw[i,j] = Fw[i,j]/Dw[i,j]
-                    Pn[i,j] = Fn[i,j]/Dn[i,j]
-                    Ps[i,j] = Fs[i,j]/Ds[i,j]
+                # Calculate flow strengths
+                Fe[i,j] = rho_H2O*(0.5*(u[i,j] + u[i+1,j]))*dy
+                Fw[i,j] = rho_H2O*(0.5*(u[i,j] + u[i-1,j]))*dy
+                Fn[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
+                Fs[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
 
-                    # Calcuate coeffs
-                    aE[i,j] = De[i,j]*np.max(0,(1-0.1*np.abs(Pe[i,j]))^5) + np.max(0,(-Fe[i,j]))
-                    aW[i,j] = Dw[i,j]*np.max(0,(1-0.1*np.abs(Pw[i,j]))^5) + np.max(0,(-Fw[i,j]))
-                    aN[i,j] = Dn[i,j]*np.max(0,(1-0.1*np.abs(Pn[i,j]))^5) + np.max(0,(-Fn[i,j]))
-                    aS[i,j] = Ds[i,j]*np.max(0,(1-0.1*np.abs(Ps[i,j]))^5) + np.max(0,(-Fs[i,j]))
-                    aP[i,j] = aE[i,j]+aW[i,j]+aN[i,j]+aS[i,j]
+                # Calculate Peclet #s
+                Pe[i,j] = Fe[i,j]/De[i,j]
+                Pw[i,j] = Fw[i,j]/Dw[i,j]
+                Pn[i,j] = Fn[i,j]/Dn[i,j]
+                Ps[i,j] = Fs[i,j]/Ds[i,j]
 
-                    # Guess pressure field (p*)
+                # Calcuate coeffs
+                aE[i,j] = De[i,j]*np.max(0,(1-0.1*np.abs(Pe[i,j]))^5) + np.max(0,(-Fe[i,j]))
+                aW[i,j] = Dw[i,j]*np.max(0,(1-0.1*np.abs(Pw[i,j]))^5) + np.max(0,(-Fw[i,j]))
+                aN[i,j] = Dn[i,j]*np.max(0,(1-0.1*np.abs(Pn[i,j]))^5) + np.max(0,(-Fn[i,j]))
+                aS[i,j] = Ds[i,j]*np.max(0,(1-0.1*np.abs(Ps[i,j]))^5) + np.max(0,(-Fs[i,j]))
+                aP[i,j] = aE[i,j]+aW[i,j]+aN[i,j]+aS[i,j]
 
-                    # Solve for u* & v* using p*
+                # Guess pressure field (p*)
 
-                    # Calculate d_u & d_v
-                    du[i,j] = dy/auP[i,j]
-                    dv[i,j] = dx/auP[i,j]
+                # Solve for u* & v* using p*
 
-                    # Solve pressure correction (p')
-                    b[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
-                    aE[i,j] = De[i,j]*np.max(0,(1-0.1*np.abs(Pe[i,j]))^5) + np.max(0,(-Fe[i,j]))
-                    aW[i,j] = Dw[i,j]*np.max(0,(1-0.1*np.abs(Pw[i,j]))^5) + np.max(0,(-Fw[i,j]))
-                    aN[i,j] = Dn[i,j]*np.max(0,(1-0.1*np.abs(Pn[i,j]))^5) + np.max(0,(-Fn[i,j]))
-                    aS[i,j] = Ds[i,j]*np.max(0,(1-0.1*np.abs(Ps[i,j]))^5) + np.max(0,(-Fs[i,j]))
-                    aP[i,j] = aE[i,j]+aW[i,j]+aN[i,j]+aS[i,j]
-                    
-                    p_prm[i,j] = 1
+                # Calculate d_u & d_v
+                du[i,j] = dy/auP[i,j]
+                dv[i,j] = dx/auP[i,j]
 
-                    # Calculate velocity corrections (u' & v')
-                    u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
-                    v_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
+                # Solve pressure correction (p')
+                b[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
+                aE[i,j] = De[i,j]*np.max(0,(1-0.1*np.abs(Pe[i,j]))^5) + np.max(0,(-Fe[i,j]))
+                aW[i,j] = Dw[i,j]*np.max(0,(1-0.1*np.abs(Pw[i,j]))^5) + np.max(0,(-Fw[i,j]))
+                aN[i,j] = Dn[i,j]*np.max(0,(1-0.1*np.abs(Pn[i,j]))^5) + np.max(0,(-Fn[i,j]))
+                aS[i,j] = Ds[i,j]*np.max(0,(1-0.1*np.abs(Ps[i,j]))^5) + np.max(0,(-Fs[i,j]))
+                aP[i,j] = aE[i,j]+aW[i,j]+aN[i,j]+aS[i,j]
+                
+                p_prm[i,j] = 1
 
-                    # Correct p, u, & v
-                    p = p + (alpha_p*p_prm)
-                    u = u + (alpha_u*u_prm)
-                    v = v + (alpha_v*v_prm)
+                # Calculate velocity corrections (u' & v')
+                u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
+                v_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
 
-                    # Convergence check 
-                    Rp = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
-                    Ru = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
-                    Rv = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
+                # Correct p, u, & v
+                p = p + (alpha_p*p_prm)
+                u = u + (alpha_u*u_prm)
+                v = v + (alpha_v*v_prm)
 
-                    # Zero correction terms
-                    p_star = np.zeros(dims)
-                    u_star = np.zeros(dims)
-                    v_star = np.zeros(dims)
+                # Convergence check 
+                Rp = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
+                Ru = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
+                Rv = (aP*u - aE*u - aE*u - aE*u - aE*u)/(aP*u)
+
+                # Zero correction terms
+                p_star = np.zeros(dims)
+                u_star = np.zeros(dims)
+                v_star = np.zeros(dims)
+
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.contourf(X, Y, p, cmap='viridis')
+plt.colorbar()
+plt.title('Pressure Field (dx={:.3f})'.format(dx))
+plt.xlabel('X')
+plt.ylabel('Y')
+
+plt.subplot(1, 2, 2)
+plt.quiver(X, Y, u, v)
+plt.title('Velocity Field (dx={:.3f})'.format(dx))
+plt.xlabel('X')
+plt.ylabel('Y')
+
+plt.tight_layout()
+plt.show()
 
 
 ###################################
