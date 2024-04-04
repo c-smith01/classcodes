@@ -121,7 +121,7 @@ def SIMPLE_sol_P1(gridsize,iterlim):
     while Ru>Ru_tol or Rv>Rv_tol or Rp>Rp_tol and iternum<iterlim:
         for j in range(0,gridsize+2):
             for i in range(0,gridsize+2):
-                if i == 0 or i == gridsize+1 or j == 0 or j == gridsize+1:
+                if i == 0 or i == gridsize+1 or j == 0 or j == gridsize+1: # alternate computation schemes for edge CVs
                     # Start with u vel-calcs
                     if j == 0:
                         # Calculate diffusion strengths
@@ -162,74 +162,57 @@ def SIMPLE_sol_P1(gridsize,iterlim):
                         Dnv[i,j] = mu_H2O*dy/dx
                         Dsv[i,j] = mu_H2O*dy/dx
 
-                    if i == 0: #find better way to implement this
-                        # Calculate flow strengths
-                        Feu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i+1,j]))*dy
-                        Fwu[i,j] = rho_H2O*(0.5*(u[i,j] + 0))*dy
-                        Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
-                        Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
+                    # Calculate flow strengths
+                    Fev[i,j] = rho_H2O*(0.5*(v[i,j] + v[i+1,j]))*dy
+                    Fwv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i-1,j]))*dy
+                    Fnv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
+                    Fsv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
 
-                        # Calculate Peclet #s
-                        Peu[i,j] = Feu[i,j]/Deu[i,j]
-                        Pwu[i,j] = Fwu[i,j]/Dwu[i,j]
-                        Pnu[i,j] = Fnu[i,j]/Dnu[i,j]
-                        Psu[i,j] = Fsu[i,j]/Dsu[i,j]
+                    # Calculate Peclet #s
+                    Pev[i,j] = Fev[i,j]/Dev[i,j]
+                    Pwv[i,j] = Fwv[i,j]/Dwv[i,j]
+                    Pnv[i,j] = Fnv[i,j]/Dnv[i,j]
+                    Psv[i,j] = Fsv[i,j]/Dsv[i,j]
 
-                        # Calcuate coeffs
-                        aEu[i,j] = Deu[i,j]*np.max(0,(1-0.1*np.abs(Peu[i,j]))^5) + np.max(0,(-Feu[i,j]))
-                        aWu[i,j] = Dwu[i,j]*np.max(0,(1-0.1*np.abs(Pwu[i,j]))^5) + np.max(0,(-Fwu[i,j]))
-                        aNu[i,j] = Dnu[i,j]*np.max(0,(1-0.1*np.abs(Pnu[i,j]))^5) + np.max(0,(-Fnu[i,j]))
-                        aSu[i,j] = Dsu[i,j]*np.max(0,(1-0.1*np.abs(Psu[i,j]))^5) + np.max(0,(-Fsu[i,j]))
-                        aPu[i,j] = aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]
+                    # Calcuate coeffs
+                    aEv[i,j] = Dev[i,j]*np.max(0,(1-0.1*np.abs(Pev[i,j]))^5) + np.max(0,(-Fev[i,j]))
+                    aWv[i,j] = Dwv[i,j]*np.max(0,(1-0.1*np.abs(Pwv[i,j]))^5) + np.max(0,(-Fwv[i,j]))
+                    aNv[i,j] = Dnv[i,j]*np.max(0,(1-0.1*np.abs(Pnv[i,j]))^5) + np.max(0,(-Fnv[i,j]))
+                    aSv[i,j] = Dsv[i,j]*np.max(0,(1-0.1*np.abs(Psv[i,j]))^5) + np.max(0,(-Fsv[i,j]))
+                    aPv[i,j] = aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]
 
-                        # Then v terms
+                    # Solve for u and v
+                    u[i,j] = (aEu[i,j]*u[i+1,j]+aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+                    v[i,j] = (aEv[i,j]*v[i+1,j]+aWv[i,j]*v[i-1,j]+aNv[i,j]*v[i,j+1]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
 
-                        # Calculate flow strengths
-                        Fev[i,j] = rho_H2O*(0.5*(v[i,j] + v[i+1,j]))*dy
-                        Fwv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i-1,j]))*dy
-                        Fnv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
-                        Fsv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
+                    # Calculate d_u & d_v
+                    du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
+                    dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
 
-                        # Calculate Peclet #s
-                        Pev[i,j] = Fev[i,j]/Dev[i,j]
-                        Pwv[i,j] = Fwv[i,j]/Dwv[i,j]
-                        Pnv[i,j] = Fnv[i,j]/Dnv[i,j]
-                        Psv[i,j] = Fsv[i,j]/Dsv[i,j]
+                    # Solve pressure correction (p')
+                    bPP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
+                    aEP[i,j] = rho_H2O*du[i,j]*dy
+                    aWP[i,j] = rho_H2O*du[i,j]*dy
+                    aNP[i,j] = rho_H2O*du[i,j]*dx
+                    aSP[i,j] = rho_H2O*du[i,j]*dx
+                    aPP[i,j] = aEP[i,j]+aWP[i,j]+aNP[i,j]+aSP[i,j]
+                    
+                    p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aWP[i,j]*p[i-1,j]+aNP[i,j]*p[i,j+1]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
 
-                        # Calcuate coeffs
-                        aEv[i,j] = Dev[i,j]*np.max(0,(1-0.1*np.abs(Pev[i,j]))^5) + np.max(0,(-Fev[i,j]))
-                        aWv[i,j] = Dwv[i,j]*np.max(0,(1-0.1*np.abs(Pwv[i,j]))^5) + np.max(0,(-Fwv[i,j]))
-                        aNv[i,j] = Dnv[i,j]*np.max(0,(1-0.1*np.abs(Pnv[i,j]))^5) + np.max(0,(-Fnv[i,j]))
-                        aSv[i,j] = Dsv[i,j]*np.max(0,(1-0.1*np.abs(Psv[i,j]))^5) + np.max(0,(-Fsv[i,j]))
-                        aPv[i,j] = aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]
-
-                        # Solve for u and v
-                        u[i,j] = (aEu[i,j]*u[i+1,j]+aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j-1])*(omega/aPu[i,j])
-                        v[i,j] = (aEv[i,j]*v[i+1,j]+aWv[i,j]*v[i-1,j]+aNv[i,j]*v[i,j+1]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
-
-                        # Calculate d_u & d_v
-                        du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
-                        dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
-
-                        # Solve pressure correction (p')
-                        bPP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
-                        aEP[i,j] = rho_H2O*du[i,j]*dy
-                        aWP[i,j] = rho_H2O*du[i,j]*dy
-                        aNP[i,j] = rho_H2O*du[i,j]*dx
-                        aSP[i,j] = rho_H2O*du[i,j]*dx
-                        aPP[i,j] = aEP[i,j]+aWP[i,j]+aNP[i,j]+aSP[i,j]
-                        
-                        p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aWP[i,j]*p[i-1,j]+aNP[i,j]*p[i,j+1]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
-
-                        # Calculate velocity corrections (u' & v')
+                    # Calculate velocity corrections (u' & v')
+                    if i == gridsize+1:
+                        u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i-1,j])
+                        v_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i-1,j])
+                    else:
                         u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
                         v_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
 
-                        # Correct p, u, & v
-                        p = p + (omega*p_prm)
-                        u = u + u_prm
-                        v = v + v_prm
-                else:
+                    # Correct p, u, & v
+                    p = p + (omega*p_prm)
+                    u = u + u_prm
+                    v = v + v_prm
+
+                else:                                   #computation scheme for internal CVs
                     # Start with u vel-calcs
                     if j == 1:
                         # Calculate diffusion strengths
