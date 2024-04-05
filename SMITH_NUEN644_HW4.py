@@ -74,6 +74,8 @@ def SIMPLE_sol(gridsize,iterlim):
     aS      = np.ones(dims)
     aP      = np.ones(dims)
     bP      = np.ones(dims)
+    du      = np.ones(dims)
+    dv      = np.ones(dims)
     p       = np.ones(dims)
     u       = np.ones(dims)
     v       = np.ones(dims)
@@ -126,7 +128,7 @@ def SIMPLE_sol(gridsize,iterlim):
                     dv[i,j] = dx/auP[i,j]
 
                     # Solve pressure correction (p')
-                    b[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
+                    bP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
                     aE[i,j] = De[i,j]*np.max(0,(1-0.1*np.abs(Pe[i,j]))^5) + np.max(0,(-Fe[i,j]))
                     aW[i,j] = Dw[i,j]*np.max(0,(1-0.1*np.abs(Pw[i,j]))^5) + np.max(0,(-Fw[i,j]))
                     aN[i,j] = Dn[i,j]*np.max(0,(1-0.1*np.abs(Pn[i,j]))^5) + np.max(0,(-Fn[i,j]))
