@@ -112,7 +112,7 @@ def pcoeffs(dims,p,bP,
     aSP[i,j] = rho_H2O*du[i,j]*dx
     aPP[i,j] = aEP[i,j]+aWP[i,j]+aNP[i,j]+aSP[i,j]
     
-def psolve():
+def psolve(p,p_prm,aEP,aWP,aNP,aSP,aPP):
     p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aWP[i,j]*p[i-1,j]+aNP[i,j]*p[i,j+1]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
     
 def ucorrect(dims,u_prm,du,p_prm):
@@ -129,7 +129,7 @@ def vcorrect(dims,v_prm,du,p_prm):
         v_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
     v = v + v_prm
 
-def pcorrect():
+def pcorrect(p,p_prm):
     p = p + (omega*p_prm)
     
 def conv_check():
@@ -155,7 +155,7 @@ P1_psols = []
 P1_usols = []
 P1_vsols = [] # initialize empty array to contain solutions for post-processing
 
-def SIMPLE_sol_1(cv_arr,iter_lim):
+def SIMPLE_sol(cv_arr,iter_lim):
     pstate = True #let dependent methods know this is Problem 1
     
     for dims in cv_arr:
@@ -163,7 +163,10 @@ def SIMPLE_sol_1(cv_arr,iter_lim):
         p = np.ones(bnd_size)
         v = np.ones(bnd_size)
         u = np.ones(bnd_size)
-        
+        p_prm = np.ones(bnd_size)
+        v_prm = np.ones(bnd_size)
+        u_prm = np.ones(bnd_size)
+
 
 
 ###################################
