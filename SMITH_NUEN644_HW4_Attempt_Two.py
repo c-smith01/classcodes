@@ -11,7 +11,6 @@ import os
 os.system('cls')
 os.system('clear')
 
-
 # Define constants
 L           = 1                         # m
 omega       = 0.5                       # Reccomended relaxation factor
@@ -50,17 +49,26 @@ def ucoeffs(dims,
         jlim = dims-1
     for j in range(1,jlim):
         for i in range(0,dims):
-            Deu[i,j] = mu_H2O*dy/dx # Calculate diffusion strengths
-            Dwu[i,j] = mu_H2O*dy/dx
+            if i == 0:
+                Deu[i,j] = 0
+            else:
+                Deu[i,j] = mu_H2O*dy/dx                         # Calculate diffusion strengths
+            if j == jlim-1:
+                Dwu[i,j] = 0
+            else:
+                Dwu[i,j] = mu_H2O*dy/dx
             Dnu[i,j] = mu_H2O*dx/dy
             Dsu[i,j] = mu_H2O*dx/dy
 
             Feu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i+1,j]))*dy # Calculate flow strengths
             Fwu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i-1,j]))*dy
-            Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
-            Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
+            Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j+1]))*dx
+            if j == 0:
+                Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
+            else:
+                Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
 
-            Peu[i,j] = Feu[i,j]/Deu[i,j] # Calculate Peclet #s
+            Peu[i,j] = Feu[i,j]/Deu[i,j]                    # Calculate Peclet #s
             Pwu[i,j] = Fwu[i,j]/Dwu[i,j]
             Pnu[i,j] = Fnu[i,j]/Dnu[i,j]
             Psu[i,j] = Fsu[i,j]/Dsu[i,j]
@@ -88,10 +96,9 @@ def usolve(dims,u,aEu,aWu,aSu,aNu,aPu,pstate):
 def vcoeffs(dims,
             Dev,Dwv,Dnv,Dsv,
             Fev,Fwv,Fnv,Fsv,
-            Peu,Pwu,Pnu,Psu,
-            aEu,aWu,aNu,aSu,aPu,
-            v,pstate,dx,dy):
-    
+            Pev,Pwv,Pnv,Psv,
+            aEv,aWv,aNv,aSv,aPv,
+            v,pstate,dx,dy):    
 
 def vsolve(dims,v,aEv,aWv,aSv,aNv,aPv,pstate):
     
@@ -148,16 +155,13 @@ def print_res(ps,us,vs):
 #########  Problem #1 #############
 ###################################
 
-P1_psols = []
-P1_usols = []
-P1_vsols = [] # initialize empty array to contain solutions for post-processing
-
 def SIMPLE_sol(cv_arr,iter_lim,pstate):
     
     for dims in cv_arr:
         #init geometry
         dx = dy = L/dims
-        bnd_size = (dims,dims)
+        cv_size = dims+2
+        bnd_size = (cv_size,cv_size)
 
         #init necessary matrices
         p = v = u = np.ones(bnd_size)
@@ -170,13 +174,19 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
         aEu = aWu = aNu = aSu = aPu = aEu = aWu = aNu = aSu = aPu = np.ones(bnd_size)
         aEP = aWP = aNP = aSP = aPP = bPP = np.ones(bnd_size)
 
-        Rp = Ru = Rv = 1 #start residuals with values greater than tolerance to force at least one iteration
-        itercount = 1 # start count of iterations to convergence
+        Rp = Ru = Rv = 1 # start residuals with values greater than tolerance to force at least one iteration
+        itercount    = 1 # start count of iterations to convergence
 
         while Rp>Rp_tol or Ru>Ru_tol or Rv>Rv_tol or itercount<iter_lim:
             bnd_conds(u_matr=u,pstate=pstate)
+            ucoeffs(Deu=Deu,Dwu=Dwu,Dnu=Dnu,Dsu=Dsu,
+                    Feu=Feu,Fwu=Fwu,Fnu=Fnu,Fsu=Fsu,
+                    Peu=Peu,Pwu=Pwu,Pnu=Pnu,Psu=Psu,
+                    aEu=aEu,aWu=aWu,aNu=aNu,aSu=aSu,aPu=aPu,
+                    u=u,pstate=pstate,dy=dy,dx=dy)
+            usolve()
 
-            
+
 
 
         print_res()
