@@ -61,11 +61,11 @@ def ucoeffs(dims,pstate):
             Pnu[i,j] = Fnu[i,j]/Dnu[i,j]
             Psu[i,j] = Fsu[i,j]/Dsu[i,j]
 
-            aEv[i,j] = Dev[i,j]*np.max(0,(1-0.1*np.abs(Pev[i,j]))^5) + np.max(0,(-Fev[i,j]))
-            aWv[i,j] = Dwv[i,j]*np.max(0,(1-0.1*np.abs(Pwv[i,j]))^5) + np.max(0,(-Fwv[i,j]))
-            aNv[i,j] = Dnv[i,j]*np.max(0,(1-0.1*np.abs(Pnv[i,j]))^5) + np.max(0,(-Fnv[i,j]))
-            aSv[i,j] = Dsv[i,j]*np.max(0,(1-0.1*np.abs(Psv[i,j]))^5) + np.max(0,(-Fsv[i,j]))
-            aPv[i,j] = aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]
+            aEu[i,j] = Deu[i,j]*np.max(0,(1-0.1*np.abs(Peu[i,j]))^5) + np.max(0,(-Feu[i,j]))
+            aWu[i,j] = Dwu[i,j]*np.max(0,(1-0.1*np.abs(Pwu[i,j]))^5) + np.max(0,(-Fwu[i,j]))
+            aNu[i,j] = Dnu[i,j]*np.max(0,(1-0.1*np.abs(Pnu[i,j]))^5) + np.max(0,(-Fnu[i,j]))
+            aSu[i,j] = Dsu[i,j]*np.max(0,(1-0.1*np.abs(Psu[i,j]))^5) + np.max(0,(-Fsu[i,j]))
+            aPu[i,j] = aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]
 
     
 def usolve(dims,pstate):
@@ -88,14 +88,38 @@ def vcoeffs():
 def vsolve():
     
 def pcoeffs():
+    bP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
+    aE[i,j] = De[i,j]*np.max(0,(1-0.1*np.abs(Pe[i,j]))^5) + np.max(0,(-Fe[i,j]))
+    aW[i,j] = Dw[i,j]*np.max(0,(1-0.1*np.abs(Pw[i,j]))^5) + np.max(0,(-Fw[i,j]))
+    aN[i,j] = Dn[i,j]*np.max(0,(1-0.1*np.abs(Pn[i,j]))^5) + np.max(0,(-Fn[i,j]))
+    aS[i,j] = Ds[i,j]*np.max(0,(1-0.1*np.abs(Ps[i,j]))^5) + np.max(0,(-Fs[i,j]))
+    aP[i,j] = aE[i,j]+aW[i,j]+aN[i,j]+aS[i,j]
+    bPP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
+    aEP[i,j] = rho_H2O*du[i,j]*dy
+    aWP[i,j] = rho_H2O*du[i,j]*dy
+    aNP[i,j] = rho_H2O*du[i,j]*dx
+    aSP[i,j] = rho_H2O*du[i,j]*dx
+    aPP[i,j] = aEP[i,j]+aWP[i,j]+aNP[i,j]+aSP[i,j]
     
 def psolve():
+    p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aWP[i,j]*p[i-1,j]+aNP[i,j]*p[i,j+1]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
     
 def ucorrect():
+    if i == gridsize+1:
+        u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i-1,j])
+        
+    else:
+        u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
 
 def vcorrect():
-    
+    if i == gridsize+1:
+        v_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i-1,j])
+    else:
+        v_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
+    v = v + v_prm
+
 def pcorrect():
+    p = p + (omega*p_prm)
     
 def conv_check():
     Rp = (np.sum(rho_H2O*u-rho_H2O*u,rho_H2O*u-rho_H2O*u))/(rho_H2O*u_0*L)
