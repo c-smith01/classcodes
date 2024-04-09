@@ -157,10 +157,13 @@ P1_vsols = [] # initialize empty array to contain solutions for post-processing
 
 def SIMPLE_sol_1(cv_arr,iter_lim):
     pstate = True #let dependent methods know this is Problem 1
+    
     for dims in cv_arr:
-
-
-
+        bnd_size = (dims,dims)
+        p = np.ones(bnd_size)
+        v = np.ones(bnd_size)
+        u = np.ones(bnd_size)
+        
 
 
 ###################################
