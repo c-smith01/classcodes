@@ -39,15 +39,49 @@ def reset(matr,dims):
     matr = np.zeros(dims)
 
 def ucoeffs(dims,pstate):
+    dy = dx = L/dims
     if pstate == True:
         jlim = dims
     else:
         jlim = dims-1
     for j in range(1,jlim):
         for i in range(0,dims):
+            Deu[i,j] = mu_H2O*dy/dx # Calculate diffusion strengths
+            Dwu[i,j] = mu_H2O*dy/dx
+            Dnu[i,j] = mu_H2O*dx/dy
+            Dsu[i,j] = mu_H2O*dx/dy
+
+            Feu[i,j] = rho_H2O*(0.5*(v[i,j] + v[i+1,j]))*dy # Calculate flow strengths
+            Fwu[i,j] = rho_H2O*(0.5*(v[i,j] + v[i-1,j]))*dy
+            Fnu[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
+            Fsu[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
+
+            Peu[i,j] = Feu[i,j]/Deu[i,j] # Calculate Peclet #s
+            Pwu[i,j] = Fwu[i,j]/Dwu[i,j]
+            Pnu[i,j] = Fnu[i,j]/Dnu[i,j]
+            Psu[i,j] = Fsu[i,j]/Dsu[i,j]
+
+            aEv[i,j] = Dev[i,j]*np.max(0,(1-0.1*np.abs(Pev[i,j]))^5) + np.max(0,(-Fev[i,j]))
+            aWv[i,j] = Dwv[i,j]*np.max(0,(1-0.1*np.abs(Pwv[i,j]))^5) + np.max(0,(-Fwv[i,j]))
+            aNv[i,j] = Dnv[i,j]*np.max(0,(1-0.1*np.abs(Pnv[i,j]))^5) + np.max(0,(-Fnv[i,j]))
+            aSv[i,j] = Dsv[i,j]*np.max(0,(1-0.1*np.abs(Psv[i,j]))^5) + np.max(0,(-Fsv[i,j]))
+            aPv[i,j] = aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]
 
     
-def usolve()
+def usolve(dims,pstate):
+    if pstate == True:
+        jlim = dims
+    else:
+        jlim = dims-1
+    for j in range(1,jlim):
+        for i in range(0,dims):
+            if i == 0:
+                u[i,j] = (aEu[i,j]*u[i+1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+            elif i == dims-1:
+                u[i,j] = (aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+            else:
+                u[i,j] = (aEu[i,j]*u[i+1,j]+aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+
 
 def vcoeffs():
 
@@ -80,4 +114,8 @@ def print_res(ps,us,vs):
 
 ###################################
 #########  Problem #1 #############
+###################################
+
+###################################
+#########  Problem #2 #############
 ###################################
