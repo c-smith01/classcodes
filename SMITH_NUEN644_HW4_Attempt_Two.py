@@ -38,7 +38,12 @@ def bnd_conds_two(u_matr):
 def reset(matr,dims):
     matr = np.zeros(dims)
 
-def ucoeffs(dims,pstate):
+def ucoeffs(dims,
+            Deu,Dwu,Dnu,Dsu,
+            Feu,Fwu,Fnu,Fsu,
+            Peu,Pwu,Pnu,Psu,
+            aEu,aWu,aNu,aSu,aPu,
+            u,pstate):
     dy = dx = L/dims
     if pstate == True:
         jlim = dims
@@ -51,10 +56,10 @@ def ucoeffs(dims,pstate):
             Dnu[i,j] = mu_H2O*dx/dy
             Dsu[i,j] = mu_H2O*dx/dy
 
-            Feu[i,j] = rho_H2O*(0.5*(v[i,j] + v[i+1,j]))*dy # Calculate flow strengths
-            Fwu[i,j] = rho_H2O*(0.5*(v[i,j] + v[i-1,j]))*dy
-            Fnu[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
-            Fsu[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
+            Feu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i+1,j]))*dy # Calculate flow strengths
+            Fwu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i-1,j]))*dy
+            Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
+            Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
 
             Peu[i,j] = Feu[i,j]/Deu[i,j] # Calculate Peclet #s
             Pwu[i,j] = Fwu[i,j]/Dwu[i,j]
@@ -66,9 +71,8 @@ def ucoeffs(dims,pstate):
             aNu[i,j] = Dnu[i,j]*np.max(0,(1-0.1*np.abs(Pnu[i,j]))^5) + np.max(0,(-Fnu[i,j]))
             aSu[i,j] = Dsu[i,j]*np.max(0,(1-0.1*np.abs(Psu[i,j]))^5) + np.max(0,(-Fsu[i,j]))
             aPu[i,j] = aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]
-
     
-def usolve(dims,pstate):
+def usolve(dims,u,aEu,aWu,aSu,aNu,aPu,pstate):
     if pstate == True:
         jlim = dims
     else:
@@ -82,12 +86,19 @@ def usolve(dims,pstate):
             else:
                 u[i,j] = (aEu[i,j]*u[i+1,j]+aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j-1])*(omega/aPu[i,j])
 
+def vcoeffs(dims,
+            Dev,Dwv,Dnv,Dsv,
+            Fev,Fwv,Fnv,Fsv,
+            Peu,Pwu,Pnu,Psu,
+            aEu,aWu,aNu,aSu,aPu,
+            v,pstate):
+    dy = dx = L/dims
 
-def vcoeffs():
-
-def vsolve():
+def vsolve(dims,v,aEv,aWv,aSv,aNv,aPv,pstate):
     
-def pcoeffs():
+def pcoeffs(dims,p,bP,
+            aE,aW,aN,aS,aP,
+            bPP,aEP,aWP,aNP,aSP,aPP):
     bP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
     aE[i,j] = De[i,j]*np.max(0,(1-0.1*np.abs(Pe[i,j]))^5) + np.max(0,(-Fe[i,j]))
     aW[i,j] = Dw[i,j]*np.max(0,(1-0.1*np.abs(Pw[i,j]))^5) + np.max(0,(-Fw[i,j]))
@@ -104,15 +115,15 @@ def pcoeffs():
 def psolve():
     p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aWP[i,j]*p[i-1,j]+aNP[i,j]*p[i,j+1]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
     
-def ucorrect():
-    if i == gridsize+1:
+def ucorrect(dims,u_prm,du,p_prm):
+    if i == dims+1:
         u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i-1,j])
         
     else:
         u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
 
-def vcorrect():
-    if i == gridsize+1:
+def vcorrect(dims,v_prm,du,p_prm):
+    if i == dims+1:
         v_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i-1,j])
     else:
         v_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
@@ -139,6 +150,18 @@ def print_res(ps,us,vs):
 ###################################
 #########  Problem #1 #############
 ###################################
+
+P1_psols = []
+P1_usols = []
+P1_vsols = [] # initialize empty array to contain solutions for post-processing
+
+def SIMPLE_sol_1(cv_arr,iter_lim):
+    pstate = True #let dependent methods know this is Problem 1
+    for dims in cv_arr:
+
+
+
+
 
 ###################################
 #########  Problem #2 #############
