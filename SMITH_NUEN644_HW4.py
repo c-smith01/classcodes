@@ -56,6 +56,26 @@ def SIMPLE_sol_P1(gridsize,iterlim):
     dims    = (gridsize+2,gridsize+2)
     dx      = L/gridsize
     dy      = dx
+    Fe      = np.ones(dims)
+    Fw      = np.ones(dims)
+    Fn      = np.ones(dims)
+    Fs      = np.ones(dims)
+    De      = np.ones(dims)
+    Dw      = np.ones(dims)
+    Dn      = np.ones(dims)
+    Ds      = np.ones(dims)
+    Pe      = np.ones(dims)
+    Pw      = np.ones(dims)
+    Pn      = np.ones(dims)
+    Ps      = np.ones(dims)
+    aE      = np.ones(dims)
+    aW      = np.ones(dims)
+    aN      = np.ones(dims)
+    aS      = np.ones(dims)
+    aP      = np.ones(dims)
+    bP      = np.ones(dims)
+    du      = np.ones(dims)
+    dv      = np.ones(dims)
     du      = np.ones(dims)
     dv      = np.ones(dims)
     Feu      = np.ones(dims)
@@ -190,6 +210,12 @@ def SIMPLE_sol_P1(gridsize,iterlim):
                     dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
 
                     # Solve pressure correction (p')
+                    bP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
+                    aE[i,j] = De[i,j]*np.max(0,(1-0.1*np.abs(Pe[i,j]))^5) + np.max(0,(-Fe[i,j]))
+                    aW[i,j] = Dw[i,j]*np.max(0,(1-0.1*np.abs(Pw[i,j]))^5) + np.max(0,(-Fw[i,j]))
+                    aN[i,j] = Dn[i,j]*np.max(0,(1-0.1*np.abs(Pn[i,j]))^5) + np.max(0,(-Fn[i,j]))
+                    aS[i,j] = Ds[i,j]*np.max(0,(1-0.1*np.abs(Ps[i,j]))^5) + np.max(0,(-Fs[i,j]))
+                    aP[i,j] = aE[i,j]+aW[i,j]+aN[i,j]+aS[i,j]
                     bPP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
                     aEP[i,j] = rho_H2O*du[i,j]*dy
                     aWP[i,j] = rho_H2O*du[i,j]*dy
