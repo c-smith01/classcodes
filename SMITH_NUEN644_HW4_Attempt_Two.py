@@ -28,16 +28,16 @@ N_CVs   = [5, 8, 16, 64, 128, 256]  # CVs
 # General methods used in both problems
 
 def bnd_conds_one(u_matr):
-    u_matr[0] = u_0
-    u_matr[-1]
+    u_matr[:][0] = u_0
+    u_matr[:][-1] = u_0
 
 def bnd_conds_two(u_matr):
-    u_matr[0] = u_0
+    u_matr[:][0] = u_0
 
 def reset(matr,dims):
     matr = np.zeros(dims)
 
-def ucoeffs():
+def ucoeffs(dims):
     
 def usolve()
 
@@ -57,7 +57,14 @@ def pcorrect():
     
 def conv_check():
     
-def print_res():
+def print_res(ps,us,vs):
+    print('Printing pressure solutions')
+    print(ps)
+    print('Printing u-vel fields')
+    print(us)
+    print('Printing v-vel fields')
+    print(vs)
+
 
 
 ###################################
