@@ -39,6 +39,25 @@ def reset(matr,dims):
 
 def ucoeffs():
     
+def usolve()
+
+def vcoeffs():
+
+def vsolve():
+    
+def pcoeffs():
+    
+def psolve():
+    
+def ucorrect():
+
+def vcorrect():
+    
+def pcorrect():
+    
+def conv_check():
+    
+def print_res():
 
 
 ###################################
