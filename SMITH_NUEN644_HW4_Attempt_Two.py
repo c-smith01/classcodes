@@ -49,18 +49,29 @@ def ucoeffs(dims,
         jlim = dims-1
     for j in range(1,jlim):
         for i in range(0,dims):
+            # Calculate diffusion strengths
             if i == 0:
                 Deu[i,j] = 0
             else:
-                Deu[i,j] = mu_H2O*dy/dx                         # Calculate diffusion strengths
-            if j == jlim-1:
+                Deu[i,j] = mu_H2O*dy/dx
+
+            if i == dims-2:
                 Dwu[i,j] = 0
             else:
                 Dwu[i,j] = mu_H2O*dy/dx
-            Dnu[i,j] = mu_H2O*dx/dy
-            Dsu[i,j] = mu_H2O*dx/dy
 
-            Feu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i+1,j]))*dy # Calculate flow strengths
+            if j == dims-2:
+                Dnu[i,j] = 0
+            else:
+                Dnu[i,j] = mu_H2O*dx/dy
+
+            if j == 0:
+                Dsu[i,j] = 0
+            else:
+                Dsu[i,j] = mu_H2O*dx/dy
+
+            # Calculate flow strengths
+            Feu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i+1,j]))*dy
             Fwu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i-1,j]))*dy
             Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j+1]))*dx
             if j == 0:
