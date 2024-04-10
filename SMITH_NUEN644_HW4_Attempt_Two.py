@@ -83,12 +83,12 @@ def ucoeffs(dims,
             if j == dims-1:
                 Fnu[i,j] = 0
             else:
-                Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j+1]))*dx
+                Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
 
             if j == 0:
                 Fsu[i,j] = 0
             else:
-                Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
+                Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j+1]))*dx
 
             # Calculate Peclet #s
             if i == 0:
@@ -117,7 +117,7 @@ def ucoeffs(dims,
             aSu[i,j] = Dsu[i,j]*np.max((0,(1-0.1*np.abs(Psu[i,j]))**5)) + np.max((0,(-Fsu[i,j])))
             aPu[i,j] = aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]
 
-    print(aPu)
+    print(aEu)
     
 def usolve(dims,
            u,aEu,aWu,aSu,aNu,aPu,
@@ -436,3 +436,5 @@ prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_one,iter_lim=5,pstate=True)
 ###################################
 #########  Problem #2 #############
 ###################################
+
+prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=5,pstate=True)
