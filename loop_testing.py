@@ -1,7 +1,10 @@
 import numpy as np
 
-for i in range (0,5+2):
+size = 7
+for i in range (0,size):
     print(i)
+    if i == size-1:
+        print('last val',i)
 
 x = np.array([[1,2],[3,4]])
 

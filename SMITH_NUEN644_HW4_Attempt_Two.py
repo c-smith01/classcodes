@@ -8,8 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-os.system('cls')
-os.system('clear')
+#os.system('cls')
 
 # Define constants
 L           = 1                         # m
@@ -44,9 +43,9 @@ def ucoeffs(dims,
             aEu,aWu,aNu,aSu,aPu,
             u,pstate,dy,dx):
     if pstate == True:
-        jlim = dims
-    else:
         jlim = dims-1
+    else:
+        jlim = dims
     for j in range(1,jlim):
         for i in range(0,dims):
             # Calculate diffusion strengths
@@ -55,12 +54,12 @@ def ucoeffs(dims,
             else:
                 Deu[i,j] = mu_H2O*dy/dx
 
-            if i == dims-2:
+            if i == dims-1:
                 Dwu[i,j] = 0
             else:
                 Dwu[i,j] = mu_H2O*dy/dx
 
-            if j == jlim-2:
+            if j == dims-1:
                 Dnu[i,j] = 0
             else:
                 Dnu[i,j] = mu_H2O*dx/dy
@@ -87,7 +86,7 @@ def ucoeffs(dims,
                 Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j+1]))*dx
 
             if j == 0:
-                Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
+                Fsu[i,j] = 0
             else:
                 Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
 
@@ -117,30 +116,44 @@ def ucoeffs(dims,
             aNu[i,j] = Dnu[i,j]*np.max((0,(1-0.1*np.abs(Pnu[i,j]))**5)) + np.max((0,(-Fnu[i,j])))
             aSu[i,j] = Dsu[i,j]*np.max((0,(1-0.1*np.abs(Psu[i,j]))**5)) + np.max((0,(-Fsu[i,j])))
             aPu[i,j] = aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]
+
+    print(aPu)
     
 def usolve(dims,
            u,aEu,aWu,aSu,aNu,aPu,
            du,dy,pstate):
     if pstate == True:
-        jlim = dims
-    else:
         jlim = dims-1
+    else:
+        jlim = dims
     for j in range(1,jlim):
         for i in range(0,dims):
-            if i == 0:
-                u[i,j] = (aEu[i,j]*u[i+1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+            if i == 0 and j!=0 and j!=dims-1:
+                u[i,j] = (aEu[i,j]*u[i+1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j+1])*(omega/aPu[i,j])
                 du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
-            elif i == dims-1:
-                u[i,j] = (aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+            elif i == dims-1 and j!=0 and j!=dims-1:
+                u[i,j] = (aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j+1])*(omega/aPu[i,j])
                 du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
-            elif j == 0:
-                u[i,j] = (aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j+1])*(omega/aPu[i,j])
+            elif j == 0 and i!=0 and i!=dims-1:
+                u[i,j] = (aEu[i,j]*u[i+1,j]+aWu[i,j]*u[i-1,j]+aSu[i,j]*u[i,j+1])*(omega/aPu[i,j])
                 du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
-            elif j == dims-1:
-                u[i,j] = (aEu[i,j]*u[i+1,j]+aWu[i,j]*u[i-1,j]+aSu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+            elif j == dims-1 and i!=0 and i!=dims-1:
+                u[i,j] = (aEu[i,j]*u[i+1,j]+aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+                du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
+            elif i == 0 and j == 0:
+                u[i,j] = (aEu[i,j]*u[i+1,j]+aNu[i,j]*u[i,j+1])*(omega/aPu[i,j])
+                du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
+            elif i == 0 and j == dims-1:
+                u[i,j] = (aEu[i,j]*u[i+1,j]+aNu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+                du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
+            elif i == dims-1 and j == dims-1:
+                u[i,j] = (aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+                du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
+            elif i == dims-1 and j == 0:
+                u[i,j] = (aEu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j+1])*(omega/aPu[i,j])
                 du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
             else:
-                u[i,j] = (aEu[i,j]*u[i+1,j]+aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j+1]+aSu[i,j]*u[i,j-1])*(omega/aPu[i,j])
+                u[i,j] = (aEu[i,j]*u[i+1,j]+aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j-1]+aSu[i,j]*u[i,j+1])*(omega/aPu[i,j])
                 du[i,j] = dy/((aPu[i,j]/omega)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
 
 def vcoeffs(dims,
@@ -173,8 +186,8 @@ def vcoeffs(dims,
                 Dsv[i,j] = mu_H2O*dx/dy
 
             # Calculate flow strengths
-            if i == 0:
-                Fev[i,j] = rho_H2O*(0.5*(v[i,j] + v[i+1,j]))*dy
+            if i == dims-1:
+                Fev[i,j] = 0
             else:    
                 Fev[i,j] = rho_H2O*(0.5*(v[i,j] + v[i+1,j]))*dy
 
@@ -224,18 +237,30 @@ def vsolve(dims,
            v,aEv,aWv,aSv,aNv,aPv,
            dv,dx):
     for i in range(0,dims):
-        for j in range(dims):
-            if i == 0:
-                v[i,j] = (aEv[i,j]*v[i+1,j]+aWv[i,j]*v[i-1,j]+aNv[i,j]*v[i,j+1]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
+        for j in range(0,dims):
+            if i == 0 and j!=0 and j!=dims-1:
+                v[i,j] = (aEv[i,j]*v[i+1,j]+aNv[i,j]*v[i,j+1]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
                 dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
-            elif i == dims-1:
-                v[i,j] = (aEv[i,j]*v[i+1,j]+aWv[i,j]*v[i-1,j]+aNv[i,j]*v[i,j+1]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
+            elif i == dims-1 and j!=0 and j!=dims-1:
+                v[i,j] = (aWv[i,j]*v[i-1,j]+aNv[i,j]*v[i,j+1]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
                 dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
-            elif j == 0:
-                v[i,j] = (aEv[i,j]*v[i+1,j]+aWv[i,j]*v[i-1,j]+aNv[i,j]*v[i,j+1]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
+            elif j == 0 and i!=0 and i!=dims-1:
+                v[i,j] = (aEv[i,j]*v[i+1,j]+aWv[i,j]*v[i-1,j]+aSv[i,j]*v[i,j+1])*(omega/aPv[i,j])
                 dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
-            elif j == dims-1:
-                v[i,j] = (aEv[i,j]*v[i+1,j]+aWv[i,j]*v[i-1,j]+aNv[i,j]*v[i,j+1]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
+            elif j == dims-1 and i!=0 and i!=dims-1:
+                v[i,j] = (aEv[i,j]*v[i+1,j]+aWv[i,j]*v[i-1,j]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
+                dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
+            elif i == 0 and j == 0:
+                v[i,j] = (aEv[i,j]*v[i+1,j]+aSv[i,j]*v[i,j+1])*(omega/aPv[i,j])
+                dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
+            elif i == 0 and j == dims-1:
+                v[i,j] = (aEv[i,j]*v[i+1,j]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
+                dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
+            elif i == dims-1 and j == dims-1:
+                v[i,j] = (aWv[i,j]*v[i-1,j]+aNv[i,j]*v[i,j-1])*(omega/aPv[i,j])
+                dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
+            elif i == dims-1 and j == 0:
+                v[i,j] = (aWv[i,j]*v[i-1,j]+aSv[i,j]*v[i,j+1])*(omega/aPv[i,j])
                 dv[i,j] = dx/((aPv[i,j]/omega)-(aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]))
             else:
                 v[i,j] = (aEv[i,j]*v[i+1,j]+aWv[i,j]*v[i-1,j]+aNv[i,j]*v[i,j+1]+aSv[i,j]*v[i,j-1])*(omega/aPv[i,j])
@@ -247,7 +272,14 @@ def pccoeffs(dims,
              du,dv,dx,dy):
     for j in range(0,dims):
         for i in range(0,dims): 
-            bPP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
+            if i == 0  and j!=0:
+                bPP[i,j] = rho_H2O*dy*(u[i+1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
+            elif j == 0:
+                bPP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j+1]-v[i,j])
+            elif i == 0 and j == 0:
+                bPP[i,j] = rho_H2O*dy*(u[i+1,j]-u[i,j]) + rho_H2O*dx*(v[i,j+1]-v[i,j])
+            else:
+                bPP[i,j] = rho_H2O*dy*(u[i-1,j]-u[i,j]) + rho_H2O*dx*(v[i,j-1]-v[i,j])
             aEP[i,j] = rho_H2O*du[i,j]*dy
             aWP[i,j] = rho_H2O*du[i,j]*dy
             aNP[i,j] = rho_H2O*dv[i,j]*dx
@@ -258,36 +290,59 @@ def pcsolve(dims,
             p,p_prm,aEP,aWP,aNP,aSP,aPP):
     for j in range(0,dims):
         for i in range(0,dims):
-            p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aWP[i,j]*p[i-1,j]+aNP[i,j]*p[i,j+1]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
+            if i == 0 and j!=0 and j!=dims-1:
+                p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aNP[i,j]*p[i,j+1]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
+            elif i == dims-1 and j!=0 and j!=dims-1:
+                p_prm[i,j] = (aWP[i,j]*p[i-1,j]+aNP[i,j]*p[i,j+1]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
+            elif j == dims-1 and i!=0 and i!=dims-1:
+                p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aWP[i,j]*p[i-1,j]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
+            elif j == 0 and i!=0 and i!=dims-1:
+                p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aWP[i,j]*p[i-1,j]+aNP[i,j]*p[i,j+1])*(omega/aPP[i,j])
+            elif i == 0 and j == 0:
+                p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aNP[i,j]*p[i,j+1])*(omega/aPP[i,j])
+            elif i == 0 and j == dims-1:
+                p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
+            elif i == dims-1 and j == dims-1:
+                p_prm[i,j] = (aWP[i,j]*p[i-1,j]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
+            elif i == dims-1 and j == 0:
+                p_prm[i,j] = (aWP[i,j]*p[i-1,j]+aNP[i,j]*p[i,j+1])*(omega/aPP[i,j])
+            else:
+                p_prm[i,j] = (aEP[i,j]*p[i+1,j]+aWP[i,j]*p[i-1,j]+aNP[i,j]*p[i,j+1]+aSP[i,j]*p[i,j-1])*(omega/aPP[i,j])
     
 def ucorrect(dims,
-             u_prm,du,p_prm):
+             u,u_prm,du,p_prm):
     for j in range(0,dims):
         for i in range(0,dims):
-            u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i-1,j])
+            if i == 0:
+                u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i+1,j])
+            else:
+                u_prm[i,j] = du[i,j]*(p_prm[i,j]-p_prm[i-1,j])
     u = u + u_prm
 
 def vcorrect(dims,
-             v_prm,dv,p_prm):
+             v,v_prm,dv,p_prm):
     for j in range(0,dims):
         for i in range(0,dims):
-            v_prm[i,j] = dv[i,j]*(p_prm[i,j]-p_prm[i-1,j])
+            if i == 0:
+                v_prm[i,j] = dv[i,j]*(p_prm[i,j]-p_prm[i+1,j])
+            else:
+                v_prm[i,j] = dv[i,j]*(p_prm[i,j]-p_prm[i-1,j])
     v = v + v_prm
 
 def pcorrect(p,p_prm):
     p = p + (omega*p_prm)
     
-def conv_check(p,u,v,
+def conv_check(dx,dy,u,v,
                aEu,aWu,aNu,aSu,aPu,
                aEv,aWv,aNv,aSv,aPv):
-    Ru = (np.sum(np.multiply(aPu*u)-np.multiply(aEu*u)-np.multiply(aWu*u)-np.multiply(aNu*u)-np.multiply(aSu*u)))/(np.sum(np.multiply(aPu*u)))
+    Ru = (np.abs(np.sum(np.multiply(aPu,u)-np.multiply(aEu,u)-np.multiply(aWu,u)-np.multiply(aNu,u)-np.multiply(aSu,u))))/(np.sum(np.multiply(aPu,u)))
 
-    Rv = (np.sum(np.multiply(aPv*v)-np.multiply(aEv*v)-np.multiply(aWv*v)-np.multiply(aNv*v)-np.multiply(aSv*v)))/(np.sum(np.multiply(aPv*v)))
+    Rv = (np.abs(np.sum(np.multiply(aPv,v)-np.multiply(aEv,v)-np.multiply(aWv,v)-np.multiply(aNv,v)-np.multiply(aSv,v))))/(np.sum(np.multiply(aPv,v)))
 
-    Rp = (np.sum(rho_H2O*u-rho_H2O*u,rho_H2O*u-rho_H2O*u))/(rho_H2O*u_0*L)
+    Rp = (np.sum(rho_H2O*u-rho_H2O*u*dy-rho_H2O*u-rho_H2O*u*dx))/(rho_H2O*u_0*L)
     return Rp,Ru,Rv
 
-def print_res(p,u,v,itercount,Rp,Ru,Rv):
+def print_results(p,u,v,itercount,Rp,Ru,Rv):
     print('SIMPLE Algorithm terminated at {} iterations with Rp = {}, Ru = {}, Rv = {}'.format(itercount,Rp,Ru,Rv))
     print('Printing pressure solutions')
     print(p)
@@ -304,15 +359,15 @@ def print_res(p,u,v,itercount,Rp,Ru,Rv):
 
 def SIMPLE_sol(cv_arr,iter_lim,pstate):
     
-    for dims in cv_arr:
+    for numvol in cv_arr:
         #init solutions arrays
         psols = []
         usols = []
         vsols = []
 
         #init geometry
-        dx = dy = L/dims
-        cv_size = dims+2
+        dx = dy = L/numvol
+        cv_size = numvol+2
         bnd_size = (cv_size,cv_size)
 
         #init necessary matrices
@@ -359,17 +414,17 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
             pcsolve(dims=cv_size,
                     p=p,p_prm=p_prm,aEP=aEP,aWP=aWP,aNP=aNP,aSP=aSP,aPP=aPP)
             ucorrect(dims=cv_size,
-                     u_prm=u_prm,du=du,p_prm=p_prm)
+                     u=u,u_prm=u_prm,du=du,p_prm=p_prm)
             vcorrect(dims=cv_size,
-                     v_prm=v_prm,dv=dv,p_prm=p_prm)
+                     v=v,v_prm=v_prm,dv=dv,p_prm=p_prm)
             pcorrect(p=p,p_prm=p_prm)
-            Rp,Ru,Rv = conv_check(p=p,u=u,v=v,
+            Rp,Ru,Rv = conv_check(dx=dx,dy=dy,u=u,v=v,
                                   aEu=aEu,aWu=aWu,aNu=aNu,aSu=aSu,aPu=aPu,
                                   aEv=aEv,aWv=aWv,aNv=aNv,aSv=aSv,aPv=aPv)
 
             itercount +=1 # add one to iteration tally
 
-        print_res(p=p,u=u,v=v,itercount=itercount,Rp=Rp,Ru=Ru,Rv=Rv)
+        print_results(p=p,u=u,v=v,itercount=itercount,Rp=Rp,Ru=Ru,Rv=Rv)
         psols.append(p)
         usols.append(u)
         vsols.append(v)
