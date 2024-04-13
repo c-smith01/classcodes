@@ -16,3 +16,7 @@ y = np.zeros(ydims)
 
 print(y)
 print(y[:][0])
+
+y[0,:] = 1
+
+print(y)
