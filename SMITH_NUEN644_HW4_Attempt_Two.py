@@ -340,7 +340,7 @@ def conv_check(dx,dy,u,v,
     Rv = (np.abs(np.sum(np.multiply(aPv,v)-np.multiply(aEv,v)-np.multiply(aWv,v)-np.multiply(aNv,v)-np.multiply(aSv,v))))/(np.sum(np.multiply(aPv,v)))
 
     Rp = (np.sum(rho_H2O*u-rho_H2O*u*dy-rho_H2O*u-rho_H2O*u*dx))/(rho_H2O*u_0*L)
-    return Rp,Ru,Rv
+    return Rp, Ru, Rv
 
 def print_results(p,u,v,itercount,Rp,Ru,Rv):
     print('SIMPLE Algorithm terminated at {} iterations with Rp = {}, Ru = {}, Rv = {}'.format(itercount,Rp,Ru,Rv))
