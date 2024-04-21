@@ -11,7 +11,8 @@ import os
 #os.system('cls')
 
 # Define constants
-L           = 1                         # m
+L           = 2                         # m
+H           = 0.02                      # m
 omega       = 0.5                       # Reccomended relaxation factor
 T_H2O       = 20                        # Deg C
 Ru_tol      = 1E-6                      # Tolerance for u-vel residual
@@ -23,3 +24,7 @@ mu_H2O      = 1.002E-3                  # N*s/m^2
 u_0         = (Re*mu_H2O)/(rho_H2O*L)   # m/s
 N_CVs_one   = [[10,5]]
 N_CVs_two   = [[20,10], [60,20], [120,40], [160,80]]     # Dimensions of CVs
+
+###################################
+#########  Problem #1 #############
+###################################
