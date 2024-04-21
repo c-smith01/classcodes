@@ -92,22 +92,22 @@ def ucoeffs(dims,
 
             # Calculate Peclet #s
             if i == 0:
-                Peu[i,j] = 0
+                Peu[i,j] = 1
             else:
                 Peu[i,j] = Feu[i,j]/Deu[i,j]
 
             if i == dims-1:
-                Pwu[i,j] = 0
+                Pwu[i,j] = 1
             else:
                 Pwu[i,j] = Fwu[i,j]/Dwu[i,j]
 
             if j == dims-1:
-                Pnu[i,j] = 0
+                Pnu[i,j] = 1
             else:
                 Pnu[i,j] = Fwu[i,j]/Dwu[i,j]
 
             if j == 0:
-                Psu[i,j] = 0
+                Psu[i,j] = 1
             else:
                 Psu[i,j] = Fwu[i,j]/Dwu[i,j]
 
@@ -206,22 +206,22 @@ def vcoeffs(dims,
 
             # Calculate Peclet #s
             if i == 0:
-                Pev[i,j] = 0
+                Pev[i,j] = 1
             else:
                 Pev[i,j] = Fev[i,j]/Dev[i,j]
 
             if i == dims-1:
-                Pwv[i,j] = 0
+                Pwv[i,j] = 1
             else:
                 Pwv[i,j] = Fwv[i,j]/Dwv[i,j]
 
             if j == dims-1:
-                Pnv[i,j] = 0
+                Pnv[i,j] = 1
             else:
                 Pnv[i,j] = Fwv[i,j]/Dwv[i,j]
 
             if j == 0:
-                Psv[i,j] = 0
+                Psv[i,j] = 1
             else:
                 Psv[i,j] = Fwv[i,j]/Dwv[i,j]
 
@@ -382,7 +382,7 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
         Rp = Ru = Rv = 1 # start residuals with values greater than tolerance to force at least one iteration
         itercount    = 1 # start count of iterations to convergence
 
-        while Rp>Rp_tol or Ru>Ru_tol or Rv>Rv_tol or itercount<iter_lim:
+        while Rp>Rp_tol or Ru>Ru_tol or Rv>Rv_tol and itercount<iter_lim:
             bnd_conds(u_matr=u,pstate=pstate)
             reset(matr=p_prm,dims=cv_size)
             reset(matr=u_prm,dims=cv_size)
