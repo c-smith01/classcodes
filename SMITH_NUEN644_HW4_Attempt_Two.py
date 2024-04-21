@@ -112,12 +112,10 @@ def ucoeffs(dims,
                 Psu[i,j] = Fwu[i,j]/Dwu[i,j]
 
             aEu[i,j] = Deu[i,j]*np.max((0,(1-0.1*np.abs(Peu[i,j]))**5)) + np.max((0,(-Feu[i,j])))
-            aWu[i,j] = Dwu[i,j]*np.max((0,(1-0.1*np.abs(Pwu[i,j]))**5)) + np.max((0,(-Fwu[i,j])))
+            aWu[i,j] = Dwu[i,j]*np.max((0,(1-0.1*np.abs(Pwu[i,j]))**5)) + np.max((0,(Fwu[i,j])))
             aNu[i,j] = Dnu[i,j]*np.max((0,(1-0.1*np.abs(Pnu[i,j]))**5)) + np.max((0,(-Fnu[i,j])))
-            aSu[i,j] = Dsu[i,j]*np.max((0,(1-0.1*np.abs(Psu[i,j]))**5)) + np.max((0,(-Fsu[i,j])))
+            aSu[i,j] = Dsu[i,j]*np.max((0,(1-0.1*np.abs(Psu[i,j]))**5)) + np.max((0,(Fsu[i,j])))
             aPu[i,j] = aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]
-
-    print(aEu)
     
 def usolve(dims,
            u,aEu,aWu,aSu,aNu,aPu,
@@ -228,9 +226,9 @@ def vcoeffs(dims,
                 Psv[i,j] = Fwv[i,j]/Dwv[i,j]
 
             aEv[i,j] = Dev[i,j]*np.max((0,(1-0.1*np.abs(Pev[i,j]))**5)) + np.max((0,(-Fev[i,j])))
-            aWv[i,j] = Dwv[i,j]*np.max((0,(1-0.1*np.abs(Pwv[i,j]))**5)) + np.max((0,(-Fwv[i,j])))
+            aWv[i,j] = Dwv[i,j]*np.max((0,(1-0.1*np.abs(Pwv[i,j]))**5)) + np.max((0,(Fwv[i,j])))
             aNv[i,j] = Dnv[i,j]*np.max((0,(1-0.1*np.abs(Pnv[i,j]))**5)) + np.max((0,(-Fnv[i,j])))
-            aSv[i,j] = Dsv[i,j]*np.max((0,(1-0.1*np.abs(Psv[i,j]))**5)) + np.max((0,(-Fsv[i,j])))
+            aSv[i,j] = Dsv[i,j]*np.max((0,(1-0.1*np.abs(Psv[i,j]))**5)) + np.max((0,(Fsv[i,j])))
             aPv[i,j] = aEv[i,j]+aWv[i,j]+aNv[i,j]+aSv[i,j]    
 
 def vsolve(dims,
@@ -437,4 +435,4 @@ prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_one,iter_lim=5,pstate=True)
 #########  Problem #2 #############
 ###################################
 
-prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=5,pstate=True)
+#prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=5,pstate=True)
