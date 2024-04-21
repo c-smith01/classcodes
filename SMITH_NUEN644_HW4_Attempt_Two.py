@@ -49,22 +49,22 @@ def ucoeffs(dims,
     for j in range(1,jlim):
         for i in range(0,dims):
             # Calculate diffusion strengths
-            if i == 0:
+            if i == dims-1:
                 Deu[i,j] = 0
             else:
                 Deu[i,j] = mu_H2O*dy/dx
 
-            if i == dims-1:
+            if i == 0:
                 Dwu[i,j] = 0
             else:
                 Dwu[i,j] = mu_H2O*dy/dx
 
-            if j == dims-1:
+            if j == 0:
                 Dnu[i,j] = 0
             else:
                 Dnu[i,j] = mu_H2O*dx/dy
 
-            if j == 0:
+            if j == dims-1:
                 Dsu[i,j] = 0
             else:
                 Dsu[i,j] = mu_H2O*dx/dy
@@ -80,34 +80,34 @@ def ucoeffs(dims,
             else:
                 Fwu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i-1,j]))*dy
 
-            if j == dims-1:
+            if j == 0:
                 Fnu[i,j] = 0
             else:
                 Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
 
-            if j == 0:
+            if j == dims-1:
                 Fsu[i,j] = 0
             else:
                 Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j+1]))*dx
 
             # Calculate Peclet #s
-            if i == 0:
-                Peu[i,j] = 1
+            if i == dims-1:
+                Peu[i,j] = 0
             else:
                 Peu[i,j] = Feu[i,j]/Deu[i,j]
 
-            if i == dims-1:
-                Pwu[i,j] = 1
+            if i == 0:
+                Pwu[i,j] = 0
             else:
                 Pwu[i,j] = Fwu[i,j]/Dwu[i,j]
 
-            if j == dims-1:
-                Pnu[i,j] = 1
+            if j == 0:
+                Pnu[i,j] = 0
             else:
                 Pnu[i,j] = Fwu[i,j]/Dwu[i,j]
 
-            if j == 0:
-                Psu[i,j] = 1
+            if j == dims-1:
+                Psu[i,j] = 0
             else:
                 Psu[i,j] = Fwu[i,j]/Dwu[i,j]
 
@@ -163,22 +163,22 @@ def vcoeffs(dims,
     for j in range(0,dims):
         for i in range(0,dims):
             # Calculate diffusion strengths
-            if i == 0:
+            if i == dims-1:
                 Dev[i,j] = 0
             else:
                 Dev[i,j] = mu_H2O*dy/dx
 
-            if i == dims-2:
+            if i == 0:
                 Dwv[i,j] = 0
             else:
                 Dwv[i,j] = mu_H2O*dy/dx
 
-            if j == dims-2:
+            if j == 0:
                 Dnv[i,j] = 0
             else:
                 Dnv[i,j] = mu_H2O*dx/dy
 
-            if j == 0:
+            if j == dims-1:
                 Dsv[i,j] = 0
             else:
                 Dsv[i,j] = mu_H2O*dx/dy
@@ -189,39 +189,39 @@ def vcoeffs(dims,
             else:    
                 Fev[i,j] = rho_H2O*(0.5*(v[i,j] + v[i+1,j]))*dy
 
-            if i == dims-1:
+            if i == 0:
                 Fwv[i,j] = 0
             else:
                 Fwv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i-1,j]))*dy
 
-            if j == dims-1:
+            if j == 0:
                 Fnv[i,j] = 0
             else:
-                Fnv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j+1]))*dx
+                Fnv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
 
-            if j == 0:
-                Fsv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
+            if j == dims-1:
+                Fsv[i,j] = 0
             else:
                 Fsv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
 
             # Calculate Peclet #s
-            if i == 0:
-                Pev[i,j] = 1
+            if i == dims-1:
+                Pev[i,j] = 0
             else:
                 Pev[i,j] = Fev[i,j]/Dev[i,j]
 
-            if i == dims-1:
-                Pwv[i,j] = 1
+            if i == 0:
+                Pwv[i,j] = 0
             else:
                 Pwv[i,j] = Fwv[i,j]/Dwv[i,j]
 
-            if j == dims-1:
-                Pnv[i,j] = 1
+            if j == 0:
+                Pnv[i,j] = 0
             else:
                 Pnv[i,j] = Fwv[i,j]/Dwv[i,j]
 
-            if j == 0:
-                Psv[i,j] = 1
+            if j == dims-1:
+                Psv[i,j] = 0
             else:
                 Psv[i,j] = Fwv[i,j]/Dwv[i,j]
 
@@ -385,14 +385,14 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
         while Rp>Rp_tol or Ru>Ru_tol or Rv>Rv_tol and itercount<iter_lim:
             bnd_conds(u_matr=u,pstate=pstate)
             reset(matr=p_prm,dims=cv_size)
-            reset(matr=u_prm,dims=cv_size)
-            reset(matr=v_prm,dims=cv_size)
+            #reset(matr=u_prm,dims=cv_size)
+            #reset(matr=v_prm,dims=cv_size)
             ucoeffs(dims=cv_size,
                     Deu=Deu,Dwu=Dwu,Dnu=Dnu,Dsu=Dsu,
                     Feu=Feu,Fwu=Fwu,Fnu=Fnu,Fsu=Fsu,
                     Peu=Peu,Pwu=Pwu,Pnu=Pnu,Psu=Psu,
                     aEu=aEu,aWu=aWu,aNu=aNu,aSu=aSu,aPu=aPu,
-                    u=u,pstate=pstate,dy=dy,dx=dy)
+                    u=u,pstate=pstate,dy=dy,dx=dx)
             usolve(dims=cv_size,
                    u=u,aEu=aEu,aWu=aWu,aSu=aSu,aNu=aNu,aPu=aPu,
                    du=du,dy=dy,pstate=pstate)
@@ -401,7 +401,7 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
                     Fev=Fev,Fwv=Fwv,Fnv=Fnv,Fsv=Fsv,
                     Pev=Pev,Pwv=Pwv,Pnv=Pnv,Psv=Psv,
                     aEv=aEv,aWv=aWv,aNv=aNv,aSv=aSv,aPv=aPv,
-                    v=v,dx=dx,dy=dy)
+                    v=v,dx=dx,dy=dx)
             vsolve(dims=cv_size,
                    v=v,aEv=aEv,aWv=aWv,aSv=aSv,aNv=aNv,aPv=aPv,
                    dv=dv,dx=dx)
