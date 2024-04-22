@@ -23,6 +23,7 @@ mu_H2O      = 1.002E-3                  # N*s/m^2
 u_0         = (Re*mu_H2O)/(rho_H2O*L)   # m/s
 N_CVs_one   = [5]
 N_CVs_two   = [8, 16, 64, 128, 256]     # Dimensions of CVs
+print(u_0)
 
 # General methods used in both problems
 
@@ -50,66 +51,66 @@ def ucoeffs(dims,
         for i in range(0,dims):
             # Calculate diffusion strengths
             if i == dims-1:
-                Deu[i,j] = 0
+                Deu[i,j] = 1
             else:
                 Deu[i,j] = mu_H2O*dy/dx
 
             if i == 0:
-                Dwu[i,j] = 0
+                Dwu[i,j] = 1
             else:
                 Dwu[i,j] = mu_H2O*dy/dx
 
             if j == 0:
-                Dnu[i,j] = 0
+                Dnu[i,j] = 1
             else:
                 Dnu[i,j] = mu_H2O*dx/dy
 
             if j == dims-1:
-                Dsu[i,j] = 0
+                Dsu[i,j] = 1
             else:
                 Dsu[i,j] = mu_H2O*dx/dy
 
             # Calculate flow strengths
             if i == dims-1:
-                Feu[i,j] = 0
+                Feu[i,j] = 1
             else:
                 Feu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i+1,j]))*dy
 
             if i == 0:
-                Fwu[i,j] = 0
+                Fwu[i,j] = 1
             else:
                 Fwu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i-1,j]))*dy
 
             if j == 0:
-                Fnu[i,j] = 0
+                Fnu[i,j] = 1
             else:
                 Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
 
             if j == dims-1:
-                Fsu[i,j] = 0
+                Fsu[i,j] = 1
             else:
                 Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j+1]))*dx
 
             # Calculate Peclet #s
             if i == dims-1:
-                Peu[i,j] = 0
+                Peu[i,j] = 1
             else:
                 Peu[i,j] = Feu[i,j]/Deu[i,j]
 
             if i == 0:
-                Pwu[i,j] = 0
+                Pwu[i,j] = 1
             else:
                 Pwu[i,j] = Fwu[i,j]/Dwu[i,j]
 
             if j == 0:
-                Pnu[i,j] = 0
+                Pnu[i,j] = 1
             else:
-                Pnu[i,j] = Fwu[i,j]/Dwu[i,j]
+                Pnu[i,j] = Fnu[i,j]/Dnu[i,j]
 
             if j == dims-1:
-                Psu[i,j] = 0
+                Psu[i,j] = 1
             else:
-                Psu[i,j] = Fwu[i,j]/Dwu[i,j]
+                Psu[i,j] = Fsu[i,j]/Dsu[i,j]
 
             aEu[i,j] = Deu[i,j]*np.max((0,(1-0.1*np.abs(Peu[i,j]))**5)) + np.max((0,(-Feu[i,j])))
             aWu[i,j] = Dwu[i,j]*np.max((0,(1-0.1*np.abs(Pwu[i,j]))**5)) + np.max((0,(Fwu[i,j])))
@@ -164,66 +165,66 @@ def vcoeffs(dims,
         for i in range(0,dims):
             # Calculate diffusion strengths
             if i == dims-1:
-                Dev[i,j] = 0
+                Dev[i,j] = 1
             else:
                 Dev[i,j] = mu_H2O*dy/dx
 
             if i == 0:
-                Dwv[i,j] = 0
+                Dwv[i,j] = 1
             else:
                 Dwv[i,j] = mu_H2O*dy/dx
 
             if j == 0:
-                Dnv[i,j] = 0
+                Dnv[i,j] = 1
             else:
                 Dnv[i,j] = mu_H2O*dx/dy
 
             if j == dims-1:
-                Dsv[i,j] = 0
+                Dsv[i,j] = 1
             else:
                 Dsv[i,j] = mu_H2O*dx/dy
 
             # Calculate flow strengths
             if i == dims-1:
-                Fev[i,j] = 0
+                Fev[i,j] = 1
             else:    
                 Fev[i,j] = rho_H2O*(0.5*(v[i,j] + v[i+1,j]))*dy
 
             if i == 0:
-                Fwv[i,j] = 0
+                Fwv[i,j] = 1
             else:
                 Fwv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i-1,j]))*dy
 
             if j == 0:
-                Fnv[i,j] = 0
+                Fnv[i,j] = 1
             else:
                 Fnv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
 
             if j == dims-1:
-                Fsv[i,j] = 0
+                Fsv[i,j] = 1
             else:
-                Fsv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
+                Fsv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j+1]))*dx
 
             # Calculate Peclet #s
             if i == dims-1:
-                Pev[i,j] = 0
+                Pev[i,j] = 1
             else:
                 Pev[i,j] = Fev[i,j]/Dev[i,j]
 
             if i == 0:
-                Pwv[i,j] = 0
+                Pwv[i,j] = 1
             else:
                 Pwv[i,j] = Fwv[i,j]/Dwv[i,j]
 
             if j == 0:
-                Pnv[i,j] = 0
+                Pnv[i,j] = 1
             else:
-                Pnv[i,j] = Fwv[i,j]/Dwv[i,j]
+                Pnv[i,j] = Fnv[i,j]/Dnv[i,j]
 
             if j == dims-1:
-                Psv[i,j] = 0
+                Psv[i,j] = 1
             else:
-                Psv[i,j] = Fwv[i,j]/Dwv[i,j]
+                Psv[i,j] = Fsv[i,j]/Dsv[i,j]
 
             aEv[i,j] = Dev[i,j]*np.max((0,(1-0.1*np.abs(Pev[i,j]))**5)) + np.max((0,(-Fev[i,j])))
             aWv[i,j] = Dwv[i,j]*np.max((0,(1-0.1*np.abs(Pwv[i,j]))**5)) + np.max((0,(Fwv[i,j])))
@@ -382,7 +383,7 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
         Rp = Ru = Rv = 1 # start residuals with values greater than tolerance to force at least one iteration
         itercount    = 1 # start count of iterations to convergence
 
-        while Rp>Rp_tol or Ru>Ru_tol or Rv>Rv_tol and itercount<iter_lim:
+        while np.abs(Rp)>Rp_tol and np.abs(Ru)>Ru_tol and np.abs(Rv)>Rv_tol and itercount<iter_lim:
             bnd_conds(u_matr=u,pstate=pstate)
             reset(matr=p_prm,dims=cv_size)
             #reset(matr=u_prm,dims=cv_size)
