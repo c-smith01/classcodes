@@ -51,64 +51,64 @@ def ucoeffs(dims,
         for i in range(0,dims):
             # Calculate diffusion strengths
             if i == dims-1:
-                Deu[i,j] = 1
+                Deu[i,j] = 1e-3
             else:
                 Deu[i,j] = mu_H2O*dy/dx
 
             if i == 0:
-                Dwu[i,j] = 1
+                Dwu[i,j] = 1e-3
             else:
                 Dwu[i,j] = mu_H2O*dy/dx
 
             if j == 0:
-                Dnu[i,j] = 1
+                Dnu[i,j] = 1e-3
             else:
                 Dnu[i,j] = mu_H2O*dx/dy
 
             if j == dims-1:
-                Dsu[i,j] = 1
+                Dsu[i,j] = 1e-3
             else:
                 Dsu[i,j] = mu_H2O*dx/dy
 
             # Calculate flow strengths
             if i == dims-1:
-                Feu[i,j] = 1
+                Feu[i,j] = 1e-3
             else:
                 Feu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i+1,j]))*dy
 
             if i == 0:
-                Fwu[i,j] = 1
+                Fwu[i,j] = 1e-3
             else:
                 Fwu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i-1,j]))*dy
 
             if j == 0:
-                Fnu[i,j] = 1
+                Fnu[i,j] = 1e-3
             else:
                 Fnu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j-1]))*dx
 
             if j == dims-1:
-                Fsu[i,j] = 1
+                Fsu[i,j] = 1e-3
             else:
                 Fsu[i,j] = rho_H2O*(0.5*(u[i,j] + u[i,j+1]))*dx
 
             # Calculate Peclet #s
             if i == dims-1:
-                Peu[i,j] = 1
+                Peu[i,j] = 1e-3
             else:
                 Peu[i,j] = Feu[i,j]/Deu[i,j]
 
             if i == 0:
-                Pwu[i,j] = 1
+                Pwu[i,j] = 1e-3
             else:
                 Pwu[i,j] = Fwu[i,j]/Dwu[i,j]
 
             if j == 0:
-                Pnu[i,j] = 1
+                Pnu[i,j] = 1e-3
             else:
                 Pnu[i,j] = Fnu[i,j]/Dnu[i,j]
 
             if j == dims-1:
-                Psu[i,j] = 1
+                Psu[i,j] = 1e-3
             else:
                 Psu[i,j] = Fsu[i,j]/Dsu[i,j]
 
@@ -165,64 +165,64 @@ def vcoeffs(dims,
         for i in range(0,dims):
             # Calculate diffusion strengths
             if i == dims-1:
-                Dev[i,j] = 1
+                Dev[i,j] = 1e-3
             else:
                 Dev[i,j] = mu_H2O*dy/dx
 
             if i == 0:
-                Dwv[i,j] = 1
+                Dwv[i,j] = 1e-3
             else:
                 Dwv[i,j] = mu_H2O*dy/dx
 
             if j == 0:
-                Dnv[i,j] = 1
+                Dnv[i,j] = 1e-3
             else:
                 Dnv[i,j] = mu_H2O*dx/dy
 
             if j == dims-1:
-                Dsv[i,j] = 1
+                Dsv[i,j] = 1e-3
             else:
                 Dsv[i,j] = mu_H2O*dx/dy
 
             # Calculate flow strengths
             if i == dims-1:
-                Fev[i,j] = 1
+                Fev[i,j] = 1e-3
             else:    
                 Fev[i,j] = rho_H2O*(0.5*(v[i,j] + v[i+1,j]))*dy
 
             if i == 0:
-                Fwv[i,j] = 1
+                Fwv[i,j] = 1e-3
             else:
                 Fwv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i-1,j]))*dy
 
             if j == 0:
-                Fnv[i,j] = 1
+                Fnv[i,j] = 1e-3
             else:
                 Fnv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j-1]))*dx
 
             if j == dims-1:
-                Fsv[i,j] = 1
+                Fsv[i,j] = 1e-3
             else:
                 Fsv[i,j] = rho_H2O*(0.5*(v[i,j] + v[i,j+1]))*dx
 
             # Calculate Peclet #s
             if i == dims-1:
-                Pev[i,j] = 1
+                Pev[i,j] = 1e-3
             else:
                 Pev[i,j] = Fev[i,j]/Dev[i,j]
 
             if i == 0:
-                Pwv[i,j] = 1
+                Pwv[i,j] = 1e-3
             else:
                 Pwv[i,j] = Fwv[i,j]/Dwv[i,j]
 
             if j == 0:
-                Pnv[i,j] = 1
+                Pnv[i,j] = 1e-3
             else:
                 Pnv[i,j] = Fnv[i,j]/Dnv[i,j]
 
             if j == dims-1:
-                Psv[i,j] = 1
+                Psv[i,j] = 1e-3
             else:
                 Psv[i,j] = Fsv[i,j]/Dsv[i,j]
 
@@ -338,7 +338,7 @@ def conv_check(dx,dy,u,v,
 
     Rv = (np.abs(np.sum(np.multiply(aPv,v)-np.multiply(aEv,v)-np.multiply(aWv,v)-np.multiply(aNv,v)-np.multiply(aSv,v))))/(np.sum(np.multiply(aPv,v)))
 
-    Rp = (np.sum(rho_H2O*u-rho_H2O*u*dy-rho_H2O*u-rho_H2O*u*dx))/(rho_H2O*u_0*L)
+    Rp = (np.sum(rho_H2O*u - rho_H2O*u*dy - rho_H2O*u - rho_H2O*u*dx))/(rho_H2O*u_0*L)
     return Rp, Ru, Rv
 
 def print_results(p,u,v,itercount,Rp,Ru,Rv):
@@ -431,6 +431,35 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
     return [psols,usols,vsols]
 
 prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_one,iter_lim=5,pstate=True)
+
+x = np.arange(prob_one_sol[0].shape[1])
+y = np.arange(prob_one_sol[0].shape[0])
+X, Y = np.meshgrid(x, y)
+
+# Create a contour plot
+plt.figure()
+cp = plt.contour(X, Y, prob_one_sol[0], colors='black', linestyles='dashed')
+plt.clabel(cp, inline=True, fontsize=10)
+plt.title('Contour Plot of 2-D Array')
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.show()
+
+plt.figure()
+cp = plt.contour(X, Y, prob_one_sol[1], colors='black', linestyles='dashed')
+plt.clabel(cp, inline=True, fontsize=10)
+plt.title('Contour Plot of 2-D Array')
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.show()
+
+plt.figure()
+cp = plt.contour(X, Y, prob_one_sol[2], colors='black', linestyles='dashed')
+plt.clabel(cp, inline=True, fontsize=10)
+plt.title('Contour Plot of 2-D Array')
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.show()
 
 ###################################
 #########  Problem #2 #############
