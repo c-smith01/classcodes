@@ -1,7 +1,7 @@
 '''
 Created by Coleman Smith on 1/23/24
 NUEN/MEEN 644 HW1
-Due 03 May 2024
+Due 03 May 2024 by 3:00 PM
 '''
 
 import matplotlib.pyplot as plt
@@ -10,18 +10,6 @@ import os
 import numpy as np
 from scipy.sparse import lil_matrix
 from scipy.sparse.linalg import spsolve
-
-# Constants and grid definition
-L = 2.0         # channel length in meters
-H = 0.02        # channel height in meters
-nu = 8.71e-4    # kinematic viscosity in m^2/s
-rho = 997       # density in kg/m^3
-mu = rho * nu   # dynamic viscosity
-Cp = 4179.0     # heat capacity
-k = 0.563       # thermal conductivity
-T_in = 27       # inlet temperature in Celsius
-T_w = 100       # wall temperature in Celsius
-U_in = 1.0      # inlet velocity in m/s
 
 # Mesh parameters
 nx, ny = 160, 80  # number of control volumes in x and y directions
@@ -83,19 +71,18 @@ print("Simulation complete!")
 #os.system('cls')
 
 # Define constants
-L           = 2                         # m
-H           = 0.02                      # m
-omega       = 0.5                       # Reccomended relaxation factor
-T_H2O       = 20                        # Deg C
-Ru_tol      = 1E-6                      # Tolerance for u-vel residual
-Rv_tol      = Ru_tol                    # Tolerance for v-vel residual
-Rp_tol      = 1E-5                      # Tolerance for Pressure residual
-Re          = 200                       # Unitless Reynolds #
-rho_H2O     = 998.3                     # kg/m^3
-mu_H2O      = 1.002E-3                  # N*s/m^2
-u_0         = (Re*mu_H2O)/(rho_H2O*L)   # m/s
-N_CVs_one   = [[10,5]]
-N_CVs_two   = [[20,10], [60,20], [120,40], [160,80]]     # Dimensions of CVs
+L                           = 2                                      # m
+H                           = 0.02                                   # m
+omega_u, omega_v            = 0.5                                    # Reccomended relaxation factor
+T_H2O                       = 20                                     # Deg C
+Ru_tol,Rv_tol,Rp_tol,RT_tol = 1E-6                                   # Tolerance for u-vel residual
+Re                          = 200                                    # Unitless Reynolds #
+rho_H2O                     = 998.3                                  # kg/m^3
+mu_H2O                      = 1.002E-3                               # N*s/m^2
+u_0                         = (Re*mu_H2O)/(rho_H2O*L)                # m/s
+N_CVs_one                   = [[10,5]]                               # Dimensions of CVs
+N_CVs_two                   = [[20,10], [60,20], [120,40], [160,80]] # Dimensions of CVs
+
 
 ###################################
 #########  Problem #1 #############
