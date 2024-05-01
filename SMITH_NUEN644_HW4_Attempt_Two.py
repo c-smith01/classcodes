@@ -439,44 +439,45 @@ X, Y = np.meshgrid(x, y)
 print(prob_one_sol[0])
 
 # Create a contour plot
-plt.figure()
-cp = plt.contour(X, Y, np.concatenate(prob_one_sol[0]), colors='black', linestyles='dashed')
-plt.clabel(cp, inline=True, fontsize=10)
-plt.title('Contour Plot of 2-D Pressure Array')
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.show()
+# plt.figure()
+# cp = plt.contour(X, Y, np.concatenate(prob_one_sol[0]), colors='black', linestyles='dashed')
+# plt.clabel(cp, inline=True, fontsize=10)
+# plt.title('Contour Plot of 2-D Pressure Array')
+# plt.xlabel('X-axis')
+# plt.ylabel('Y-axis')
+# plt.show()
 
-plt.figure()
-cp = plt.contour(X, Y, np.concatenate(prob_one_sol[1]), colors='black', linestyles='dashed')
-plt.clabel(cp, inline=True, fontsize=10)
-plt.title('Contour Plot of 2-D v-Velocity Array')
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.show()
+# plt.figure()
+# cp = plt.contour(X, Y, np.concatenate(prob_one_sol[1]), colors='black', linestyles='dashed')
+# plt.clabel(cp, inline=True, fontsize=10)
+# plt.title('Contour Plot of 2-D v-Velocity Array')
+# plt.xlabel('X-axis')
+# plt.ylabel('Y-axis')
+# plt.show()
 
-plt.figure()
-cp = plt.contour(X, Y, np.concatenate(prob_one_sol[2]), colors='black', linestyles='dashed')
-plt.clabel(cp, inline=True, fontsize=10)
-plt.title('Contour Plot of 2-D u-Velocity Array')
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.show()
+# plt.figure()
+# cp = plt.contour(X, Y, np.concatenate(prob_one_sol[2]), colors='black', linestyles='dashed')
+# plt.clabel(cp, inline=True, fontsize=10)
+# plt.title('Contour Plot of 2-D u-Velocity Array')
+# plt.xlabel('X-axis')
+# plt.ylabel('Y-axis')
+# plt.show()
 
 ###################################
 #########  Problem #2 #############
 ###################################
 
 prob_two_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=5,pstate=True)
+print(prob_two_sol)
 
-for s in range(len(prob_two_sol[0])):
+for s in range(len(N_CVs_two)):
     
-    x = np.linspace(0,L,N_CVs_one[s]+2)
-    y = np.linspace(0,L,N_CVs_one[s]+2)
+    x = np.linspace(0,L,N_CVs_two[s])
+    y = np.linspace(0,L,N_CVs_two[s])
     X, Y = np.meshgrid(x, y)
     
     plt.figure()
-    cp = plt.contour(X, Y, np.concatenate(prob_two_sol[s][0]), colors='black', linestyles='dashed')
+    cp = plt.contour(X, Y, prob_two_sol[s][0], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D Pressure Array')
     plt.xlabel('X-axis')
@@ -484,7 +485,7 @@ for s in range(len(prob_two_sol[0])):
     plt.show()
 
     plt.figure()
-    cp = plt.contour(X, Y, np.concatenate(prob_one_sol[s][1]), colors='black', linestyles='dashed')
+    cp = plt.contour(X, Y, prob_one_sol[s][1], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D v-Velocity Array')
     plt.xlabel('X-axis')
@@ -492,7 +493,7 @@ for s in range(len(prob_two_sol[0])):
     plt.show()
 
     plt.figure()
-    cp = plt.contour(X, Y, np.concatenate(prob_one_sol[2]), colors='black', linestyles='dashed')
+    cp = plt.contour(X, Y, prob_one_sol[s][2], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D u-Velocity Array')
     plt.xlabel('X-axis')
