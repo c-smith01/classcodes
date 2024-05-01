@@ -432,13 +432,15 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
 
 prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_one,iter_lim=5,pstate=True)
 
-x = np.arange(prob_one_sol[0].shape[1])
-y = np.arange(prob_one_sol[0].shape[0])
+x = np.linspace(0,L,N_CVs_one[0]+2)
+y = np.linspace(0,L,N_CVs_one[0]+2)
 X, Y = np.meshgrid(x, y)
+
+print(prob_one_sol[0])
 
 # Create a contour plot
 plt.figure()
-cp = plt.contour(X, Y, prob_one_sol[0], colors='black', linestyles='dashed')
+cp = plt.contour(X, Y, np.concatenate(prob_one_sol[0]), colors='black', linestyles='dashed')
 plt.clabel(cp, inline=True, fontsize=10)
 plt.title('Contour Plot of 2-D Pressure Array')
 plt.xlabel('X-axis')
@@ -446,7 +448,7 @@ plt.ylabel('Y-axis')
 plt.show()
 
 plt.figure()
-cp = plt.contour(X, Y, prob_one_sol[1], colors='black', linestyles='dashed')
+cp = plt.contour(X, Y, np.concatenate(prob_one_sol[1]), colors='black', linestyles='dashed')
 plt.clabel(cp, inline=True, fontsize=10)
 plt.title('Contour Plot of 2-D v-Velocity Array')
 plt.xlabel('X-axis')
@@ -454,7 +456,7 @@ plt.ylabel('Y-axis')
 plt.show()
 
 plt.figure()
-cp = plt.contour(X, Y, prob_one_sol[2], colors='black', linestyles='dashed')
+cp = plt.contour(X, Y, np.concatenate(prob_one_sol[2]), colors='black', linestyles='dashed')
 plt.clabel(cp, inline=True, fontsize=10)
 plt.title('Contour Plot of 2-D u-Velocity Array')
 plt.xlabel('X-axis')
