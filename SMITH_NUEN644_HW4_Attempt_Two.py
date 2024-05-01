@@ -469,9 +469,14 @@ plt.show()
 
 prob_two_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=5,pstate=True)
 
-for solset in prob_two_sol:
+for s in range(len(prob_two_sol[0])):
+    
+    x = np.linspace(0,L,N_CVs_one[s]+2)
+    y = np.linspace(0,L,N_CVs_one[s]+2)
+    X, Y = np.meshgrid(x, y)
+    
     plt.figure()
-    cp = plt.contour(X, Y, np.concatenate(prob_two_sol[0]), colors='black', linestyles='dashed')
+    cp = plt.contour(X, Y, np.concatenate(prob_two_sol[s][0]), colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D Pressure Array')
     plt.xlabel('X-axis')
@@ -479,7 +484,7 @@ for solset in prob_two_sol:
     plt.show()
 
     plt.figure()
-    cp = plt.contour(X, Y, np.concatenate(prob_one_sol[1]), colors='black', linestyles='dashed')
+    cp = plt.contour(X, Y, np.concatenate(prob_one_sol[s][1]), colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D v-Velocity Array')
     plt.xlabel('X-axis')
