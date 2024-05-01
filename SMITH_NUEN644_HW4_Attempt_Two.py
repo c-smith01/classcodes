@@ -467,4 +467,29 @@ plt.show()
 #########  Problem #2 #############
 ###################################
 
-#prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=5,pstate=True)
+prob_two_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=5,pstate=True)
+
+for solset in prob_two_sol:
+    plt.figure()
+    cp = plt.contour(X, Y, np.concatenate(prob_two_sol[0]), colors='black', linestyles='dashed')
+    plt.clabel(cp, inline=True, fontsize=10)
+    plt.title('Contour Plot of 2-D Pressure Array')
+    plt.xlabel('X-axis')
+    plt.ylabel('Y-axis')
+    plt.show()
+
+    plt.figure()
+    cp = plt.contour(X, Y, np.concatenate(prob_one_sol[1]), colors='black', linestyles='dashed')
+    plt.clabel(cp, inline=True, fontsize=10)
+    plt.title('Contour Plot of 2-D v-Velocity Array')
+    plt.xlabel('X-axis')
+    plt.ylabel('Y-axis')
+    plt.show()
+
+    plt.figure()
+    cp = plt.contour(X, Y, np.concatenate(prob_one_sol[2]), colors='black', linestyles='dashed')
+    plt.clabel(cp, inline=True, fontsize=10)
+    plt.title('Contour Plot of 2-D u-Velocity Array')
+    plt.xlabel('X-axis')
+    plt.ylabel('Y-axis')
+    plt.show()
