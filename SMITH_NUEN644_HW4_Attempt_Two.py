@@ -521,7 +521,7 @@ all_us = []
 all_vs = []
 
 plt.figure()
-cp = plt.contour(Xg, Yg, prob_two_sol[0][s], colors='black', linestyles='dashed')
+plt.plot(N_CVs_two, center_us)
 plt.clabel(cp, inline=True, fontsize=10)
 plt.title('Centerline U-velocity plotted against grid dimensions')
 plt.xlabel('# of CVs (NxN)')
@@ -529,7 +529,7 @@ plt.ylabel('Centerline U-velocity')
 plt.show()
 
 plt.figure()
-cp = plt.contour(Xg, Yg, prob_two_sol[0][s], colors='black', linestyles='dashed')
+plt.plot(N_CVs_two, center_vs)
 plt.clabel(cp, inline=True, fontsize=10)
 plt.title('Centerline V-velocity plotted against grid dimensions')
 plt.xlabel('# of CVs (NxN)')

@@ -1,15 +1,12 @@
 '''
 Created by Coleman Smith on 1/23/24
-NUEN/MEEN 644 HW1
+NUEN/MEEN 644 Take-Home Final
 Due 03 May 2024 by 3:00 PM
 '''
 
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-import numpy as np
-from scipy.sparse import lil_matrix
-from scipy.sparse.linalg import spsolve
 
 # Define constants
 L                           = 2.00                                           # m
@@ -27,11 +24,20 @@ T_0                         = 27+273.15                                      # K
 N_CVs_one                   = [[10,5]]                                       # Dimensions of CVs
 N_CVs_two                   = [[10,5], [20,10], [60,20], [120,40], [160,80]] # Dimensions of CVs
 
-
+# Iteratively-called methods
+def reset(matr,dims):
+    matr = np.zeros(dims)
 
 def bnd_conds(u_matr,t_matr):
-        u_matr[:][0] = u_0
-        t_matr[:][0] = T_0
+        u_matr[0][:] = u_0
+        t_matr[0][:] = T_0
+
+def ucoeffs(dims,
+            Deu,Dwu,Dnu,Dsu,
+            Feu,Fwu,Fnu,Fsu,
+            Peu,Pwu,Pnu,Psu,
+            aEu,aWu,aNu,aSu,aPu,
+            u,pstate,dy,dx):
 
 def conv_check(dx,dy,u,v,
                aEu,aWu,aNu,aSu,aPu,
@@ -42,15 +48,8 @@ def conv_check(dx,dy,u,v,
 
     Rp = (np.sum(rho_H2O*u - rho_H2O*u*dy - rho_H2O*u - rho_H2O*u*dx))/(rho_H2O*u_0*L)
 
-    Rt = 
-    return Rp, Ru, Rv
-
-# Main iteration loop
-converged = False
-while not converged:
-    solve_momentum()
-    solve_energy()
-    converged = check_convergence()
+    Rt = (np.sum(rho_H2O*u - rho_H2O*u*dy - rho_H2O*u - rho_H2O*u*dx))/(rho_H2O*u_0*L)
+    return Rp, Ru, Rv, Rt, convstate
     
 def print_results(p,u,v,t,itercount,Rp,Ru,Rv):
     print('SIMPLE Algorithm terminated at {} iterations with Rp = {}, Ru = {}, Rv = {}'.format(itercount,Rp,Ru,Rv))
@@ -79,15 +78,21 @@ def SIMPLE_sol(dimlist):
         ny = dims[1]
         dx = L/nx
         dy = H/ny
-        cent_dy = 
+        cent_dy = dy*2
+        cent_dx = dx*2
+        corn_dy = dy*1.5
+        corn_dx = dx*1.5
         # Initialize field variables
         u = np.ones((nx+1, ny+2))   # u-velocity on staggered grid
         v = np.ones((nx+2, ny+1))   # v-velocity on staggered grid
         p = np.ones((nx+2, ny+2))   # pressure on main grid
         T = np.ones((nx+2, ny+2))   # temperature on main grid
         
-        Rp = Ru = Rv = 1 # start residuals with values greater than tolerance to force at least one iteration
-        itercount    = 1 # start count of iterations to convergence
+        Rp = Ru = Rv = Rt = 1     # start residuals with values greater than tolerance to force at least one iteration
+        itercount         = 1     # start count of iterations to convergence
+        converged         = False # converged boolean starts on false to force at least one iteration
+        while converged==False and itercount<iterlim:
+            
     print("Simulation complete!")
     return [psols,usols,vsols,tsols]
 
