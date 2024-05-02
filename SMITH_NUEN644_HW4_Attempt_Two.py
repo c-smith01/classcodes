@@ -476,7 +476,9 @@ prob_two_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=3,pstate=True)
 
 for solsets in prob_two_sol:
     print(len(solsets[0]))
-
+    
+    
+# plot solution fields
 for s in range(0,len(N_CVs_two)):
     
     x = np.linspace(0, L, N_CVs_two[s]+2)
@@ -511,6 +513,9 @@ for s in range(0,len(N_CVs_two)):
     plt.xlabel('X-axis [m]')
     plt.ylabel('Y-axis [m]')
     plt.show()
+    
+    
+
     
 # Print tabulated solutions to txt files
 
