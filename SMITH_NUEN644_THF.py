@@ -28,10 +28,6 @@ T[:, 0] = T_w
 T[:, -1] = T_w
 T[0, :] = T_in
 
-# Define under-relaxation factors
-omega_u = omega_v = 0.3
-omega_p = 0.7
-
 def update_boundary_conditions():
     # Apply no-slip condition at walls
     u[:, 0] = u[:, -1] = 0
@@ -73,7 +69,7 @@ print("Simulation complete!")
 # Define constants
 L                           = 2                                      # m
 H                           = 0.02                                   # m
-omega_u, omega_v            = 0.5                                    # given under-relaxation factors
+omega_u, omega_v            = 0.3                                    # given under-relaxation factors
 omega_p                     = 0.7                                    # given under-relaxation factors
 T_H2O                       = 20                                     # Deg C
 Ru_tol,Rv_tol,Rp_tol,RT_tol = 1E-6                                   # Tolerance for u-vel residual

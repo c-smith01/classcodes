@@ -473,6 +473,8 @@ print(test_N_CVs_two)
 prob_two_sol = SIMPLE_sol(cv_arr=test_N_CVs_two,iter_lim=5,pstate=True)
 #print(prob_two_sol)
 
+print(np.size(prob_two_sol))
+
 for s in range(0,len(test_N_CVs_two)):
     
     x = np.linspace(0, L, test_N_CVs_two[s]+2)
@@ -481,7 +483,7 @@ for s in range(0,len(test_N_CVs_two)):
     
     #print(x,y,prob_two_sol[0][s][:])
     plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[0][s][:], colors='black', linestyles='dashed')
+    cp = plt.contour(Xg, Yg, prob_two_sol[s][0], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D Pressure Array')
     plt.xlabel('X-axis')
@@ -489,7 +491,7 @@ for s in range(0,len(test_N_CVs_two)):
     plt.show()
 
     plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[1][s][:], colors='black', linestyles='dashed')
+    cp = plt.contour(Xg, Yg, prob_two_sol[s][1], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D v-Velocity Array')
     plt.xlabel('X-axis')
@@ -497,7 +499,7 @@ for s in range(0,len(test_N_CVs_two)):
     plt.show()
 
     plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[2][s][:], colors='black', linestyles='dashed')
+    cp = plt.contour(Xg, Yg, prob_two_sol[s][2], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D u-Velocity Array')
     plt.xlabel('X-axis')
