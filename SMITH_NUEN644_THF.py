@@ -11,6 +11,21 @@ import numpy as np
 from scipy.sparse import lil_matrix
 from scipy.sparse.linalg import spsolve
 
+# Define constants
+L                           = 2.00                                   # m
+H                           = 0.02                                   # m
+omega_u, omega_v            = 0.3                                    # given under-relaxation factors
+omega_p                     = 0.7                                    # given under-relaxation factors
+T_H2O                       = 20                                     # Deg C
+Ru_tol,Rv_tol,Rp_tol,RT_tol = 1E-6                                   # Tolerance for u-vel residual
+Re                          = 200                                    # Unitless Reynolds #
+rho_f                       = 997.0                                  # kg/m^3
+mu_f                        = 8.71E-4                                # N*s/m^2
+C_pf                        = 4179.0                                 # J/kg*K
+u_0                         = (Re*mu_f)/(rho_f*L)                    # m/s
+N_CVs_one                   = [[10,5]]                               # Dimensions of CVs
+N_CVs_two                   = [[10,5], [20,10], [60,20], [120,40], [160,80]] # Dimensions of CVs
+
 def solve_momentum():
     # Solve the momentum equations using the SIMPLE algorithm
     # Placeholder for the actual solver
@@ -22,6 +37,7 @@ def solve_energy():
     pass
 
 def check_convergence():
+    
     # Check for convergence (placeholder)
     # if p,u,v,ort resid is greater than tol, return converged as False, else return converged as true
     return False
@@ -70,33 +86,39 @@ def SIMPLE_sol(dimlist):
     return [psols,usols,vsols,tsols]
 
 
-#os.system('cls')
-
-# Define constants
-L                           = 2.00                                   # m
-H                           = 0.02                                   # m
-omega_u, omega_v            = 0.3                                    # given under-relaxation factors
-omega_p                     = 0.7                                    # given under-relaxation factors
-T_H2O                       = 20                                     # Deg C
-Ru_tol,Rv_tol,Rp_tol,RT_tol = 1E-6                                   # Tolerance for u-vel residual
-Re                          = 200                                    # Unitless Reynolds #
-rho_f                       = 997.0                                  # kg/m^3
-mu_f                        = 8.71E-4                                # N*s/m^2
-C_pf                        = 4179.0                                 # J/kg*K
-u_0                         = (Re*mu_f)/(rho_f*L)                    # m/s
-N_CVs_one                   = [[10,5]]                               # Dimensions of CVs
-N_CVs_two                   = [[20,10], [60,20], [120,40], [160,80]] # Dimensions of CVs
-
-
 ###################################
 #########  Problem #1 #############
 ###################################
+
+# 1) Tabulated velocity with 5 decimal point truncation# Print tabulated solutions to txt files
+
 
 ###################################
 #########  Problem #2 #############
 ###################################
 
+# 2a) Plot U/Uin at channel exit and show that Umax/Uin approaches 1.5 as mesh is refined
 def plot_T_bulk():
     '''
     Plots T_bulk as a function of x given a solved temperature field
     '''
+
+# Extras for post-processing
+# Specify the filenames
+filename_1 = 'p1tabs.txt'
+filename_2 = 'p2tabs.txt'
+
+# Open the file in write mode
+with open(filename_1, 'w') as file:
+    # Write each item from the list to the file, each on a new line
+    for item in prob_one_sol:
+        file.write(f"{item}\n")
+
+print(f"List has been written to {filename_1}")
+
+with open(filename_2, 'w') as file:
+    # Write each item from the list to the file, each on a new line
+    for item in prob_two_sol:
+        file.write(f"{(item*1e5)/1e5}\n") #multiplying and dividing the decimal values by 1e5 truncates to 5 decimal places
+
+print(f"List has been written to {filename_2}")
