@@ -23,7 +23,7 @@ mu_H2O      = 1.002E-3                  # N*s/m^2
 u_0         = (Re*mu_H2O)/(rho_H2O*L)   # m/s
 N_CVs_one   = [5]
 N_CVs_two   = [8, 16, 64, 128, 256]     # Dimensions of CVs
-print(u_0)
+#print(u_0)
 
 # General methods used in both problems
 
@@ -367,7 +367,7 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
         #init geometry
         dx = dy = L/numvol
         cv_size = numvol+2
-        bnd_size = (cv_size,cv_size)
+        bnd_size = (cv_size, cv_size)
 
         #init necessary matrices
         p = v = u = np.ones(bnd_size)
@@ -468,9 +468,10 @@ print(prob_one_sol[0])
 ###################################
 
 test_N_CVs_two = N_CVs_two[0:2]
+print(test_N_CVs_two)
 
 prob_two_sol = SIMPLE_sol(cv_arr=test_N_CVs_two,iter_lim=5,pstate=True)
-print(prob_two_sol)
+#print(prob_two_sol)
 
 for s in range(0,len(test_N_CVs_two)):
     
@@ -478,8 +479,9 @@ for s in range(0,len(test_N_CVs_two)):
     y = np.linspace(0, L, test_N_CVs_two[s]+2)
     Xg, Yg = np.meshgrid(x, y)
     
+    #print(x,y,prob_two_sol[0][s][:])
     plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[0][s][:,:], colors='black', linestyles='dashed')
+    cp = plt.contour(Xg, Yg, prob_two_sol[0][s][:], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D Pressure Array')
     plt.xlabel('X-axis')
@@ -487,7 +489,7 @@ for s in range(0,len(test_N_CVs_two)):
     plt.show()
 
     plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[1][s][:,:], colors='black', linestyles='dashed')
+    cp = plt.contour(Xg, Yg, prob_two_sol[1][s][:], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D v-Velocity Array')
     plt.xlabel('X-axis')
@@ -495,7 +497,7 @@ for s in range(0,len(test_N_CVs_two)):
     plt.show()
 
     plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[1][s][:,:], colors='black', linestyles='dashed')
+    cp = plt.contour(Xg, Yg, prob_two_sol[2][s][:], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
     plt.title('Contour Plot of 2-D u-Velocity Array')
     plt.xlabel('X-axis')
