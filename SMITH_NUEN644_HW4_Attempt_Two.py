@@ -437,38 +437,38 @@ x = np.linspace(0,L,N_CVs_one[0]+2)
 y = np.linspace(0,L,N_CVs_one[0]+2)
 X, Y = np.meshgrid(x, y)
 
-print(prob_one_sol[0])
+#print(prob_one_sol[0])
 
 #Create a contour plot
-plt.figure()
-cp = plt.contour(X, Y, np.concatenate(prob_one_sol[0]), colors='black', linestyles='dashed')
-plt.clabel(cp, inline=True, fontsize=10)
-plt.title('Contour Plot of 2-D Pressure Array for a(n) 5 by 5 Grid')
-plt.xlabel('X-axis [m]')
-plt.ylabel('Y-axis [m]')
-plt.show()
+# plt.figure()
+# cp = plt.contour(X, Y, np.concatenate(prob_one_sol[0]), colors='black', linestyles='dashed')
+# plt.clabel(cp, inline=True, fontsize=10)
+# plt.title('Contour Plot of 2-D Pressure Array for a(n) 5 by 5 Grid')
+# plt.xlabel('X-axis [m]')
+# plt.ylabel('Y-axis [m]')
+# plt.show()
 
-plt.figure()
-cp = plt.contour(X, Y, np.concatenate(prob_one_sol[1]), colors='black', linestyles='dashed')
-plt.clabel(cp, inline=True, fontsize=10)
-plt.title('Contour Plot of 2-D V-Velocity Array for a(n) 5 by 5 Grid')
-plt.xlabel('X-axis [m]')
-plt.ylabel('Y-axis [m]')
-plt.show()
+# plt.figure()
+# cp = plt.contour(X, Y, np.concatenate(prob_one_sol[1]), colors='black', linestyles='dashed')
+# plt.clabel(cp, inline=True, fontsize=10)
+# plt.title('Contour Plot of 2-D V-Velocity Array for a(n) 5 by 5 Grid')
+# plt.xlabel('X-axis [m]')
+# plt.ylabel('Y-axis [m]')
+# plt.show()
 
-plt.figure()
-cp = plt.contour(X, Y, np.concatenate(prob_one_sol[2]), colors='black', linestyles='dashed')
-plt.clabel(cp, inline=True, fontsize=10)
-plt.title('Contour Plot of 2-D U-Velocity Array for a(n) 5 by 5 Grid')
-plt.xlabel('X-axis [m]')
-plt.ylabel('Y-axis [m]')
-plt.show()
+# plt.figure()
+# cp = plt.contour(X, Y, np.concatenate(prob_one_sol[2]), colors='black', linestyles='dashed')
+# plt.clabel(cp, inline=True, fontsize=10)
+# plt.title('Contour Plot of 2-D U-Velocity Array for a(n) 5 by 5 Grid')
+# plt.xlabel('X-axis [m]')
+# plt.ylabel('Y-axis [m]')
+# plt.show()
 
 ###################################
 #########  Problem #2 #############
 ###################################
 
-#test_N_CVs_two = N_CVs_two[0:2] testing array looking at only smallest CVs for debugging
+test_N_CVs_two = N_CVs_two[0:2] # testing array looking at only smallest CVs for debugging
 #print(test_N_CVs_two)
 
 prob_two_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=3,pstate=True)
@@ -479,46 +479,62 @@ for solsets in prob_two_sol:
     
     
 # Plot solution fields to satisfy 2a
-for s in range(0,len(N_CVs_two)):
+# for s in range(0,len(N_CVs_two)):
     
-    x = np.linspace(0, L, N_CVs_two[s]+2)
-    y = np.linspace(0, L, N_CVs_two[s]+2)
-    Xg, Yg = np.meshgrid(x, y)
-    ptext = f'Contour Plot of 2-D Pressure Array for a(n) {N_CVs_two[s]} by {N_CVs_two[s]} Grid'
-    utext = f'Contour Plot of 2-D U-Velocity Array for a(n) {N_CVs_two[s]} by {N_CVs_two[s]} Grid'
-    vtext = f'Contour Plot of 2-D V-Velocity Array for a(n) {N_CVs_two[s]} by {N_CVs_two[s]} Grid'
+#     x = np.linspace(0, L, N_CVs_two[s]+2)
+#     y = np.linspace(0, L, N_CVs_two[s]+2)
+#     Xg, Yg = np.meshgrid(x, y)
+#     ptext = f'Contour Plot of 2-D Pressure Array for a(n) {N_CVs_two[s]} by {N_CVs_two[s]} Grid'
+#     utext = f'Contour Plot of 2-D U-Velocity Array for a(n) {N_CVs_two[s]} by {N_CVs_two[s]} Grid'
+#     vtext = f'Contour Plot of 2-D V-Velocity Array for a(n) {N_CVs_two[s]} by {N_CVs_two[s]} Grid'
     
     
-    #print(x,y,prob_two_sol[0][s][:])
-    plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[0][s], colors='black', linestyles='dashed')
-    plt.clabel(cp, inline=True, fontsize=10)
-    plt.title(ptext)
-    plt.xlabel('X-axis [m]')
-    plt.ylabel('Y-axis [m]')
-    plt.show()
+#     #print(x,y,prob_two_sol[0][s][:])
+#     plt.figure()
+#     cp = plt.contour(Xg, Yg, prob_two_sol[0][s], colors='black', linestyles='dashed')
+#     plt.clabel(cp, inline=True, fontsize=10)
+#     plt.title(ptext)
+#     plt.xlabel('X-axis [m]')
+#     plt.ylabel('Y-axis [m]')
+#     plt.show()
 
-    plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[1][s], colors='black', linestyles='dashed')
-    plt.clabel(cp, inline=True, fontsize=10)
-    plt.title(vtext)
-    plt.xlabel('X-axis [m]')
-    plt.ylabel('Y-axis [m]')
-    plt.show()
+#     plt.figure()
+#     cp = plt.contour(Xg, Yg, prob_two_sol[1][s], colors='black', linestyles='dashed')
+#     plt.clabel(cp, inline=True, fontsize=10)
+#     plt.title(vtext)
+#     plt.xlabel('X-axis [m]')
+#     plt.ylabel('Y-axis [m]')
+#     plt.show()
 
-    plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[0][s], colors='black', linestyles='dashed')
-    plt.clabel(cp, inline=True, fontsize=10)
-    plt.title(utext)
-    plt.xlabel('X-axis [m]')
-    plt.ylabel('Y-axis [m]')
-    plt.show()
+#     plt.figure()
+#     cp = plt.contour(Xg, Yg, prob_two_sol[0][s], colors='black', linestyles='dashed')
+#     plt.clabel(cp, inline=True, fontsize=10)
+#     plt.title(utext)
+#     plt.xlabel('X-axis [m]')
+#     plt.ylabel('Y-axis [m]')
+#     plt.show()
     
 # Plot centerline U and V-Vels for each case
 center_us = []
 center_vs = []
 all_us = []
 all_vs = []
+
+plt.figure()
+cp = plt.contour(Xg, Yg, prob_two_sol[0][s], colors='black', linestyles='dashed')
+plt.clabel(cp, inline=True, fontsize=10)
+plt.title('Centerline U-velocity plotted against grid dimensions')
+plt.xlabel('# of CVs (NxN)')
+plt.ylabel('Centerline U-velocity')
+plt.show()
+
+plt.figure()
+cp = plt.contour(Xg, Yg, prob_two_sol[0][s], colors='black', linestyles='dashed')
+plt.clabel(cp, inline=True, fontsize=10)
+plt.title('Centerline V-velocity plotted against grid dimensions')
+plt.xlabel('# of CVs (NxN)')
+plt.ylabel('Centerline V-velocity')
+plt.show()
 
 # Calculate and print order of convergence and GCI at the centerpoint of each using p-field solutions
 GCIs = []

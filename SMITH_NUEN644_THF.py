@@ -12,35 +12,38 @@ from scipy.sparse import lil_matrix
 from scipy.sparse.linalg import spsolve
 
 # Define constants
-L                           = 2.00                                   # m
-H                           = 0.02                                   # m
-omega_u, omega_v            = 0.3                                    # given under-relaxation factors
-omega_p                     = 0.7                                    # given under-relaxation factors
-T_H2O                       = 20                                     # Deg C
-Ru_tol,Rv_tol,Rp_tol,RT_tol = 1E-6                                   # Tolerance for u-vel residual
-Re                          = 200                                    # Unitless Reynolds #
-rho_f                       = 997.0                                  # kg/m^3
-mu_f                        = 8.71E-4                                # N*s/m^2
-C_pf                        = 4179.0                                 # J/kg*K
-u_0                         = (Re*mu_f)/(rho_f*L)                    # m/s
-N_CVs_one                   = [[10,5]]                               # Dimensions of CVs
+L                           = 2.00                                           # m
+H                           = 0.02                                           # m
+omega_u, omega_v            = 0.3                                            # given under-relaxation factors
+omega_p                     = 0.7                                            # given under-relaxation factors
+Ru_tol,Rv_tol,Rp_tol,RT_tol = 1E-6                                           # Tolerance for u-vel residual
+Re                          = 200                                            # Unitless Reynolds #
+rho_f                       = 997.0                                          # kg/m^3
+mu_f                        = 8.71E-4                                        # N*s/m^2
+C_pf                        = 4179.0                                         # J/kg*K
+u_0                         = (Re*mu_f)/(rho_f*L)                            # m/s
+T_0                         = 100+273.15                                     # K
+T_0                         = 27+273.15                                      # K
+N_CVs_one                   = [[10,5]]                                       # Dimensions of CVs
 N_CVs_two                   = [[10,5], [20,10], [60,20], [120,40], [160,80]] # Dimensions of CVs
 
-def solve_momentum():
-    # Solve the momentum equations using the SIMPLE algorithm
-    # Placeholder for the actual solver
-    pass
 
-def solve_energy():
-    # Solve the energy equation using the power-law scheme
-    # Placeholder for the actual solver
-    pass
 
-def check_convergence():
-    
-    # Check for convergence (placeholder)
-    # if p,u,v,ort resid is greater than tol, return converged as False, else return converged as true
-    return False
+def bnd_conds(u_matr,t_matr):
+        u_matr[:][0] = u_0
+        t_matr[:][0] = T_0
+
+def conv_check(dx,dy,u,v,
+               aEu,aWu,aNu,aSu,aPu,
+               aEv,aWv,aNv,aSv,aPv):
+    Ru = (np.abs(np.sum(np.multiply(aPu,u)-np.multiply(aEu,u)-np.multiply(aWu,u)-np.multiply(aNu,u)-np.multiply(aSu,u))))/(np.sum(np.multiply(aPu,u)))
+
+    Rv = (np.abs(np.sum(np.multiply(aPv,v)-np.multiply(aEv,v)-np.multiply(aWv,v)-np.multiply(aNv,v)-np.multiply(aSv,v))))/(np.sum(np.multiply(aPv,v)))
+
+    Rp = (np.sum(rho_H2O*u - rho_H2O*u*dy - rho_H2O*u - rho_H2O*u*dx))/(rho_H2O*u_0*L)
+
+    Rt = 
+    return Rp, Ru, Rv
 
 # Main iteration loop
 converged = False
@@ -74,6 +77,9 @@ def SIMPLE_sol(dimlist):
     for dims in dimlist:
         nx = dims[0]
         ny = dims[1]
+        dx = L/nx
+        dy = H/ny
+        cent_dy = 
         # Initialize field variables
         u = np.ones((nx+1, ny+2))   # u-velocity on staggered grid
         v = np.ones((nx+2, ny+1))   # v-velocity on staggered grid
@@ -90,7 +96,8 @@ def SIMPLE_sol(dimlist):
 #########  Problem #1 #############
 ###################################
 
-# 1) Tabulated velocity with 5 decimal point truncation# Print tabulated solutions to txt files
+# 1) Tabulated velocity with 5 decimal point truncation
+prob_one_sol = SIMPLE_sol()
 
 
 ###################################
@@ -102,6 +109,12 @@ def plot_T_bulk():
     '''
     Plots T_bulk as a function of x given a solved temperature field
     '''
+
+# 2b) Plot non-dimensional temperature at x=2.0 as a function of y
+
+# 2c) Plot T_bulk and Tw as a function of x
+
+# 2d) Plot the local nuselt number as a function of x
 
 # Extras for post-processing
 # Specify the filenames
