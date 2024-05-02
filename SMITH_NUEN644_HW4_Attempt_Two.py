@@ -478,7 +478,7 @@ for solsets in prob_two_sol:
     print(len(solsets[0]))
     
     
-# plot solution fields
+# Plot solution fields to satisfy 2a
 for s in range(0,len(N_CVs_two)):
     
     x = np.linspace(0, L, N_CVs_two[s]+2)
@@ -514,12 +514,21 @@ for s in range(0,len(N_CVs_two)):
     plt.ylabel('Y-axis [m]')
     plt.show()
     
-    
+# Plot centerline U and V-Vels for each case
+center_us = []
+center_vs = []
+all_us = []
+all_vs = []
 
-    
+# Calculate and print order of convergence and GCI at the centerpoint of each using p-field solutions
+GCIs = []
+OoCs = []
+
+print(N_CVs_two)
+print(GCIs)
+print(OoCs)
 # Print tabulated solutions to txt files
-
-# Specify the filename
+# Specify the filenames
 filename_1 = 'p1tabs.txt'
 filename_2 = 'p2tabs.txt'
 
@@ -534,6 +543,6 @@ print(f"List has been written to {filename_1}")
 with open(filename_2, 'w') as file:
     # Write each item from the list to the file, each on a new line
     for item in prob_two_sol:
-        file.write(f"{item}\n")
+        file.write(f"{(item*1e5)/1e5}\n") #multiplying and dividing the decimal values by 1e5 truncates to 5 decimal places
 
 print(f"List has been written to {filename_2}")
