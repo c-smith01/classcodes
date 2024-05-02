@@ -358,11 +358,12 @@ def print_results(p,u,v,itercount,Rp,Ru,Rv):
 
 def SIMPLE_sol(cv_arr,iter_lim,pstate):
     
+    #init solutions arrays
+    psols = []
+    usols = []
+    vsols = []
+        
     for numvol in cv_arr:
-        #init solutions arrays
-        psols = []
-        usols = []
-        vsols = []
 
         #init geometry
         dx = dy = L/numvol
@@ -430,7 +431,7 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
 
     return [psols,usols,vsols]
 
-prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_one,iter_lim=5,pstate=True)
+prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_one,iter_lim=3,pstate=True)
 
 x = np.linspace(0,L,N_CVs_one[0]+2)
 y = np.linspace(0,L,N_CVs_one[0]+2)
@@ -438,70 +439,96 @@ X, Y = np.meshgrid(x, y)
 
 print(prob_one_sol[0])
 
-# Create a contour plot
-# plt.figure()
-# cp = plt.contour(X, Y, np.concatenate(prob_one_sol[0]), colors='black', linestyles='dashed')
-# plt.clabel(cp, inline=True, fontsize=10)
-# plt.title('Contour Plot of 2-D Pressure Array')
-# plt.xlabel('X-axis')
-# plt.ylabel('Y-axis')
-# plt.show()
+#Create a contour plot
+plt.figure()
+cp = plt.contour(X, Y, np.concatenate(prob_one_sol[0]), colors='black', linestyles='dashed')
+plt.clabel(cp, inline=True, fontsize=10)
+plt.title('Contour Plot of 2-D Pressure Array for a(n) 5 by 5 Grid')
+plt.xlabel('X-axis [m]')
+plt.ylabel('Y-axis [m]')
+plt.show()
 
-# plt.figure()
-# cp = plt.contour(X, Y, np.concatenate(prob_one_sol[1]), colors='black', linestyles='dashed')
-# plt.clabel(cp, inline=True, fontsize=10)
-# plt.title('Contour Plot of 2-D v-Velocity Array')
-# plt.xlabel('X-axis')
-# plt.ylabel('Y-axis')
-# plt.show()
+plt.figure()
+cp = plt.contour(X, Y, np.concatenate(prob_one_sol[1]), colors='black', linestyles='dashed')
+plt.clabel(cp, inline=True, fontsize=10)
+plt.title('Contour Plot of 2-D V-Velocity Array for a(n) 5 by 5 Grid')
+plt.xlabel('X-axis [m]')
+plt.ylabel('Y-axis [m]')
+plt.show()
 
-# plt.figure()
-# cp = plt.contour(X, Y, np.concatenate(prob_one_sol[2]), colors='black', linestyles='dashed')
-# plt.clabel(cp, inline=True, fontsize=10)
-# plt.title('Contour Plot of 2-D u-Velocity Array')
-# plt.xlabel('X-axis')
-# plt.ylabel('Y-axis')
-# plt.show()
+plt.figure()
+cp = plt.contour(X, Y, np.concatenate(prob_one_sol[2]), colors='black', linestyles='dashed')
+plt.clabel(cp, inline=True, fontsize=10)
+plt.title('Contour Plot of 2-D U-Velocity Array for a(n) 5 by 5 Grid')
+plt.xlabel('X-axis [m]')
+plt.ylabel('Y-axis [m]')
+plt.show()
 
 ###################################
 #########  Problem #2 #############
 ###################################
 
-test_N_CVs_two = N_CVs_two[0:2]
-print(test_N_CVs_two)
+#test_N_CVs_two = N_CVs_two[0:2] testing array looking at only smallest CVs for debugging
+#print(test_N_CVs_two)
 
-prob_two_sol = SIMPLE_sol(cv_arr=test_N_CVs_two,iter_lim=5,pstate=True)
+prob_two_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=3,pstate=True)
 #print(prob_two_sol)
 
-print(np.size(prob_two_sol))
+for solsets in prob_two_sol:
+    print(len(solsets[0]))
 
-for s in range(0,len(test_N_CVs_two)):
+for s in range(0,len(N_CVs_two)):
     
-    x = np.linspace(0, L, test_N_CVs_two[s]+2)
-    y = np.linspace(0, L, test_N_CVs_two[s]+2)
+    x = np.linspace(0, L, N_CVs_two[s]+2)
+    y = np.linspace(0, L, N_CVs_two[s]+2)
     Xg, Yg = np.meshgrid(x, y)
+    ptext = f'Contour Plot of 2-D Pressure Array for a(n) {N_CVs_two[s]} by {N_CVs_two[s]} Grid'
+    utext = f'Contour Plot of 2-D U-Velocity Array for a(n) {N_CVs_two[s]} by {N_CVs_two[s]} Grid'
+    vtext = f'Contour Plot of 2-D V-Velocity Array for a(n) {N_CVs_two[s]} by {N_CVs_two[s]} Grid'
+    
     
     #print(x,y,prob_two_sol[0][s][:])
     plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[s][0], colors='black', linestyles='dashed')
+    cp = plt.contour(Xg, Yg, prob_two_sol[0][s], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
-    plt.title('Contour Plot of 2-D Pressure Array')
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
+    plt.title(ptext)
+    plt.xlabel('X-axis [m]')
+    plt.ylabel('Y-axis [m]')
     plt.show()
 
     plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[s][1], colors='black', linestyles='dashed')
+    cp = plt.contour(Xg, Yg, prob_two_sol[1][s], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
-    plt.title('Contour Plot of 2-D v-Velocity Array')
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
+    plt.title(vtext)
+    plt.xlabel('X-axis [m]')
+    plt.ylabel('Y-axis [m]')
     plt.show()
 
     plt.figure()
-    cp = plt.contour(Xg, Yg, prob_two_sol[s][2], colors='black', linestyles='dashed')
+    cp = plt.contour(Xg, Yg, prob_two_sol[0][s], colors='black', linestyles='dashed')
     plt.clabel(cp, inline=True, fontsize=10)
-    plt.title('Contour Plot of 2-D u-Velocity Array')
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
+    plt.title(utext)
+    plt.xlabel('X-axis [m]')
+    plt.ylabel('Y-axis [m]')
     plt.show()
+    
+# Print tabulated solutions to txt files
+
+# Specify the filename
+filename_1 = 'p1tabs.txt'
+filename_2 = 'p2tabs.txt'
+
+# Open the file in write mode
+with open(filename_1, 'w') as file:
+    # Write each item from the list to the file, each on a new line
+    for item in prob_one_sol:
+        file.write(f"{item}\n")
+
+print(f"List has been written to {filename_1}")
+
+with open(filename_2, 'w') as file:
+    # Write each item from the list to the file, each on a new line
+    for item in prob_two_sol:
+        file.write(f"{item}\n")
+
+print(f"List has been written to {filename_2}")
