@@ -29,8 +29,8 @@ def reset(matr,dims):
     matr = np.zeros(dims)
 
 def bnd_conds(u_matr,t_matr):
-        u_matr[0][:] = u_0
-        t_matr[0][:] = T_0
+    u_matr[0][:] = u_0
+    t_matr[0][:] = T_0
 
 def ucoeffs(dims,
             Deu,Dwu,Dnu,Dsu,
@@ -38,6 +38,7 @@ def ucoeffs(dims,
             Peu,Pwu,Pnu,Psu,
             aEu,aWu,aNu,aSu,aPu,
             u,pstate,dy,dx):
+    
 
 def conv_check(dx,dy,u,v,
                aEu,aWu,aNu,aSu,aPu,
@@ -49,6 +50,7 @@ def conv_check(dx,dy,u,v,
     Rp = (np.sum(rho_H2O*u - rho_H2O*u*dy - rho_H2O*u - rho_H2O*u*dx))/(rho_H2O*u_0*L)
 
     Rt = (np.sum(rho_H2O*u - rho_H2O*u*dy - rho_H2O*u - rho_H2O*u*dx))/(rho_H2O*u_0*L)
+    
     return Rp, Ru, Rv, Rt, convstate
     
 def print_results(p,u,v,t,itercount,Rp,Ru,Rv):
@@ -82,11 +84,16 @@ def SIMPLE_sol(dimlist):
         cent_dx = dx*2
         corn_dy = dy*1.5
         corn_dx = dx*1.5
-        # Initialize field variables
-        u = np.ones((nx+1, ny+2))   # u-velocity on staggered grid
-        v = np.ones((nx+2, ny+1))   # v-velocity on staggered grid
-        p = np.ones((nx+2, ny+2))   # pressure on main grid
-        T = np.ones((nx+2, ny+2))   # temperature on main grid
+        #init necessary matrices
+        p = v = u = T = np.ones((nx+1, ny+2))
+        p_prm = v_prm = u_prm = np.zeros((nx+1, ny+2))
+        dv = du = np.ones((nx+1, ny+2))
+        Deu = Dwu = Dnu = Dsu = Dev = Dwv = Dnv = Dsv = np.ones((nx+1, ny+2))
+        Feu = Fwu = Fnu = Fsu = Fev = Fwv = Fnv = Fsv = np.ones((nx+1, ny+2))
+        Peu = Pwu = Pnu = Psu = Pev = Pwv = Pnv = Psv = np.ones((nx+1, ny+2))
+        Peu = Pwu = Pnu = Psu = Pev = Pwv = Pnv = Psv = np.ones((nx+1, ny+2))
+        aEu = aWu = aNu = aSu = aPu = aEv = aWv = aNv = aSv = aPv = np.ones((nx+1, ny+2))
+        aEP = aWP = aNP = aSP = aPP = bPP = np.ones((nx+1, ny+2))
         
         Rp = Ru = Rv = Rt = 1     # start residuals with values greater than tolerance to force at least one iteration
         itercount         = 1     # start count of iterations to convergence
@@ -119,7 +126,10 @@ def plot_T_bulk():
 
 # 2c) Plot T_bulk and Tw as a function of x
 
-# 2d) Plot the local nuselt number as a function of x
+# 2d) Plot the local Nusselt number as a function of x
+Nu_exact = 7.5407
+
+
 
 # Extras for post-processing
 # Specify the filenames

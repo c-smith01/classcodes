@@ -520,9 +520,40 @@ center_vs = []
 all_us = []
 all_vs = []
 
+for solsets in prob_two_sol[1]:
+    all_us.append(solsets)
+
+    rows,cols = solsets.shape()
+    center_row = rows // 2
+    center_col = cols // 2
+    
+    # Handling even dimensions by taking the top-left value in the center 2x2 grid
+    if rows % 2 == 0:
+        center_row -= 1
+    if cols % 2 == 0:
+        center_col -= 1
+    
+    center_u = solsets[center_row,center_col]
+    center_us.append(center_u)
+
+for solsets in prob_two_sol[2]:
+    all_vs.append(solsets)
+
+    rows,cols = solsets.shape()
+    center_row = rows // 2
+    center_col = cols // 2
+    
+    # Handling even dimensions by taking the top-left value in the center 2x2 grid
+    if rows % 2 == 0:
+        center_row -= 1
+    if cols % 2 == 0:
+        center_col -= 1
+    
+    center_v = solsets[center_row,center_col]
+    center_vs.append(center_u)    
+
 plt.figure()
 plt.plot(N_CVs_two, center_us)
-plt.clabel(cp, inline=True, fontsize=10)
 plt.title('Centerline U-velocity plotted against grid dimensions')
 plt.xlabel('# of CVs (NxN)')
 plt.ylabel('Centerline U-velocity')
@@ -530,7 +561,6 @@ plt.show()
 
 plt.figure()
 plt.plot(N_CVs_two, center_vs)
-plt.clabel(cp, inline=True, fontsize=10)
 plt.title('Centerline V-velocity plotted against grid dimensions')
 plt.xlabel('# of CVs (NxN)')
 plt.ylabel('Centerline V-velocity')
@@ -539,6 +569,8 @@ plt.show()
 # Calculate and print order of convergence and GCI at the centerpoint of each using p-field solutions
 GCIs = []
 OoCs = []
+Fos = 3
+conv_rate = 2
 
 print(N_CVs_two)
 print(GCIs)
