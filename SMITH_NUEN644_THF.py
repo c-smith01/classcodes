@@ -13,11 +13,12 @@ L                           = 2.00                                           # m
 H                           = 0.02                                           # m
 omega_u, omega_v            = 0.3                                            # given under-relaxation factors
 omega_p                     = 0.7                                            # given under-relaxation factors
-Ru_tol,Rv_tol,Rp_tol,RT_tol = 1E-6                                           # Tolerance for u-vel residual
+Ru_tol,Rv_tol,Rp_tol,Rt_tol = 1E-6                                           # Tolerance for u-vel residual
 Re                          = 200                                            # Unitless Reynolds #
 rho_f                       = 997.0                                          # kg/m^3
 mu_f                        = 8.71E-4                                        # N*s/m^2
 C_pf                        = 4179.0                                         # J/kg*K
+k                           = 0.563                                          # W/m*K
 u_0                         = (Re*mu_f)/(rho_f*L)                            # m/s
 T_0                         = 100+273.15                                     # K
 T_0                         = 27+273.15                                      # K
@@ -28,16 +29,71 @@ N_CVs_two                   = [[10,5], [20,10], [60,20], [120,40], [160,80]] # D
 def reset(matr,dims):
     matr = np.zeros(dims)
 
-def bnd_conds(u_matr,t_matr):
+def bnd_conds(u_matr,v_matr,t_matr):
     u_matr[0][:] = u_0
+    u_matr[-1][:] = u_matr[-2][:]
+    v_matr[0][:] = 0
+    v_matr[-1][:] = v_matr[-2][:]
     t_matr[0][:] = T_0
+    t_matr[-1][:] = t_matr[-2][:]
 
 def ucoeffs(dims,
             Deu,Dwu,Dnu,Dsu,
             Feu,Fwu,Fnu,Fsu,
             Peu,Pwu,Pnu,Psu,
             aEu,aWu,aNu,aSu,aPu,
-            u,pstate,dy,dx):
+            u,v,dy,dx):
+    for j in range(1,dims-1):
+        for i in range(1,dims-1):
+            if i==1:
+                Feu[i,j] = rho_f*(0.5*(u[i,j]+u[i+1]))*dy
+                Fwu[i,j] = rho_f*(0.5*(u[i,j]+u[i-1]))*dy
+                Vn = (0.25*v[i-1,j]+0.5*v[i,j]+0.75*v[i+1,j])/1.5
+                Vs = (0.25*v[i-1,j+1]+0.5*v[i,j+1]+0.75*v[i+1,j+1])/1.5
+                Fnu[i,j] = rho_f*(Vn)*1.5*dx
+                Fsu[i,j] = rho_f*(Vs)*1.5*dx
+            elif i==dims-1:
+                Feu[i,j] = rho_f*(0.5*(u[i,j]+u[i+1]))*dy
+                Fwu[i,j] = rho_f*(0.5*(u[i,j]+u[i-1]))*dy
+                Vn = (0.75*v[i-1,j]+0.5*v[i,j]+0.25*v[i+1,j])/1.5
+                Vs = (0.75*v[i-1,j+1]+0.5*v[i,j+1]+0.25*v[i+1,j+1])/1.5
+                Fnu[i,j] = rho_f*(Vn)*1.5*dx
+                Fsu[i,j] = rho_f*(Vs)*1.5*dx
+            else:
+                Feu[i,j] = rho_f*(0.5*u[i,j]+u[i+1])*dy
+                Fwu[i,j] = rho_f*(0.5*u[i,j]+u[i-1])*dy
+                Fnu[i,j] = rho_f*(0.5*(v[i,j]+v[i+1,j]))*dx
+                Fsu[i,j] = rho_f*(0.5*(v[i,j+1]+v[i+1,j+1]))*dx
+
+            Deu[i,j], Dwu[i,j] = mu_f*dy/dx
+            Dnu[i,j], Dsu[i,j] = mu_f*dx/dy
+
+            if j==dims-1:
+                Dsu[i,j] = Dsu[i,j]/2
+            if j==1:
+                Dnu[i,j] = Dnu[i,j]/2
+            if i==1 or i == dims-1:
+                Dnu[i,j] = 1.5*Dnu[i,j]
+                Dsu[i,j] = 1.5*Dsu[i,j]
+
+            Peu[i,j] = Feu[i,j]/Deu[i,j]
+            Pwu[i,j] = Fwu[i,j]/Dwu[i,j]
+            Pnu[i,j] = Fnu[i,j]/Dnu[i,j]
+            Psu[i,j] = Fsu[i,j]/Dsu[i,j]
+
+            aEu[i,j] = Deu[i,j]*np.max((0,(1-0.1*np.abs(Peu[i,j]))**5)) + np.max((0,(-Feu[i,j])))
+            aWu[i,j] = Dwu[i,j]*np.max((0,(1-0.1*np.abs(Pwu[i,j]))**5)) + np.max((0,(Fwu[i,j])))
+            aNu[i,j] = Dnu[i,j]*np.max((0,(1-0.1*np.abs(Pnu[i,j]))**5)) + np.max((0,(-Fnu[i,j])))
+            aSu[i,j] = Dsu[i,j]*np.max((0,(1-0.1*np.abs(Psu[i,j]))**5)) + np.max((0,(Fsu[i,j])))
+            aPu[i,j] = aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]
+
+def usolve(dims,
+           u,aEu,aWu,aSu,aNu,aPu,
+           du,dy):
+    for j in range(1,dims-1):
+        for i in range(1,dims-1):
+            u[i,j] = (aEu[i,j]*u[i+1,j]+aWu[i,j]*u[i-1,j]+aNu[i,j]*u[i,j-1]+aSu[i,j]*u[i,j+1])*(omega_u/aPu[i,j])
+            du[i,j] = dy/((aPu[i,j]/omega_u)-(aEu[i,j]+aWu[i,j]+aNu[i,j]+aSu[i,j]))
     
 
 def conv_check(dx,dy,u,v,
@@ -47,9 +103,14 @@ def conv_check(dx,dy,u,v,
 
     Rv = (np.abs(np.sum(np.multiply(aPv,v)-np.multiply(aEv,v)-np.multiply(aWv,v)-np.multiply(aNv,v)-np.multiply(aSv,v))))/(np.sum(np.multiply(aPv,v)))
 
-    Rp = (np.sum(rho_H2O*u - rho_H2O*u*dy - rho_H2O*u - rho_H2O*u*dx))/(rho_H2O*u_0*L)
+    Rp = (np.sum(rho_f*u - rho_f*u*dy - rho_f*u - rho_f*u*dx))/(rho_f*u_0*L)
 
-    Rt = (np.sum(rho_H2O*u - rho_H2O*u*dy - rho_H2O*u - rho_H2O*u*dx))/(rho_H2O*u_0*L)
+    Rt = (np.sum(rho_f*u - rho_f*u*dy - rho_f*u - rho_f*u*dx))/(rho_f*u_0*L)
+
+    if Ru<Ru_tol and Rv<Rv_tol and Rp<Rp_tol and Rt<Rt_tol:
+        convstate = True
+    else:
+        convstate = False
     
     return Rp, Ru, Rv, Rt, convstate
     
@@ -80,10 +141,6 @@ def SIMPLE_sol(dimlist):
         ny = dims[1]
         dx = L/nx
         dy = H/ny
-        cent_dy = dy*2
-        cent_dx = dx*2
-        corn_dy = dy*1.5
-        corn_dx = dx*1.5
         #init necessary matrices
         p = v = u = T = np.ones((nx+1, ny+2))
         p_prm = v_prm = u_prm = np.zeros((nx+1, ny+2))

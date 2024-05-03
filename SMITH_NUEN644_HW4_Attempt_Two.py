@@ -570,7 +570,7 @@ plt.show()
 GCIs = []
 OoCs = []
 Fos = 3
-conv_rate = 2lll
+conv_rate = 2
 
 print(N_CVs_two)
 print(GCIs)
