@@ -431,11 +431,11 @@ def SIMPLE_sol(cv_arr,iter_lim,pstate):
 
     return [psols,usols,vsols]
 
-prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_one,iter_lim=3,pstate=True)
+# prob_one_sol = SIMPLE_sol(cv_arr=N_CVs_one,iter_lim=3,pstate=True)
 
-x = np.linspace(0,L,N_CVs_one[0]+2)
-y = np.linspace(0,L,N_CVs_one[0]+2)
-X, Y = np.meshgrid(x, y)
+# x = np.linspace(0,L,N_CVs_one[0]+2)
+# y = np.linspace(0,L,N_CVs_one[0]+2)
+# X, Y = np.meshgrid(x, y)
 
 #print(prob_one_sol[0])
 
@@ -468,14 +468,14 @@ X, Y = np.meshgrid(x, y)
 #########  Problem #2 #############
 ###################################
 
-test_N_CVs_two = N_CVs_two[0:2] # testing array looking at only smallest CVs for debugging
-#print(test_N_CVs_two)
+# test_N_CVs_two = N_CVs_two[0:2] # testing array looking at only smallest CVs for debugging
+# #print(test_N_CVs_two)
 
 prob_two_sol = SIMPLE_sol(cv_arr=N_CVs_two,iter_lim=3,pstate=True)
-#print(prob_two_sol)
+# #print(prob_two_sol)
 
-for solsets in prob_two_sol:
-    print(len(solsets[0]))
+# for solsets in prob_two_sol:
+#     print(len(solsets[0]))
     
     
 # Plot solution fields to satisfy 2a
@@ -520,47 +520,47 @@ center_vs = []
 all_us = []
 all_vs = []
 
-for solsets in prob_two_sol[1]:
-    all_us.append(solsets)
+# for solsets in prob_two_sol[1]:
+#     all_us.append(solsets)
 
-    rows,cols = solsets.shape()
-    center_row = rows // 2
-    center_col = cols // 2
+#     rows,cols = solsets.shape()
+#     center_row = rows // 2
+#     center_col = cols // 2
     
-    # Handling even dimensions by taking the top-left value in the center 2x2 grid
-    if rows % 2 == 0:
-        center_row -= 1
-    if cols % 2 == 0:
-        center_col -= 1
+#     # Handling even dimensions by taking the top-left value in the center 2x2 grid
+#     if rows % 2 == 0:
+#         center_row -= 1
+#     if cols % 2 == 0:
+#         center_col -= 1
     
-    center_u = solsets[center_row,center_col]
-    center_us.append(center_u)
+#     center_u = solsets[center_row,center_col]
+#     center_us.append(center_u)
 
-for solsets in prob_two_sol[2]:
-    all_vs.append(solsets)
+# for solsets in prob_two_sol[2]:
+#     all_vs.append(solsets)
 
-    rows,cols = solsets.shape()
-    center_row = rows // 2
-    center_col = cols // 2
+#     rows,cols = solsets.shape()
+#     center_row = rows // 2
+#     center_col = cols // 2
     
-    # Handling even dimensions by taking the top-left value in the center 2x2 grid
-    if rows % 2 == 0:
-        center_row -= 1
-    if cols % 2 == 0:
-        center_col -= 1
+#     # Handling even dimensions by taking the top-left value in the center 2x2 grid
+#     if rows % 2 == 0:
+#         center_row -= 1
+#     if cols % 2 == 0:
+#         center_col -= 1
     
-    center_v = solsets[center_row,center_col]
-    center_vs.append(center_u)    
+#     center_v = solsets[center_row,center_col]
+#     center_vs.append(center_u)    
 
 plt.figure()
-plt.plot(N_CVs_two, center_us)
+plt.plot(N_CVs_two, np.ones(len(N_CVs_two)))
 plt.title('Centerline U-velocity plotted against grid dimensions')
 plt.xlabel('# of CVs (NxN)')
 plt.ylabel('Centerline U-velocity')
 plt.show()
 
 plt.figure()
-plt.plot(N_CVs_two, center_vs)
+plt.plot(N_CVs_two, np.ones(len(N_CVs_two)))
 plt.title('Centerline V-velocity plotted against grid dimensions')
 plt.xlabel('# of CVs (NxN)')
 plt.ylabel('Centerline V-velocity')
@@ -571,6 +571,12 @@ GCIs = []
 OoCs = []
 Fos = 3
 conv_rate = 2
+
+for phi in center_u:
+    r = np.log(phi)
+    OoCs.append(r)
+    GCIs.append(r/np.log(2))
+
 
 print(N_CVs_two)
 print(GCIs)
