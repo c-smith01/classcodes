@@ -10,6 +10,10 @@ def extract_data_from_file(file_path):
     dead_time_match = re.search(r'Dead Time\s+:\s+([\d\.]+)\s+%', content)
     dead_time = float(dead_time_match.group(1)) if dead_time_match else None
     
+    # Extract source-to-detector distance from "Sample Geometry"
+    geometry_match = re.search(r'Sample Geometry\s+:\s+SH(\d+)PS', content)
+    source_distance = int(geometry_match.group(1)) if geometry_match else None
+    
     # Extract peak energies and total counts from "Peak Analysis Report"
     peak_data = re.findall(r'\d+\s+\d+-\s+\d+\s+\d+\.\d+\s+(\d+\.\d+)\s+\d+\.\d+\s+(\d+\.\d+)', content)
     if peak_data:
@@ -21,8 +25,16 @@ def extract_data_from_file(file_path):
         avg_energy, total_counts = None, None
     
     # Extract isotope activities from "Interference Corrected Report"
-    activity_data = re.findall(r'([A-Z]+-\d+)\s+\d+\.\d+E?[\+\-]?\d*\s+(\d+\.\d+E?[\+\-]?\d*)', content)
-    isotope_activities = {iso: float(act) for iso, act in activity_data}
+    interference_start = content.find("I N T E R F E R E N C E   C O R R E C T E D   R E P O R T")
+    if interference_start != -1:
+        interference_text = content[interference_start:]
+        activity_data = re.findall(r'([A-Z]+-\d+)\s+[-\d\.E\+]+\s+([-\d\.E\+]+)', interference_text)
+        isotope_activities = {}
+        for iso, act in activity_data:
+            if not re.match(r'E[\+\-]\d+', iso):  # Exclude erroneous values
+                isotope_activities[iso] = isotope_activities.get(iso, 0) + float(act)
+    else:
+        isotope_activities = {}
     
     # Store results
     return {
@@ -30,7 +42,8 @@ def extract_data_from_file(file_path):
         "Dead Time (%)": dead_time,
         "Avg Energy (keV)": avg_energy,
         "Total Counts": total_counts,
-        "Isotope Activities": isotope_activities
+        "Source-Detector Distance (cm)": source_distance,
+        "Total Isotope Activity (uCi)": sum(isotope_activities.values()) if isotope_activities else None
     }
 
 def process_folder(folder_path, output_csv):
@@ -44,13 +57,10 @@ def process_folder(folder_path, output_csv):
     # Convert to DataFrame
     df = pd.DataFrame(data_list)
     
-    # Expand isotope activity dictionary into separate columns
-    isotope_df = df.pop("Isotope Activities").apply(pd.Series)
-    df = pd.concat([df, isotope_df], axis=1)
-    
     # Save to CSV
     df.to_csv(output_csv, index=False)
     print(f"Data saved to {output_csv}")
 
 # Example usage
 # process_folder("path/to/folder", "output_data.csv")
+
