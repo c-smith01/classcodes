@@ -15,7 +15,7 @@ def extract_data_from_file(file_path):
     source_distance = int(geometry_match.group(1)) if geometry_match else None
     
     # Extract peak energies and total counts from "Peak Analysis Report"
-    peak_data = re.findall(r'\d+\s+\d+-\s+\d+\s+\d+\.\d+\s+(\d+\.\d+)\s+\d+\.\d+\s+(\d+\.\d+)', content)
+    peak_data = re.findall(r'\d+\s+\d+-\s+\d+\s+\d+\.\d+\s+(\d+\.\d+E?[\+\-]?\d*)\s+\d+\.\d+\s+(\d+\.\d+E?[\+\-]?\d*)', content)
     if peak_data:
         energies = [float(p[0]) for p in peak_data]
         counts = [float(p[1]) for p in peak_data]
@@ -24,11 +24,15 @@ def extract_data_from_file(file_path):
     else:
         avg_energy, total_counts = None, None
     
-    # Extract isotope activities from "Interference Corrected Report"
+    # Extract isotope activities from "Interference Corrected Report" up to "Unidentified Peaks"
     interference_start = content.find("I N T E R F E R E N C E   C O R R E C T E D   R E P O R T")
+    unidentified_start = content.find("U N I D E N T I F I E D   P E A K S")
     if interference_start != -1:
-        interference_text = content[interference_start:]
-        activity_data = re.findall(r'([A-Z]+-\d+)\s+[-\d\.E\+]+\s+([-\d\.E\+]+)', interference_text)
+        if unidentified_start != -1:
+            interference_text = content[interference_start:unidentified_start]
+        else:
+            interference_text = content[interference_start:]
+        activity_data = re.findall(r'([A-Z]+-\d+)\s+[-\d\.E\+]+\s+([\d\.E\+\-]+)', interference_text)
         isotope_activities = {}
         for iso, act in activity_data:
             if not re.match(r'E[\+\-]\d+', iso):  # Exclude erroneous values
@@ -63,4 +67,3 @@ def process_folder(folder_path, output_csv):
 
 # Example usage
 # process_folder("path/to/folder", "output_data.csv")
-
