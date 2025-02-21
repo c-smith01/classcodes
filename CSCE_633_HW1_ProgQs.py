@@ -37,6 +37,11 @@ class DataProcessor:
             Tuple containing training and test dataframes
         """
         # TODO: Implement data loading
+        for csv in self.data_root:
+            loaded_csv = pd.read_csv(csv)
+            loaded_csv.head()
+            loaded_csv.shape()
+            
         
     def check_missing_values(self, data: pd.DataFrame) -> int:
         """Count number of missing values in dataset.
@@ -253,3 +258,9 @@ class ModelEvaluator:
 
 if __name__ == "__main__":
     print("Hello World!")
+    
+    ### 1 Data Processing ###
+    #1(1) Data Proocessing
+    prcssr = DataProcessor(data_root='CSCE_633_HW1_Dat_Dir')
+    prcssr.load_data()
+    
