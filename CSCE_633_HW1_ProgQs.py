@@ -48,12 +48,16 @@ class DataProcessor:
         
         Args:
             data: Input dataframe
-            
+        
         Returns:
             Number of missing values
         """
-        # TODO: Implement missing value check
         
+        # TODO: Implement missing value check
+        miss_vals = []
+        data.pd.isnull().sum()
+        return miss_vals
+    
     def clean_data(self, data: pd.DataFrame) -> pd.DataFrame:
         """Remove rows with missing values.
         
