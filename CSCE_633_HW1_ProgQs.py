@@ -22,13 +22,14 @@ the argument and return type, you are free to change them as you see fit.
 '''
 
 class DataProcessor:
-    def __init__(self, data_root: str):
+    def __init__(self, train_dat_root: str, test_dat_root: str):
         """Initialize data processor with paths to train and test data.
         
         Args:
             data_root: root path to data directory
         """
-        self.data_root = data_root
+        self.train_dat_root = train_dat_root
+        self.test_dat_root = test_dat_root
         
     def load_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Load training and test data from CSV files.
@@ -38,9 +39,8 @@ class DataProcessor:
         """
         # TODO: Implement data loading
         for csv in self.data_root:
-            loaded_csv = pd.read_csv(csv)
-            loaded_csv.head()
-            loaded_csv.shape()
+            train_dataframe = pd.read_csv(self.train_dat_root)
+            test_dataframe = pd.read_csv(self.test_dat_root)
             
         return train_dataframe, test_dataframe
             
@@ -84,7 +84,7 @@ class DataProcessor:
         y = data['PT08.S1(CO)'].values
         return X, y
 class LinearRegression:
-    def __init__(self, learning_rate=0.001, max_iter=500):
+    def __init__(self, learning_rate=1, max_iter=1):
         """Initialize linear regression model.
         
         Args:
@@ -108,6 +108,23 @@ class LinearRegression:
             List of loss values
         """
         # TODO: Implement linear regression training
+        n_samps, n_feats = X.shape
+        self.weights = np.zeros(n_feats)
+        self.bias = 0
+        ls_taken = []
+        
+        i=0
+        while i<self.max_iter+1:
+            y_estim = np.dot(X, self.weights) + self.bias
+            loss = np.mean((y-y_estim)^2) + self.bias
+            ls_taken.append(loss)
+            
+            weight_gradient = (-2/n_samps) * np.dot(X.T, (y-y_estim))
+            bias_gradient = (-2/n_samps) * np.sum(y-y_estim)
+            
+        self.weights -= self.learning_rate * weight_gradient
+        self.bias    -= self.learning_rate * bias_gradient
+            
     
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Make predictions with trained model.
@@ -263,6 +280,8 @@ class ModelEvaluator:
             List of metric scores
         """
         # TODO: Implement cross-validation
+        scores = []
+        return scores
 
 if __name__ == "__main__":
     print("Hello World!")
@@ -275,10 +294,11 @@ if __name__ == "__main__":
     X_train, y_train = prcsr.extract_features_labels(train_dat)
     
     lin_regress = LinearRegression()
+    lin_regress.fit(X_train, y_train)
     
     log_regess = LogisticRegression()
     
     evltr = ModelEvaluator()
-    print()
-    print()
+    print(evltr.cross_validation(lin_regress, X_train, y_train))
+    print(evltr.cross_validation(log_regess, X_train, y_train))
     
