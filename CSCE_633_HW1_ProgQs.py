@@ -42,6 +42,8 @@ class DataProcessor:
             loaded_csv.head()
             loaded_csv.shape()
             
+        return train_dataframe, test_dataframe
+            
         
     def check_missing_values(self, data: pd.DataFrame) -> int:
         """Count number of missing values in dataset.
@@ -54,9 +56,7 @@ class DataProcessor:
         """
         
         # TODO: Implement missing value check
-        miss_vals = []
-        data.pd.isnull().sum()
-        return miss_vals
+        return data.pd.isnull().sum().sum()
     
     def clean_data(self, data: pd.DataFrame) -> pd.DataFrame:
         """Remove rows with missing values.
@@ -68,6 +68,7 @@ class DataProcessor:
             Cleaned dataframe
         """
         # TODO: Implement data cleaning
+        return data.dropna()
         
     def extract_features_labels(self, data: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
         """Extract features and labels from dataframe, convert to numpy arrays.
@@ -79,9 +80,11 @@ class DataProcessor:
             Tuple of feature matrix X and label vector y
         """
         # TODO: Implement feature/label extraction
-    
+        X = data.drop(columns=['PT08.S1(CO)']).values
+        y = data['PT08.S1(CO)'].values
+        return X, y
 class LinearRegression:
-    def __init__(self):
+    def __init__(self, learning_rate=0.001, max_iter=500):
         """Initialize linear regression model.
         
         Args:
@@ -91,8 +94,8 @@ class LinearRegression:
         """
         self.weights = None
         self.bias = None
-        self.learning_rate = None
-        self.max_iter = None
+        self.learning_rate = learning_rate
+        self.max_iter = max_iter
         
     def fit(self, X: np.ndarray, y: np.ndarray) -> list[float]:
         """Train linear regression model.
@@ -140,6 +143,7 @@ class LinearRegression:
             Metric value
         """
         # TODO: Implement RMSE calculation
+        return np.sqrt(self.criterion(y_true, y_pred))
 
 class LogisticRegression:
     def __init__(self):
@@ -265,6 +269,16 @@ if __name__ == "__main__":
     
     ### 1 Data Processing ###
     #1(1) Data Proocessing
-    prcssr = DataProcessor(data_root='CSCE_633_HW1_Dat_Dir')
-    prcssr.load_data()
+    prcsr = DataProcessor("data_train_25s.csv","data_test_25s.csv")
+    train_dat, test_dat = prcsr.load_data()
+    train_dat = prcsr.clean_data(train_dat)
+    X_train, y_train = prcsr.extract_features_labels(train_dat)
+    
+    lin_regress = LinearRegression()
+    
+    log_regess = LogisticRegression()
+    
+    evltr = ModelEvaluator()
+    print()
+    print()
     
