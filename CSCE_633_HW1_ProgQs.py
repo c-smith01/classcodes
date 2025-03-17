@@ -38,9 +38,8 @@ class DataProcessor:
             Tuple containing training and test dataframes
         """
         # TODO: Implement data loading
-        for csv in self.data_root:
-            train_dataframe = pd.read_csv(self.train_dat_root)
-            test_dataframe = pd.read_csv(self.test_dat_root)
+        train_dataframe = pd.read_csv(self.train_dat_root)
+        test_dataframe = pd.read_csv(self.test_dat_root)
             
         return train_dataframe, test_dataframe
             
@@ -113,8 +112,8 @@ class LinearRegression:
         self.bias = 0
         losses_list = []
         
-        i=0
-        while i<self.max_iter+1:
+        i=1
+        while i<self.max_iter:
             y_estim = np.dot(X, self.weights) + self.bias
             loss = np.mean((y-y_estim)^2) + self.bias
             losses_list.append(loss)
@@ -122,8 +121,9 @@ class LinearRegression:
             weight_gradient = (-2/n_samps) * np.dot(X.T, (y-y_estim))
             bias_gradient = (-2/n_samps) * np.sum(y-y_estim)
             
-        self.weights -= self.learning_rate * weight_gradient
-        self.bias    -= self.learning_rate * bias_gradient
+            self.weights -= self.learning_rate * weight_gradient
+            self.bias    -= self.learning_rate * bias_gradient
+            i+=1
         
         return losses_list
             
@@ -196,7 +196,23 @@ class LogisticRegression:
         n_samples, n_features = X.shape
         self.weights = np.zeros(n_features)
         self.bias = 0
-        losses = []
+        losses_list = []
+        
+        i=1
+        while i<self.max_iter:
+            linear_model = np.dot(X, self.weights) + self.bias
+            y_pred = self.sigmoid(linear_model)
+            loss = -np.mean(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
+            losses_list.append(loss)
+            
+            grad_w = (1 / n_samples) * np.dot(X.T, (y_pred - y))
+            grad_b = (1 / n_samples) * np.sum(y_pred - y)
+            
+            self.weights -= self.learning_rate * grad_w
+            self.bias -= self.learning_rate * grad_b
+            i+=1
+            
+        return losses_list
     
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         """Calculate prediction probabilities using normalized features.
@@ -220,8 +236,7 @@ class LogisticRegression:
             Predicted values
         """
         # TODO: Implement logistic regression prediction
-        y_preds = 
-        return y_preds
+        return self.label_binarize(self.predict_proba(X))
 
     def criterion(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Calculate BCE loss.
@@ -234,6 +249,7 @@ class LogisticRegression:
             Loss value
         """
         # TODO: Implement loss function
+        return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
     
     def F1_score(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Calculate F1 score with handling of edge cases.
@@ -246,6 +262,14 @@ class LogisticRegression:
             F1 score (between 0 and 1), or 0.0 for edge cases
         """
         # TODO: Implement F1 score calculation
+        tp = np.sum((y_true == 1) & (y_pred == 1))
+        fp = np.sum((y_true == 0) & (y_pred == 1))
+        fn = np.sum((y_true == 1) & (y_pred == 0))
+        if tp + fp == 0 or tp + fn == 0:
+            return 0.0
+        precision = tp / (tp + fp)
+        recall = tp / (tp + fn)
+        return 2 * (precision * recall) / (precision + recall)
 
     def label_binarize(self, y: np.ndarray) -> np.ndarray:
         """Binarize labels for binary classification.
@@ -257,6 +281,7 @@ class LogisticRegression:
             Binarized labels
         """
         # TODO: Implement label binarization
+        return (y >= 0.5).astype(int)
 
     def metric(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Calculate AUROC.
@@ -294,11 +319,18 @@ class ModelEvaluator:
             List of metric scores
         """
         # TODO: Implement cross-validation
-        scores = []
-        return scores
+        def cross_validation(self, model, X: np.ndarray, y: np.ndarray) -> List[float]:
+            scores = []
+            for train_idx, val_idx in self.kf.split(X):
+                X_train, X_val = X[train_idx], X[val_idx]
+                y_train, y_val = y[train_idx], y[val_idx]
+                model.fit(X_train, y_train)
+                y_pred = model.predict(X_val)
+                scores.append(model.metric(y_val, y_pred))
+            return scores
 
 if __name__ == "__main__":
-    print("Hello World!")
+    #print("Hello World!")
     
     ### 1 Data Processing ###
     prcsr = DataProcessor("data_train_25s.csv","data_test_25s.csv")
