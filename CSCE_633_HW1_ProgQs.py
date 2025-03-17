@@ -84,7 +84,7 @@ class DataProcessor:
         y = data['PT08.S1(CO)'].values
         return X, y
 class LinearRegression:
-    def __init__(self, learning_rate=1, max_iter=1):
+    def __init__(self, learning_rate=1, max_iter=10):
         """Initialize linear regression model.
         
         Args:
@@ -111,19 +111,21 @@ class LinearRegression:
         n_samps, n_feats = X.shape
         self.weights = np.zeros(n_feats)
         self.bias = 0
-        ls_taken = []
+        losses_list = []
         
         i=0
         while i<self.max_iter+1:
             y_estim = np.dot(X, self.weights) + self.bias
             loss = np.mean((y-y_estim)^2) + self.bias
-            ls_taken.append(loss)
+            losses_list.append(loss)
             
             weight_gradient = (-2/n_samps) * np.dot(X.T, (y-y_estim))
             bias_gradient = (-2/n_samps) * np.sum(y-y_estim)
             
         self.weights -= self.learning_rate * weight_gradient
         self.bias    -= self.learning_rate * bias_gradient
+        
+        return losses_list
             
     
     def predict(self, X: np.ndarray) -> np.ndarray:
@@ -136,6 +138,7 @@ class LinearRegression:
             Predicted values
         """
         # TODO: Implement linear regression prediction
+        return np.dot(X, self.weights) + self.bias
 
     def criterion(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Calculate MSE loss.
@@ -148,6 +151,7 @@ class LinearRegression:
             Loss value
         """
         # TODO: Implement loss function
+        return np.mean((y_true-y_pred)**2)
 
     def metric(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Calculate RMSE.
@@ -163,7 +167,7 @@ class LinearRegression:
         return np.sqrt(self.criterion(y_true, y_pred))
 
 class LogisticRegression:
-    def __init__(self):
+    def __init__(self, learning_rate=1, max_iter=10):
         """Initialize logistic regression model.
         
         Args:
@@ -172,8 +176,11 @@ class LogisticRegression:
         """
         self.weights = None
         self.bias = None
-        self.learning_rate = None
-        self.max_iter = None
+        self.learning_rate = learning_rate
+        self.max_iter = max_iter
+        
+    def sigmoid(self, z):
+        return 1 / (1 + np.exp(-z))
         
     def fit(self, X: np.ndarray, y: np.ndarray) -> list[float]:
         """Train logistic regression model with normalization and L2 regularization.
@@ -186,6 +193,10 @@ class LogisticRegression:
             List of loss values
         """
         # TODO: Implement logistic regression training
+        n_samples, n_features = X.shape
+        self.weights = np.zeros(n_features)
+        self.bias = 0
+        losses = []
     
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         """Calculate prediction probabilities using normalized features.
@@ -197,6 +208,7 @@ class LogisticRegression:
             Prediction probabilities
         """
         # TODO: Implement logistic regression prediction probabilities
+        return self.sigmoid(np.dot(X, self.weights) + self.bias)
     
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Make predictions with trained model.
@@ -208,6 +220,8 @@ class LogisticRegression:
             Predicted values
         """
         # TODO: Implement logistic regression prediction
+        y_preds = 
+        return y_preds
 
     def criterion(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Calculate BCE loss.
@@ -287,11 +301,20 @@ if __name__ == "__main__":
     print("Hello World!")
     
     ### 1 Data Processing ###
-    #1(1) Data Proocessing
     prcsr = DataProcessor("data_train_25s.csv","data_test_25s.csv")
     train_dat, test_dat = prcsr.load_data()
     train_dat = prcsr.clean_data(train_dat)
     X_train, y_train = prcsr.extract_features_labels(train_dat)
+    
+    ### 2 Exploratory Data Analysis ###
+    # Histograms of all data
+    train_dat.hist(figsize=(12, 10), bins=30, edgecolor='black')
+    plt.tight_layout()
+    plt.show()
+    
+    # Two features for comparison
+    
+    # Pearson's Correlation???
     
     lin_regress = LinearRegression()
     lin_regress.fit(X_train, y_train)
@@ -301,4 +324,8 @@ if __name__ == "__main__":
     evltr = ModelEvaluator()
     print(evltr.cross_validation(lin_regress, X_train, y_train))
     print(evltr.cross_validation(log_regess, X_train, y_train))
+    
+    ### 6 ROC Curve - Logistic Regression
+    folds = [1,2,3,4,5]
+    ROCs = []
     
