@@ -360,4 +360,6 @@ if __name__ == "__main__":
     ### 6 ROC Curve - Logistic Regression
     folds = [1,2,3,4,5]
     ROCs = []
+    #mlp.plot
+    #plt.show()
     
