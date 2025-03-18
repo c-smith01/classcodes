@@ -82,6 +82,7 @@ class DataProcessor:
         X = data.drop(columns=['PT08.S1(CO)']).values
         y = data['PT08.S1(CO)'].values
         return X, y
+    
 class LinearRegression:
     def __init__(self, learning_rate=1, max_iter=10):
         """Initialize linear regression model.
@@ -294,6 +295,7 @@ class LogisticRegression:
             AUROC score
         """
         # TODO: Implement AUROC calculation
+        #return np.trapz(tpr, fpr)
 
 class ModelEvaluator:
     def __init__(self, n_splits: int = 5, random_state: int = 42):
@@ -345,6 +347,12 @@ if __name__ == "__main__":
     plt.show()
     
     # Two features for comparison
+    plt.figure(figsize=(10, 5))
+    sns.scatterplot(x=train_dat["NOx(GT)"], y=train_dat["NO2(GT)"])
+    plt.xlabel("NOx (GT)")
+    plt.ylabel("NO2 (GT)")
+    plt.title("Correlation between NOx and NO2 Levels")
+    plt.show()
     
     # Pearson's Correlation???
     
