@@ -139,7 +139,7 @@ class LinearRegression:
             Predicted values
         """
         # TODO: Implement linear regression prediction
-        return np.dot(X, self.weights) + self.bias
+        return X@self.weights + self.bias #np.dot(X, self.weights) + self.bias
 
     def criterion(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Calculate MSE loss.
