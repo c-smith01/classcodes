@@ -41,7 +41,7 @@ class DataProcessor:
         train_dataframe = pd.read_csv(self.train_dat_root)
         test_dataframe = pd.read_csv(self.test_dat_root)
             
-        return train_dataframe, test_dataframe
+        return (train_dataframe, test_dataframe)
             
         
     def check_missing_values(self, data: pd.DataFrame) -> int:
@@ -56,6 +56,7 @@ class DataProcessor:
         
         # TODO: Implement missing value check
         return data.pd.isnull().sum().sum()
+        # return data.insull().any(axis=1).sum
     
     def clean_data(self, data: pd.DataFrame) -> pd.DataFrame:
         """Remove rows with missing values.
@@ -81,7 +82,7 @@ class DataProcessor:
         # TODO: Implement feature/label extraction
         X = data.drop(columns=['PT08.S1(CO)']).values
         y = data['PT08.S1(CO)'].values
-        return X, y
+        return (X, y)
     
 class LinearRegression:
     def __init__(self, learning_rate=1, max_iter=10):
@@ -295,7 +296,9 @@ class LogisticRegression:
             AUROC score
         """
         # TODO: Implement AUROC calculation
-        #return np.trapz(tpr, fpr)
+        tp = np.sum((y_true == 1) & (y_pred == 1))
+        fp = np.sum((y_true == 0) & (y_pred == 1))
+        return np.trapz(tp, fp)
 
 class ModelEvaluator:
     def __init__(self, n_splits: int = 5, random_state: int = 42):
