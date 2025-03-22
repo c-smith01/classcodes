@@ -85,7 +85,7 @@ class DataProcessor:
         return (X, y)
     
 class LinearRegression:
-    def __init__(self, learning_rate=1, max_iter=10):
+    def __init__(self, l2_lambda=0.1, learning_rate=4.1e-7, max_iter=1e6): #4e-7
         """Initialize linear regression model.
         
         Args:
@@ -93,10 +93,13 @@ class LinearRegression:
             max_iter: Maximum number of iterations
             l2_lambda: L2 regularization strength
         """
+        #rgen=np.random.RandomState(42)
+        
         self.weights = None
         self.bias = None
         self.learning_rate = learning_rate
         self.max_iter = max_iter
+        self.l2_lambda=l2_lambda
         
     def fit(self, X: np.ndarray, y: np.ndarray) -> list[float]:
         """Train linear regression model.
@@ -110,22 +113,25 @@ class LinearRegression:
         """
         # TODO: Implement linear regression training
         n_samps, n_feats = X.shape
-        self.weights = np.zeros(n_feats)
+        rgen=np.random.RandomState(42)
+        self.weights = np.zeros(n_feats) #rgen.normal(loc=0.0,scale=0.01,size=n_feats)
         self.bias = 0
         losses_list = []
         
         i=1
-        while i<self.max_iter:
-            y_estim = np.dot(X, self.weights) + self.bias
-            loss = np.mean((y-y_estim)^2) + self.bias
+        while i<=self.max_iter:
+            #print('Beginning Linear Regession Iteration #: ', i)
+            y_out = np.dot(X, self.weights) + self.bias
+            loss = np.mean((y-y_out) ** 2) + (2/n_samps)*self.l2_lambda*((np.sum(self.weights))**2)
             losses_list.append(loss)
             
-            weight_gradient = (-2/n_samps) * np.dot(X.T, (y-y_estim))
-            bias_gradient = (-2/n_samps) * np.sum(y-y_estim)
+            weight_gradient = (1/n_samps) * np.dot(X.T, (y - y_out))
+            bias_gradient = (2) * np.mean(y - y_out)
             
-            self.weights -= self.learning_rate * weight_gradient
-            self.bias    -= self.learning_rate * bias_gradient
+            self.weights += self.learning_rate * weight_gradient
+            self.bias    += self.learning_rate * bias_gradient
             i+=1
+            #print('Loss computed for this iteration: ', loss)
         
         return losses_list
             
@@ -140,7 +146,7 @@ class LinearRegression:
             Predicted values
         """
         # TODO: Implement linear regression prediction
-        return X@self.weights + self.bias #np.dot(X, self.weights) + self.bias
+        return np.dot(X, self.weights) + self.bias #np.dot(X, self.weights) + self.bias #X@self.weights + self.bias
 
     def criterion(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Calculate MSE loss.
@@ -169,7 +175,7 @@ class LinearRegression:
         return np.sqrt(self.criterion(y_true, y_pred))
 
 class LogisticRegression:
-    def __init__(self, learning_rate=1, max_iter=10):
+    def __init__(self, learning_rate=1e-3, max_iter=20):
         """Initialize logistic regression model.
         
         Args:
@@ -201,7 +207,8 @@ class LogisticRegression:
         losses_list = []
         
         i=1
-        while i<self.max_iter:
+        while i<=self.max_iter:
+            #print('Beginning Logistic Regession Iteration #: ',i)
             linear_model = np.dot(X, self.weights) + self.bias
             y_pred = self.sigmoid(linear_model)
             loss = -np.mean(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
@@ -213,6 +220,7 @@ class LogisticRegression:
             self.weights -= self.learning_rate * grad_w
             self.bias -= self.learning_rate * grad_b
             i+=1
+            #print('Loss computed for this iteration:',loss)
             
         return losses_list
     
@@ -338,35 +346,44 @@ if __name__ == "__main__":
     #print("Hello World!")
     
     ### 1 Data Processing ###
-    prcsr = DataProcessor("data_train_25s.csv","data_test_25s.csv")
+    prcsr = DataProcessor(train_dat_root="data_train_25s.csv",test_dat_root="data_test_25s.csv")
     train_dat, test_dat = prcsr.load_data()
+    
     train_dat = prcsr.clean_data(train_dat)
     X_train, y_train = prcsr.extract_features_labels(train_dat)
     
+    test_dat = prcsr.clean_data(test_dat)
+    X_test = test_dat
+    #X_test, y_test = prcsr.extract_features_labels(test_dat)
+    
     ### 2 Exploratory Data Analysis ###
     # Histograms of all data
-    train_dat.hist(figsize=(12, 10), bins=30, edgecolor='black')
-    plt.tight_layout()
-    plt.show()
+    # train_dat.hist(figsize=(12, 10), bins=30, edgecolor='black')
+    # plt.tight_layout()
+    # plt.show()
     
-    # Two features for comparison
-    plt.figure(figsize=(10, 5))
-    sns.scatterplot(x=train_dat["NOx(GT)"], y=train_dat["NO2(GT)"])
-    plt.xlabel("NOx (GT)")
-    plt.ylabel("NO2 (GT)")
-    plt.title("Correlation between NOx and NO2 Levels")
-    plt.show()
+    # # Two features for comparison
+    # plt.figure(figsize=(10, 5))
+    # sns.scatterplot(x=train_dat["NOx(GT)"], y=train_dat["NO2(GT)"])
+    # plt.xlabel("NOx (GT)")
+    # plt.ylabel("NO2 (GT)")
+    # plt.title("Correlation between NOx and NO2 Levels")
+    # plt.show()
     
     # Pearson's Correlation???
     
+    # 3 Linear Regression
     lin_regress = LinearRegression()
     lin_regress.fit(X_train, y_train)
+    print(lin_regress.metric(y_true=y_train, y_pred=lin_regress.predict(X=X_train)))
     
     log_regess = LogisticRegression()
+    y_train_bin = (y_train > 1000).astype(int)
+    log_regess.fit(X_train,y_train)
     
     evltr = ModelEvaluator()
     print(evltr.cross_validation(lin_regress, X_train, y_train))
-    print(evltr.cross_validation(log_regess, X_train, y_train))
+    print(evltr.cross_validation(log_regess, X_train, y_train_bin))
     
     ### 6 ROC Curve - Logistic Regression
     folds = [1,2,3,4,5]
