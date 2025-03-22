@@ -98,8 +98,9 @@ class DataProcessor:
         normalized_X = (X - mean) / std
         return normalized_X, mean, std
     
+    
 class LinearRegression:
-    def __init__(self, l2_lambda=0.0000001, learning_rate=0.34, max_iter=1.28e45): #1e5
+    def __init__(self, l2_lambda=0.0000001, learning_rate=0.34, max_iter=1e4): #1e5
         """Initialize linear regression model.
         
         Args:
@@ -139,12 +140,12 @@ class LinearRegression:
             loss = np.mean((y-y_out) ** 2) + (2/n_samps)*self.l2_lambda*(np.linalg.norm(self.weights**2))
             losses_list.append(loss)
             
-            if np.sqrt(loss) < 71:
-                print("RMSE goes <71 @ i = ",i)
-                print('lr=',self.learning_rate)
-                print('l2 lamb=',self.l2_lambda)
-                print('weights=',self.weights)
-                print('bias=',self.bias)
+            # if np.sqrt(loss) < 71:
+            #     print("RMSE goes <71 @ i = ",i)
+            #     print('lr=',self.learning_rate)
+            #     print('l2 lamb=',self.l2_lambda)
+            #     print('weights=',self.weights)
+            #     print('bias=',self.bias)
             
             weight_gradient = (1/n_samps) * np.dot(X.T, (y - y_out)) + (2)*self.l2_lambda*(self.weights)
             bias_gradient = (2) * np.mean(y - y_out)
@@ -202,8 +203,10 @@ class LinearRegression:
         # TODO: Implement RMSE calculation
         return np.sqrt(self.criterion(y_true, y_pred))
 
+
+
 class LogisticRegression:
-    def __init__(self, learning_rate=1e-3, max_iter=3e1):
+    def __init__(self, learning_rate=0.25, max_iter=5e3):
         """Initialize logistic regression model.
         
         Args:
@@ -255,7 +258,7 @@ class LogisticRegression:
             self.weights -= self.learning_rate * grad_w
             self.bias -= self.learning_rate * grad_b
             i+=1
-            #print('Loss computed for this iteration:',loss)
+            #print('Loss computed for this iteration:', loss)
             
         return losses_list
     
@@ -281,6 +284,7 @@ class LogisticRegression:
             Predicted values
         """
         # TODO: Implement logistic regression prediction
+        self.bias+=0.5
         return self.label_binarize(self.predict_proba(X))
 
     def criterion(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
@@ -435,12 +439,12 @@ if __name__ == "__main__":
     
     
     ### 2. Exploratory Data Analysis ###
-    # Histograms of all data
+    # # Histograms of all data
     # train_dat.hist(figsize=(12, 10), bins=30, edgecolor='black')
     # plt.tight_layout()
     # plt.show()
     
-    # # Two features for comparison
+    # # # Two features for comparison
     # plt.figure(figsize=(10, 5))
     # sns.scatterplot(x=train_dat["NOx(GT)"], y=train_dat["NO2(GT)"])
     # plt.xlabel("NOx (GT)")
@@ -448,17 +452,17 @@ if __name__ == "__main__":
     # plt.title("Correlation between NOx and NO2 Levels")
     # plt.show()
     
-    # Pearson's Correlation???
-    #features = data.iloc[:, :-1]  # Selecting first 12 features
+    # # Pearson's Correlation???
+    # features = train_dat.iloc[:, :]  # Selecting first 12 features
     
-    # Compute Pearson correlation matrix
-    #corr_matrix = features.corr(method='pearson')
+    # # Compute Pearson correlation matrix
+    # corr_matrix = features.corr(method='pearson')
 
-    # Display the correlation matrix as a heatmap
-    #plt.figure(figsize=(12, 8))
-    #sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)
-    #plt.title("Pearson Correlation Matrix")
-    #plt.show()
+    # # Display the correlation matrix as a heatmap
+    # plt.figure(figsize=(12, 8))
+    # sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)
+    # plt.title("Pearson Correlation Matrix")
+    # plt.show()
     
     
     ### 3. Linear Regression Implementation ###
@@ -469,31 +473,33 @@ if __name__ == "__main__":
     #print(lin_regress.predict(X=X_train).shape)
     
     # Plot of RMSE
-    n_iters_lin = range(len(loss_accum))
-    plt.loglog(n_iters_lin, loss_accum)
-    plt.title('Linear Regressesion Computed Loss as a Function of Iterations')
-    plt.xlabel('Iteration #')
-    plt.ylabel('Computed Loss (MSE)')
-    plt.show()
+    # n_iters_lin = range(len(loss_accum))
+    # plt.loglog(n_iters_lin, loss_accum)
+    # plt.title('Linear Regressesion Computed Loss as a Function of Iterations')
+    # plt.xlabel('Iteration #')
+    # plt.ylabel('Computed Loss (MSE)')
+    # plt.show()
     
     
     
     ### 4. Logistic Regression Implemenation ###
     log_regress = LogisticRegression()
     y_train_bin = (y_train > 1000).astype(int)
-    loss_accum_log = log_regress.fit(X_train,y_train)
-    F1_score = log_regress.F1_score(y_true=y_train, y_pred=log_regress.predict(X=X_train))
-    AUROC_score = log_regress.metric(y_true=y_train, y_pred=log_regress.predict_proba(X=X_train))
+    loss_accum_log = log_regress.fit(X_train,y_train_bin)
+    print("Weights:", log_regress.weights)
+    print("Bias:", log_regress.bias)
+    F1_score = log_regress.F1_score(y_true=y_train_bin, y_pred=log_regress.predict(X=X_train))
+    AUROC_score = log_regress.metric(y_true=y_train_bin, y_pred=log_regress.predict_proba(X=X_train))
     print('F1 Score (should be >=0.90):', F1_score)
     print('AUROC (should be >=0.90):', AUROC_score)
     
     # Plot of BCE
-    # n_iters_log = range(len(loss_accum_log))
-    # plt.semilogy(n_iters_log,loss_accum_log)
-    # plt.title('Logistic Regression Computed Loss as a Function of Iterations')
-    # plt.xlabel('Iteration #')
-    # plt.ylabel('Computed Loss (BCE)')
-    # plt.show()
+    n_iters_log = range(len(loss_accum_log))
+    plt.semilogy(n_iters_log, loss_accum_log)
+    plt.title('Logistic Regression Computed Loss as a Function of Iterations')
+    plt.xlabel('Iteration #')
+    plt.ylabel('Computed Loss (BCE)')
+    plt.show()
     
     
     
