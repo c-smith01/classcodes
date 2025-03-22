@@ -22,14 +22,14 @@ the argument and return type, you are free to change them as you see fit.
 '''
 
 class DataProcessor:
-    def __init__(self, train_dat_root: str, test_dat_root: str):
+    def __init__(self, data_root: str):
         """Initialize data processor with paths to train and test data.
         
         Args:
             data_root: root path to data directory
         """
-        self.train_dat_root = train_dat_root
-        self.test_dat_root = test_dat_root
+        self.train_dat_root = data_root + "/data_train_25s.csv"
+        self.test_dat_root = data_root + "/data_test_25s.csv"
         
     def load_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Load training and test data from CSV files.
@@ -99,7 +99,7 @@ class DataProcessor:
         return normalized_X, mean, std
     
 class LinearRegression:
-    def __init__(self, l2_lambda=0.00009, learning_rate=0.079, max_iter=3e3): #3e5
+    def __init__(self, l2_lambda=0.0000001, learning_rate=0.34, max_iter=1.28e45): #1e5
         """Initialize linear regression model.
         
         Args:
@@ -107,7 +107,6 @@ class LinearRegression:
             max_iter: Maximum number of iterations
             l2_lambda: L2 regularization strength
         """
-        #rgen=np.random.RandomState(42)
         
         self.weights = None
         self.bias = None
@@ -127,30 +126,35 @@ class LinearRegression:
         """
         # TODO: Implement linear regression training
         n_samps, n_feats = X.shape
-        #rgen=np.random.RandomState(42)
-        self.weights = np.zeros(n_feats) #rgen.normal(loc=0.0,scale=0.01,size=n_feats) #np.zeros(n_feats)
+        rgen=np.random.RandomState(42)
+        self.weights = rgen.normal(loc=0.0,scale=0.01,size=n_feats) #rgen.normal(loc=0.0,scale=0.01,size=n_feats) #np.zeros(n_feats)
         self.bias = 0
         losses_list = []
+        #print(self.weights.shape)
         
         i=1
         while i<=self.max_iter:
             #print('Beginning Linear Regession Iteration #: ', i)
             y_out = np.dot(X, self.weights) + self.bias
-            loss = np.mean((y-y_out) ** 2) #+ (2/n_samps)*self.l2_lambda*((np.sum(self.weights))**2)
+            loss = np.mean((y-y_out) ** 2) + (2/n_samps)*self.l2_lambda*(np.linalg.norm(self.weights**2))
             losses_list.append(loss)
             
-            #if np.sqrt(loss) < 71:
-            #    print("RMSE goes <71 @ i=",i)
+            if np.sqrt(loss) < 71:
+                print("RMSE goes <71 @ i = ",i)
+                print('lr=',self.learning_rate)
+                print('l2 lamb=',self.l2_lambda)
+                print('weights=',self.weights)
+                print('bias=',self.bias)
             
             weight_gradient = (1/n_samps) * np.dot(X.T, (y - y_out)) + (2)*self.l2_lambda*(self.weights)
             bias_gradient = (2) * np.mean(y - y_out)
             
             #schedule learning rate as convergence approaches
-            if i>4.9e4:
-                self.learning_rate=1e-3
-                #self.l2_lambda=0.001
-            #elif i>2e4:
-            #    self.learning_rate=5e-5
+            # if i>1e4:
+            #     self.learning_rate=9e-2
+            #     #self.l2_lambda=0.001
+            # elif i>3.52e5:
+            #     self.learning_rate=8e-4
             
             self.weights += self.learning_rate * weight_gradient
             self.bias    += self.learning_rate * bias_gradient
@@ -199,7 +203,7 @@ class LinearRegression:
         return np.sqrt(self.criterion(y_true, y_pred))
 
 class LogisticRegression:
-    def __init__(self, learning_rate=1e-3, max_iter=20):
+    def __init__(self, learning_rate=1e-3, max_iter=3e1):
         """Initialize logistic regression model.
         
         Args:
@@ -212,6 +216,7 @@ class LogisticRegression:
         self.max_iter = max_iter
         
     def sigmoid(self, z):
+        z = np.clip(z, -1000, 1000)  # Avoid overflow in exp
         return 1 / (1 + np.exp(-z))
         
     def fit(self, X: np.ndarray, y: np.ndarray) -> list[float]:
@@ -229,6 +234,7 @@ class LogisticRegression:
         self.weights = np.zeros(n_features)
         self.bias = 0
         losses_list = []
+        #print(self.weights.shape)
         
         i=1
         while i<=self.max_iter:
@@ -241,10 +247,10 @@ class LogisticRegression:
             grad_w = (1 / n_samples) * np.dot(X.T, (y_pred - y))
             grad_b = (1 / n_samples) * np.sum(y_pred - y)
             
-            if i>5e4:
-                self.learning_rate=0.001
-            elif i>8e4:
-                self.learning_rate=0.0001
+            # if i>5e4:
+            #     self.learning_rate=0.001
+            # elif i>8e4:
+            #     self.learning_rate=0.0001
             
             self.weights -= self.learning_rate * grad_w
             self.bias -= self.learning_rate * grad_b
@@ -415,7 +421,7 @@ class ModelEvaluator:
 if __name__ == "__main__":
     
     ### 1. Data Processing ###
-    prcsr = DataProcessor(train_dat_root="data_train_25s.csv",test_dat_root="data_test_25s.csv")
+    prcsr = DataProcessor(data_root="CSCE_633_HW_1_Provided_Files")
     train_dat, test_dat = prcsr.load_data()
     
     train_dat = prcsr.clean_data(train_dat)
@@ -459,14 +465,16 @@ if __name__ == "__main__":
     lin_regress = LinearRegression()
     loss_accum = lin_regress.fit(X_train, y_train)
     print("Computed RMSE (should be <71): ", lin_regress.metric(y_true=y_train, y_pred=lin_regress.predict(X=X_train)))
+    #print(y_train.shape)
+    #print(lin_regress.predict(X=X_train).shape)
     
     # Plot of RMSE
-    # n_iters_lin = range(len(loss_accum))
-    # plt.loglog(n_iters_lin, loss_accum)
-    # plt.title('Linear Regressesion Computed Loss as a Function of Iterations')
-    # plt.xlabel('Iteration #')
-    # plt.ylabel('Computed Loss (MSE)')
-    # plt.show()
+    n_iters_lin = range(len(loss_accum))
+    plt.loglog(n_iters_lin, loss_accum)
+    plt.title('Linear Regressesion Computed Loss as a Function of Iterations')
+    plt.xlabel('Iteration #')
+    plt.ylabel('Computed Loss (MSE)')
+    plt.show()
     
     
     
@@ -474,8 +482,8 @@ if __name__ == "__main__":
     log_regress = LogisticRegression()
     y_train_bin = (y_train > 1000).astype(int)
     loss_accum_log = log_regress.fit(X_train,y_train)
-    F1_score = log_regress.F1_score(y_true=y_train, y_pred=lin_regress.predict(X=X_train))
-    AUROC_score = log_regress.metric(y_true=y_train, y_pred=lin_regress.predict(X=X_train))
+    F1_score = log_regress.F1_score(y_true=y_train, y_pred=log_regress.predict(X=X_train))
+    AUROC_score = log_regress.metric(y_true=y_train, y_pred=log_regress.predict_proba(X=X_train))
     print('F1 Score (should be >=0.90):', F1_score)
     print('AUROC (should be >=0.90):', AUROC_score)
     
@@ -490,9 +498,9 @@ if __name__ == "__main__":
     
     
     ### 5. Result Analysis - Cross Validation ###
-    evltr = ModelEvaluator()
-    print(evltr.cross_validation(lin_regress, X_train, y_train))
-    print(evltr.cross_validation(log_regress, X_train, y_train_bin))
+    # evltr = ModelEvaluator()
+    # print(evltr.cross_validation(lin_regress, X_train, y_train))
+    # print(evltr.cross_validation(log_regress, X_train, y_train_bin))
     
     
     
