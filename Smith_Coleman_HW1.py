@@ -468,7 +468,7 @@ if __name__ == "__main__":
     ### 3. Linear Regression Implementation ###
     lin_regress = LinearRegression()
     loss_accum = lin_regress.fit(X_train, y_train)
-    print("Computed RMSE (should be <71): ", lin_regress.metric(y_true=y_train, y_pred=lin_regress.predict(X=X_train)))
+    #print("Computed RMSE (should be <71): ", lin_regress.metric(y_true=y_train, y_pred=lin_regress.predict(X=X_train)))
     #print(y_train.shape)
     #print(lin_regress.predict(X=X_train).shape)
     
