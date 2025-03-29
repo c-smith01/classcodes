@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score
 
 '''
 Problem: University Admission Classification using SVMs
@@ -25,20 +28,36 @@ class DataLoader:
         Args:
             data_path: absolute path to your data file
         """
-        self.train_data = pd.DataFrame()
-        self.val_data = pd.DataFrame()
         
         # TODO：complete your dataloader here!
+        df = pd.read_csv(data_path)
+        df = self.create_binary_label(df)
+        
+        feature_list = ['GRE Score', 'TOEFL Score', 'University Rating', 'SOP', 'LOR', 'CGPA']
+        target = 'label'
+        
+        train_set, test_set = train_test_split(df, test_size=0.2, random_state=42, stratify=df[target]) # 80/20 dataset split
+        
+        scaler = StandardScaler() # use StandardScaler from sklearn to normalize data
+        train_set[feature_list] = scaler.fit_transform(train_set[feature_list])
+        test_set[feature_list] = scaler.transform(test_set[feature_list])
+        
+        self.train_data = train_set
+        self.test_data = test_set
     
     def create_binary_label(self, df: pd.DataFrame) -> pd.DataFrame:
         '''
         Create a binary label for the training data.
         '''
-        pass
+        
+        median_chance = df['Chance of Admit'].median()
+        df['label'] = (df['Chance of Admit']>median_chance).astype(int)
+        
+        return df
 
 class SVMTrainer:
     def __init__(self):
-        pass
+        self.models = {}
 
     def train(self, X_train: np.ndarray, y_train: np.ndarray, kernel: str, **kwargs) -> SVC:
         '''
@@ -52,18 +71,77 @@ class SVMTrainer:
         Returns:
             SVC: Trained sklearn.svm.SVC model
         '''
-        pass
+        
+        model = SVC(kernel=kernel, **kwargs)
+        model.fit(X_train,y_train)
+    
+        return model
     
     def get_support_vectors(self,model: SVC) -> np.ndarray:
         '''
         Get the support vectors from the trained SVM model.
         '''
-        pass
+        model.support_vectors_
+        
+    # def accuracy_score(self,y_test,y_pred):
+    #     '''
+    #     Determine correct # of admit predictions for given model
+    #     '''
+    #     correct_preds = y_pred.intersection(y_test)
+    #     accuracy = correct_preds.shape[0]/y_pred.shape[0]
+    #     print(accuracy) # for debugging
+    #     return accuracy
     
 '''
 Initialize my_best_model with the best model you found.
 '''
-my_best_model = SVC()
+
+my_best_model = SVC(kernel='rbf', C=10, gamma=0.1)
 
 if __name__ == "__main__":
     print("Hello, World!")
+    
+    datldr = DataLoader(data_path='data.csv')
+    trnr = SVMTrainer()
+    
+    train_data = datldr.train_data
+    test_data = datldr.test_data
+    
+    feature_sets = [
+    ['CGPA', 'SOP'],
+    ['CGPA', 'GRE Score'],
+    ['SOP', 'LOR'],
+    ['LOR', 'GRE Score']
+    ]
+    
+    kernel_sets = {
+    'linear': {},
+    'rbf': {'C': 1, 'gamma': 'scale'},
+    'poly': {'degree': 3, 'C': 1}
+    }
+    
+    best_model = None
+    best_accuracy = 0
+    best_config = ('', [])
+    
+    for feats in feature_sets:
+        X_train = datldr.train_data[feats].values
+        y_train = datldr.train_data['label'].values
+        X_test = datldr.test_data[feats].values
+        y_test = datldr.test_data['label'].values
+        
+        for kernel_type, params in kernel_sets.items():
+            model = trnr.train(X_train,y_train,kernel=kernel_type,**params)
+            y_pred = model.predict(X_test)
+            accuracy = accuracy_score(y_test,y_pred)
+            svs = trnr.get_support_vectors(model)
+            
+            print(f'{kernel_type.upper()} on {feats} - Accuracy = {accuracy:.3f}')
+            print(f'Support vectors: {svs}')
+            
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                best_model = model
+                best_config = (kernel_type, feats)
+    
+    print(f"\n Best model: {best_config[0].upper()} kernel on {best_config[1]} with accuracy {best_accuracy:.3f}")            
