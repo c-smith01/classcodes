@@ -81,7 +81,7 @@ class SVMTrainer:
         '''
         Get the support vectors from the trained SVM model.
         '''
-        model.support_vectors_
+        return model.support_vectors_
         
     # def accuracy_score(self,y_test,y_pred):
     #     '''
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     trnr = SVMTrainer()
     
     train_data = datldr.train_data
-    test_data = datldr.test_data
+    test_data = datldr.val_data
     
     feature_sets = [
     ['CGPA', 'SOP'],
@@ -127,8 +127,8 @@ if __name__ == "__main__":
     for feats in feature_sets:
         X_train = datldr.train_data[feats].values
         y_train = datldr.train_data['label'].values
-        X_test = datldr.test_data[feats].values
-        y_test = datldr.test_data['label'].values
+        X_test = datldr.val_data[feats].values
+        y_test = datldr.val_data['label'].values
         
         for kernel_type, params in kernel_sets.items():
             model = trnr.train(X_train,y_train,kernel=kernel_type,**params)
@@ -144,4 +144,4 @@ if __name__ == "__main__":
                 best_model = model
                 best_config = (kernel_type, feats)
     
-    print(f"\n Best model: {best_config[0].upper()} kernel on {best_config[1]} with accuracy {best_accuracy:.3f}")            
+    print(f"\n Best model: {best_config[0].upper()} kernel on {best_config[1]} with accuracy {best_accuracy:.3f}")
