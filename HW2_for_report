@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
@@ -96,6 +97,28 @@ class SVMTrainer:
 Initialize my_best_model with the best model you found.
 '''
 
+def plot_decision_boundary(model, X, y, title, feature_names, axes):
+    
+    h = 0.01
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                         np.arange(y_min, y_max, h))
+
+    grid_points = np.c_[xx.ravel(), yy.ravel()]
+    Z = model.predict(grid_points)
+    Z = Z.reshape(xx.shape)
+
+    #plt.figure(figsize=(6, 5))
+    plt.contourf(xx, yy, Z, alpha=0.3, cmap=plt.cm.coolwarm)
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.coolwarm, edgecolors='k')
+    plt.xlabel(feature_names[0])
+    plt.ylabel(feature_names[1])
+    plt.title(title)
+    plt.grid(True)
+    plt.show()
+
+
 my_best_model = SVC(kernel='rbf', C=10, gamma=0.1)
 
 if __name__ == "__main__":
@@ -124,6 +147,12 @@ if __name__ == "__main__":
     best_accuracy = 0
     best_config = ('', [])
     
+    nrows=5
+    ncols=3
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(10, 8))
+    axes = axes.flatten()
+    plt.tight_layout()
+    
     for feats in feature_sets:
         X_train = datldr.train_data[feats].values
         y_train = datldr.train_data['label'].values
@@ -135,6 +164,7 @@ if __name__ == "__main__":
             y_pred = model.predict(X_test)
             accuracy = accuracy_score(y_test,y_pred)
             svs = trnr.get_support_vectors(model)
+            plot_decision_boundary(model, X_train, y_train, f'{kernel_type.upper()} Kernel on {feats[0]} & {feats[1]}', feats, axes=axes)
             
             print(f'{kernel_type.upper()} on {feats} - Accuracy = {accuracy:.3f}')
             print(f'Support vectors: {svs}')
@@ -145,3 +175,4 @@ if __name__ == "__main__":
                 best_config = (kernel_type, feats)
     
     print(f"\n Best model: {best_config[0].upper()} kernel on {best_config[1]} with accuracy {best_accuracy:.3f}")
+    
