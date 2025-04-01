@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib as plt
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -144,4 +145,4 @@ if __name__ == "__main__":
                 best_model = model
                 best_config = (kernel_type, feats)
     
-    print(f"\n Best model: {best_config[0].upper()} kernel on {best_config[1]} with accuracy {best_accuracy:.3f}")            
+    print(f"\n Best model: {best_config[0].upper()} kernel on {best_config[1]} with accuracy {best_accuracy:.3f}")        

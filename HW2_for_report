@@ -97,6 +97,54 @@ class SVMTrainer:
 Initialize my_best_model with the best model you found.
 '''
 
+def plot_all_boundaries_with_validation(models_dict, loader, combinations):
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    n_rows = len(combinations)
+    n_cols = len(models_dict)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(4*n_cols, 3*n_rows))
+
+    for i, features in enumerate(combinations):
+        X_train = loader.train_data[features].values
+        y_train = loader.train_data['label'].values
+        X_val = loader.val_data[features].values
+        y_val = loader.val_data['label'].values
+
+        x_min = min(X_train[:, 0].min(), X_val[:, 0].min()) - 1
+        x_max = max(X_train[:, 0].max(), X_val[:, 0].max()) + 1
+        y_min = min(X_train[:, 1].min(), X_val[:, 1].min()) - 1
+        y_max = max(X_train[:, 1].max(), X_val[:, 1].max()) + 1
+
+        xx, yy = np.meshgrid(np.linspace(x_min, x_max, 500),
+                             np.linspace(y_min, y_max, 500))
+
+        for j, (kernel, model) in enumerate(models_dict.items()):
+            model.fit(X_train, y_train)
+
+            Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+            Z = Z.reshape(xx.shape)
+
+            ax = axes[i, j] if n_rows > 1 else axes[j]
+            ax.contourf(xx, yy, Z, alpha=0.3, cmap=plt.cm.coolwarm)
+
+            # Plot training data
+            ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=plt.cm.coolwarm,
+                       edgecolors='k', label='Train', marker='o', s=50)
+
+            # Plot validation data
+            ax.scatter(X_val[:, 0], X_val[:, 1], c=y_val, cmap=plt.cm.coolwarm,
+                       edgecolors='k', marker='^', s=60, label='Val')
+
+            ax.set_title(f'{kernel.upper()} on {features[0]} & {features[1]}')
+            ax.set_xlabel(features[0])
+            ax.set_ylabel(features[1])
+            ax.legend()
+
+    plt.tight_layout()
+    plt.show()
+
+
 def plot_decision_boundary(model, X, y, title, feature_names, axes):
     
     h = 0.01
@@ -147,11 +195,11 @@ if __name__ == "__main__":
     best_accuracy = 0
     best_config = ('', [])
     
-    nrows=5
-    ncols=3
-    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(10, 8))
-    axes = axes.flatten()
-    plt.tight_layout()
+    # nrows=5
+    # ncols=3
+    # fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(10, 8))
+    # axes = axes.flatten()
+    # plt.tight_layout()
     
     for feats in feature_sets:
         X_train = datldr.train_data[feats].values
@@ -164,7 +212,7 @@ if __name__ == "__main__":
             y_pred = model.predict(X_test)
             accuracy = accuracy_score(y_test,y_pred)
             svs = trnr.get_support_vectors(model)
-            plot_decision_boundary(model, X_train, y_train, f'{kernel_type.upper()} Kernel on {feats[0]} & {feats[1]}', feats, axes=axes)
+            # plot_decision_boundary(model, X_train, y_train, f'{kernel_type.upper()} Kernel on {feats[0]} & {feats[1]}', feats, axes=axes)
             
             print(f'{kernel_type.upper()} on {feats} - Accuracy = {accuracy:.3f}')
             print(f'Support vectors: {svs}')
@@ -175,4 +223,142 @@ if __name__ == "__main__":
                 best_config = (kernel_type, feats)
     
     print(f"\n Best model: {best_config[0].upper()} kernel on {best_config[1]} with accuracy {best_accuracy:.3f}")
+
+    blue_x1 = [3,2,4,1]
+    blue_x2 = [6,2,4,3]
+
+    red_x1 = [2,4,4]
+    red_x2 = [0,2,0]
+
+    hyp_x = np.linspace(0,4,20)
+    hyp_y = hyp_x-1
+
+    new_hyp_x = np.linspace(0,4,20)
+    new_hyp_y = 3*hyp_x/4
     
+    # plt.plot(hyp_x,hyp_y,'k--')
+    # plt.plot(new_hyp_x,new_hyp_y,'k--')
+    # plt.plot(blue_x1,blue_x2,'bo')
+    # plt.plot(red_x1,red_x2,'r+')
+    # plt.xlabel('$x_{1}$')
+    # plt.ylabel('$x_{2}$')
+    # plt.show()
+
+    pos_x1 = [1,-1]
+    pos_x2 = [1,-1]
+    pos_x3 = [1,1]
+
+    neg_x1 = [1,-1]
+    neg_x2 = [-1,1]
+    neg_x3 = [-1,-1]
+
+    # fig = plt.figure()
+    # ax = fig.add_subplot(projection='3d')    
+    
+    # #plt.plot(hyp_x,hyp_y,'k--')
+    # #plt.plot(new_hyp_x,new_hyp_y,'k--')
+    # plt.scatter(pos_x1,pos_x2,pos_x3)
+    # plt.scatter(neg_x1,neg_x2,neg_x3)
+    # #plt.xlabel('$x_{1}$')
+    # #plt.ylabel('$x_{2}$')
+    # #plt.zlabel('$x_{1}x_{2}$')
+    # plt.show()
+
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    import numpy as np
+
+    # # Original XOR-style dataset
+    # X = np.array([
+    #     [1, 1],
+    #     [-1, -1],
+    #     [1, -1],
+    #     [-1, 1]
+    # ])
+    # y = np.array([1, 1, -1, -1])
+    # phi = np.array([[x[0], x[1], x[0]*x[1]] for x in X])  # φ(x)
+
+    # # Plot
+    # fig = plt.figure(figsize=(10, 7))
+    # ax = fig.add_subplot(111, projection='3d')
+
+    # # Class scatter plots
+    # for label, marker, color in zip([1, -1], ['o', '^'], ['blue', 'red']):
+    #     idx = y == label
+    #     ax.scatter(phi[idx, 0], phi[idx, 1], phi[idx, 2], s=80, marker=marker, color=color, label=f'Class {label}')
+
+    # # Plot decision surface z = 0
+    # xx, yy = np.meshgrid(np.linspace(-1.5, 1.5, 10), np.linspace(-1.5, 1.5, 10))
+    # zz = np.zeros_like(xx)
+    # ax.plot_surface(xx, yy, zz, alpha=0.3, color='gray', label='Decision Boundary')
+
+    # ax.set_xlabel('x₁')
+    # ax.set_ylabel('x₂')
+    # ax.set_zlabel('x₁·x₂')
+    # ax.set_title('3D Feature Space and Decision Boundary (z = 0)')
+    # ax.legend()
+    # plt.tight_layout()
+    # plt.show()
+
+
+svm_models = {
+    'linear': SVC(kernel='linear', C=1),
+    'rbf': SVC(kernel='rbf', C=1, gamma='scale'),
+    'poly': SVC(kernel='poly', degree=3, C=1)
+}
+
+feature_combinations = [
+    ['CGPA', 'SOP'],
+    ['CGPA', 'GRE Score'],
+    ['SOP', 'LOR'],
+    ['LOR', 'GRE Score']
+]
+
+#plot_all_boundaries_with_validation(svm_models, datldr, feature_combinations)
+
+
+support_vectors_table = []
+
+feature_combinations = [
+    ['CGPA', 'SOP'],
+    ['CGPA', 'GRE Score'],
+    ['SOP', 'LOR'],
+    ['LOR', 'GRE Score']
+]
+
+kernel_configs = {
+    'linear': {'kernel': 'linear', 'C': 1},
+    'rbf': {'kernel': 'rbf', 'C': 1, 'gamma': 'scale'},
+    'poly': {'kernel': 'poly', 'C': 1, 'degree': 3}
+}
+
+trainer = SVMTrainer()
+
+for features in feature_combinations:
+    X_train = datldr.train_data[features].values
+    y_train = datldr.train_data['label'].values
+
+    for kernel_name, params in kernel_configs.items():
+        model = trainer.train(X_train, y_train, **params)
+        support_vectors = trainer.get_support_vectors(model)
+
+        for vec in support_vectors:
+            support_vectors_table.append([
+                kernel_name,
+                f"{features[0]} & {features[1]}",
+                vec[0],
+                vec[1]
+            ])
+
+
+def generate_latex_table(data):
+    header = "\\begin{tabular}{|c|c|c|c|}\n\\hline\nKernel & Features & Feature 1 Value & Feature 2 Value \\\\ \\hline"
+    rows = []
+    for row in data:
+        kernel, feat_combo, val1, val2 = row
+        rows.append(f"{kernel} & {feat_combo} & {val1:.3f} & {val2:.3f} \\\\ \\hline")
+    footer = "\\end{tabular}"
+    return '\n'.join([header] + rows + [footer])
+
+latex_output = generate_latex_table(support_vectors_table)
+print(latex_output)
