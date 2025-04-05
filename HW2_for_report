@@ -362,3 +362,39 @@ def generate_latex_table(data):
 
 latex_output = generate_latex_table(support_vectors_table)
 print(latex_output)
+
+
+from collections import defaultdict
+
+# Dictionary to hold support vectors grouped by kernel
+kernel_sv_dict = defaultdict(list)
+
+for features in feature_combinations:
+    X_train = datldr.train_data[features].values
+    y_train = datldr.train_data['label'].values
+
+    for kernel_name, params in kernel_configs.items():
+        model = trainer.train(X_train, y_train, **params)
+        support_vectors = trainer.get_support_vectors(model)
+
+        for vec in support_vectors:
+            kernel_sv_dict[kernel_name].append([
+                f"{features[0]} & {features[1]}",
+                vec[0],
+                vec[1]
+            ])
+
+
+def generate_latex_tables_by_kernel(sv_dict):
+    tables = []
+    for kernel, rows in sv_dict.items():
+        title = f"\\subsection*{{Support Vectors for {kernel.upper()} Kernel}}"
+        header = "\\begin{tabular}{|c|c|c|}\n\\hline\nFeatures & Feature 1 Value & Feature 2 Value \\\\ \\hline"
+        body = []
+        for features, val1, val2 in rows:
+            body.append(f"{features} & {val1:.3f} & {val2:.3f} \\\\ \\hline")
+        footer = "\\end{tabular}\n"
+        tables.append("\n".join([title, header] + body + [footer]))
+    return "\n\n".join(tables)
+
+generate_latex_tables_by_kernel(sv_dict=kernel_sv_dict)
