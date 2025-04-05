@@ -159,3 +159,6 @@ my_best_model = XGBClassifier()
 
 if __name__ == "__main__":
     print("Hello World!")
+    
+    # Define alpha values as stated in Part B.1
+    alpha  = [1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3]
