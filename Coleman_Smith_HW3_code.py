@@ -55,7 +55,8 @@ class DataLoader:
         '''
         You are asked to drop any rows with missing values and map categorical variables to numeric values. 
         '''
-        pass
+        data = self.data
+        return data.dropna()
 
     def extract_features_and_label(self, data: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         '''
@@ -66,7 +67,10 @@ class DataLoader:
             X_data: np.ndarray of shape (n_samples, n_features) - Extracted features
             y_data: np.ndarray of shape (n_samples,) - Extracted labels
         '''
-        pass
+        X_data = data.features(1:4)
+        y_data = data.features(4)
+        
+        return X_data,y_data
 
 
 '''
