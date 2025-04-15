@@ -40,7 +40,7 @@ class DataLoader:
         np.random.seed(self.random_state)
 
         self.data = pd.read_csv(data_root, delimiter=';')
-        self.data.head()
+        #self.data.head()
         self.data_train = None
         self.data_valid = None
 
