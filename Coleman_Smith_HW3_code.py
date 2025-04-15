@@ -44,7 +44,7 @@ class DataLoader:
         self.data_train = None
         self.data_valid = None
 
-        #print(self.data.head()) # show format of data
+        ##print(self.data.head()) # show format of data
 
     def data_split(self) -> None:
         '''
@@ -65,7 +65,7 @@ class DataLoader:
             if self.data[col].dtype == 'object':
                 self.data[col] = self.data[col].astype('category').cat.codes
                 
-        #print("Columns after preprocessing:", self.data.columns.tolist())
+        ##print("Columns after preprocessing:", self.data.columns.tolist())
 
     def extract_features_and_label(self, data: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         '''
@@ -228,14 +228,14 @@ def train_XGBoost() -> dict:
             all_preds.append(f1)
 
         avg_f1 = np.mean(all_preds)
-        print(f"Alpha={alpha}, Avg F1={avg_f1:.4f}")
+        #print(f"Alpha={alpha}, Avg F1={avg_f1:.4f}")
         
         if avg_f1 > best_f1:
             best_f1 = avg_f1
             best_model = model
             best_alpha = alpha
 
-    print(f"Best Alpha: {best_alpha}, Best F1: {best_f1:.4f}")
+    #print(f"Best Alpha: {best_alpha}, Best F1: {best_f1:.4f}")
     
     # Save to global model for Gradescope
     global my_best_model
@@ -276,7 +276,7 @@ my_best_model = XGBClassifier()
 
 if __name__ == "__main__":
     results = train_XGBoost()
-    print(results)
+    #print(results)
     
     # Define alpha values as stated in Part B.1
     alpha_vals  = [1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3]
@@ -299,4 +299,4 @@ if __name__ == "__main__":
 
     # Evaluate performance
     f1 = compute_macro_f1(y_val, y_pred)
-    print(f"Macro F1 Score on validation set: {f1:.4f}")
+    #print(f"Macro F1 Score on validation set: {f1:.4f}")
