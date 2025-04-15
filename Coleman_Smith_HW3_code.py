@@ -262,7 +262,7 @@ def train_XGBoost() -> dict:
                 n_estimators=150,   # gives enough training rounds
                 subsample=0.8,      # improves generalization
                 colsample_bytree=0.8,
-                use_label_encoder=False,
+                use_label_encoder=True,
                 eval_metric='mlogloss',
                 verbosity=0
             )
