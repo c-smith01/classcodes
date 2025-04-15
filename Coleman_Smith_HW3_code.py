@@ -39,9 +39,11 @@ class DataLoader:
         self.random_state = random_state
         np.random.seed(self.random_state)
 
-        self.data = pd.read_csv(data_root)
+        self.data = pd.read_csv(data_root, delimiter=';')
         self.data_train = None
         self.data_valid = None
+
+        print("Loaded columns:", self.data.columns.tolist())
 
     def data_split(self) -> None:
         '''
@@ -57,10 +59,15 @@ class DataLoader:
         '''
         You are asked to drop any rows with missing values and map categorical variables to numeric values. 
         '''
+        self.data.columns = self.data.columns.str.strip().str.lower()
         self.data = self.data.dropna()
+
         for col in self.data.columns:
-            if self.data[col].dtype == 'object':
+            if col != 'y' and self.data[col].dtype == 'object':
                 self.data[col] = self.data[col].astype('category').cat.codes
+
+        if 'y' in self.data.columns and self.data['y'].dtype == 'object':
+            self.data['y'] = self.data['y'].astype('category')
 
     def extract_features_and_label(self, data: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         '''
@@ -71,6 +78,9 @@ class DataLoader:
             X_data: np.ndarray of shape (n_samples, n_features) - Extracted features
             y_data: np.ndarray of shape (n_samples,) - Extracted labels
         '''
+        if 'y' not in data.columns:
+            raise ValueError("Missing 'y' column in provided DataFrame!")
+
         X_data = data.drop(columns='y').to_numpy()
         y_data = data['y'].astype('category').cat.codes.to_numpy()
         return X_data, y_data
