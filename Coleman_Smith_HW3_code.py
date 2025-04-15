@@ -39,7 +39,7 @@ class DataLoader:
         self.random_state = random_state
         np.random.seed(self.random_state)
 
-        self.data = pd.DataFrame()
+        self.data = pd.read_csv(data_root)
 
         self.data_train = None
         self.data_valid = None
@@ -49,7 +49,8 @@ class DataLoader:
         You are asked to split the training data into train/valid datasets on the ratio of 80/20. 
         Add the split datasets to self.data_train, self.data_valid. Both of the split should still be pd.DataFrame.
         '''
-        pass
+        df = self.data
+        train_set, test_set = df.random_split([0.8, 0.2])   # 80/20 dataset split
 
     def data_prep(self) -> None:
         '''
@@ -153,6 +154,28 @@ def train_XGBoost() -> dict:
     '''
     pass
 
+def compute_macro_f1(y_true, y_pred):
+    classes = np.unique(np.concatenate([y_true, y_pred]))
+    f1_scores = []
+
+    for cls in classes:
+        tp = np.sum((y_pred == cls) & (y_true == cls))
+        fp = np.sum((y_pred == cls) & (y_true != cls))
+        fn = np.sum((y_pred != cls) & (y_true == cls))
+
+        precision = tp / (tp + fp + 1e-9)  # avoid division by zero
+        recall = tp / (tp + fn + 1e-9)
+
+        if precision + recall == 0:
+            f1 = 0.0
+        else:
+            f1 = 2 * precision * recall / (precision + recall)
+
+        f1_scores.append(f1)
+
+    return np.mean(f1_scores)
+
+
 
 '''
 Initialize the following variable with the best model you have found. This model will be used in testing 
@@ -165,4 +188,24 @@ if __name__ == "__main__":
     print("Hello World!")
     
     # Define alpha values as stated in Part B.1
-    alpha  = [1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3]
+    alpha_vals  = [1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3]
+    
+     # Initialize data
+    data_loader = DataLoader(data_root="bank-3.csv", random_state=42)
+    data_loader.data_prep()
+    data_loader.data_split()
+
+    # Extract train and validation features/labels
+    X_train, y_train = data_loader.extract_features_and_label(data_loader.data_train)
+    X_val, y_val = data_loader.extract_features_and_label(data_loader.data_valid)
+
+    # Train classification tree
+    clf_tree = ClassificationTree(random_state=42)
+    clf_tree.fit(X_train, y_train)
+
+    # Predict on validation data
+    y_pred = clf_tree.predict(X_val)
+
+    # Evaluate performance
+    f1 = compute_macro_f1(y_val, y_pred)
+    print(f"Macro F1 Score on validation set: {f1:.4f}")
