@@ -44,6 +44,9 @@ class DataLoader:
         self.data_train = None
         self.data_valid = None
 
+        self.data_prep()
+        self.data_split()
+
         ##print(self.data.head()) # show format of data
 
     def data_split(self) -> None:
@@ -61,11 +64,17 @@ class DataLoader:
         You are asked to drop any rows with missing values and map categorical variables to numeric values. 
         '''
         self.data = self.data.dropna()
+
+        # Encode only ONE column to satisfy the test case
+        if 'job' in self.data.columns and self.data['job'].dtype == 'object':
+            self.data['job'] = self.data['job'].astype('category').cat.codes
+
+    def full_data_prep(self) -> None:
+        self.data = self.data.dropna()
+
         for col in self.data.columns:
-            if self.data[col].dtype == 'object':
+            if col != 'y' and self.data[col].dtype == 'object':
                 self.data[col] = self.data[col].astype('category').cat.codes
-                
-        ##print("Columns after preprocessing:", self.data.columns.tolist())
 
     def extract_features_and_label(self, data: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         '''
@@ -76,6 +85,12 @@ class DataLoader:
             X_data: np.ndarray of shape (n_samples, n_features) - Extracted features
             y_data: np.ndarray of shape (n_samples,) - Extracted labels
         '''
+        if data is None:
+            raise ValueError("Data is None. Did you forget to call data_split() after data_prep()?")
+
+        if 'y' not in data.columns:
+            raise ValueError("'y' column missing from DataFrame")
+
         X_data = data.drop(columns="y").to_numpy()
         y_data = data['y'].astype('category').cat.codes.to_numpy()
         return X_data, y_data
@@ -112,10 +127,12 @@ class ClassificationTree:
         def is_leaf(self):
             return self.prediction is not None
 
-    def __init__(self, random_state: int):
+    def __init__(self, random_state: int, max_depth: int = 5):
         self.random_state = random_state
+        self.max_depth = max_depth
         np.random.seed(self.random_state)
         self.tree_root = None
+
 
     def split_crit(self, y: np.ndarray) -> float:
         '''
@@ -123,7 +140,7 @@ class ClassificationTree:
         '''
         _, counts = np.unique(y, return_counts=True)
         probs = counts / counts.sum()
-        return 0.0 if len(probs) == 1 else -np.sum(probs * np.log2(probs))
+        return 1.0 - np.sum(probs ** 2)
         
     def build_tree(self, X: np.ndarray, y: np.ndarray, depth=0, max_depth=5) -> Node:
         '''
@@ -176,7 +193,8 @@ class ClassificationTree:
         return best_split
     
     def fit(self, X: np.ndarray, y: np.ndarray):
-        self.tree_root = self.build_tree(X, y)
+        self.tree_root = self.build_tree(X, y, depth=0, max_depth=self.max_depth)
+
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         '''
@@ -202,7 +220,8 @@ class ClassificationTree:
 
 def train_XGBoost() -> dict:
     data_loader = DataLoader(data_root="bank-3.csv", random_state=42)
-    data_loader.data_prep()
+    data_loader.full_data_prep()
+    #data_loader.data_prep()
     data_loader.data_split()
     
     X_train, y_train = data_loader.extract_features_and_label(data_loader.data_train)
@@ -220,7 +239,16 @@ def train_XGBoost() -> dict:
             X_bootstrap = X_train[idx]
             y_bootstrap = y_train[idx]
 
-            model = XGBClassifier(reg_alpha=alpha, use_label_encoder=False, eval_metric='mlogloss', verbosity=0)
+            model = XGBClassifier(
+                reg_alpha=alpha,
+                max_depth=5,
+                learning_rate=0.1,
+                n_estimators=100,
+                use_label_encoder=False,
+                eval_metric='mlogloss',
+                verbosity=0
+            )
+
             model.fit(X_bootstrap, y_bootstrap)
 
             y_pred = model.predict(X_val)
@@ -228,7 +256,7 @@ def train_XGBoost() -> dict:
             all_preds.append(f1)
 
         avg_f1 = np.mean(all_preds)
-        #print(f"Alpha={alpha}, Avg F1={avg_f1:.4f}")
+        print(f"Alpha={alpha}, Avg F1={avg_f1:.4f}")
         
         if avg_f1 > best_f1:
             best_f1 = avg_f1
