@@ -163,14 +163,16 @@ class ClassificationTree:
             values, counts = np.unique(y, return_counts=True)
             return self.Node(prediction=values[np.argmax(counts)])
 
-        feature_idx, split_val, is_cat = best_split
+        #feature_idx, split_val, is_cat = best_split
+        feature_idx, split_val = best_split
         left_mask = X[:, feature_idx] <= split_val
         right_mask = ~left_mask
 
         left = self.build_tree(X[left_mask], y[left_mask], depth + 1, max_depth)
         right = self.build_tree(X[right_mask], y[right_mask], depth + 1, max_depth)
 
-        return self.Node(split=(feature_idx, split_val, False), left=left, right=right)
+        #return self.Node(split=(feature_idx, split_val, False), left=left, right=right)
+        return self.Node(split=(feature_idx, split_val), left=left, right=right)
 
     def search_best_split(self, X: np.ndarray, y: np.ndarray):
         '''
@@ -196,7 +198,8 @@ class ClassificationTree:
                     ig = current_impurity - weighted_imp
                     if ig > best_ig:
                         best_ig = ig
-                        best_split = (feature_idx, t, False)
+                        #best_split = (feature_idx, t, False)
+                        best_split = (feature_idx, t)
         return best_split
     
     def fit(self, X: np.ndarray, y: np.ndarray):
@@ -218,7 +221,8 @@ class ClassificationTree:
     def predict_sample(self, x: np.ndarray, node: Node):
         if node.is_leaf():
             return node.prediction
-        idx, val, _ = node.split
+        #idx, val, _ = node.split
+        idx, val = node.split
         if x[idx] <= val:
             return self.predict_sample(x, node.left)
         else:
@@ -320,8 +324,8 @@ if __name__ == "__main__":
     
      # Initialize data
     data_loader = DataLoader(data_root="bank-3.csv", random_state=42)
-    #data_loader.data_prep()
-    #data_loader.data_split()
+    data_loader.data_prep()
+    data_loader.data_split()
 
     # Extract train and validation features/labels
     X_train, y_train = data_loader.extract_features_and_label(data_loader.data_train)
