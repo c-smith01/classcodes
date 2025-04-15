@@ -61,6 +61,8 @@ class DataLoader:
         for col in self.data.columns:
             if self.data[col].dtype == 'object':
                 self.data[col] = self.data[col].astype('category').cat.codes
+                
+        print("Columns after preprocessing:", self.data.columns.tolist())
 
     def extract_features_and_label(self, data: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         '''
@@ -71,7 +73,7 @@ class DataLoader:
             X_data: np.ndarray of shape (n_samples, n_features) - Extracted features
             y_data: np.ndarray of shape (n_samples,) - Extracted labels
         '''
-        X_data = data.drop(columns='y').to_numpy()
+        X_data = data.drop(columns="y").to_numpy()
         y_data = data['y'].astype('category').cat.codes.to_numpy()
         return X_data, y_data
 
@@ -260,6 +262,55 @@ def compute_macro_f1(y_true, y_pred):
 
     return np.mean(f1_scores)
 
+def plot_roc_and_auc(model, X_val: np.ndarray, y_val: np.ndarray) -> float:
+    probs = model.predict_proba(X_val)
+    classes = np.unique(y_val)
+    aucs = []
+
+    plt.figure()
+    for i, cls in enumerate(classes):
+        y_true_bin = (y_val == cls).astype(int)
+        y_score = probs[:, i]
+
+        # Sort by score
+        desc_score_indices = np.argsort(-y_score)
+        y_true_bin = y_true_bin[desc_score_indices]
+        y_score = y_score[desc_score_indices]
+
+        # Compute TPR and FPR
+        tpr = []
+        fpr = []
+        thresholds = np.unique(y_score)
+        P = y_true_bin.sum()
+        N = len(y_true_bin) - P
+
+        for thresh in thresholds:
+            y_pred = (y_score >= thresh).astype(int)
+            tp = ((y_pred == 1) & (y_true_bin == 1)).sum()
+            fp = ((y_pred == 1) & (y_true_bin == 0)).sum()
+            tpr.append(tp / (P + 1e-9))
+            fpr.append(fp / (N + 1e-9))
+
+        tpr = np.array(tpr)
+        fpr = np.array(fpr)
+        auc = np.trapz(tpr, fpr)
+        aucs.append(auc)
+
+        plt.plot(fpr, tpr, label=f"Class {cls} (AUC={auc:.2f})")
+
+    plt.plot([0, 1], [0, 1], 'k--')  # diagonal line
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("ROC Curve - One vs. Rest")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("roc_curve.png")  # Saves instead of displaying
+    print("ROC curve saved as 'roc_curve.png'.")
+
+    return np.mean(aucs)
+
+
 
 
 '''
@@ -295,3 +346,7 @@ if __name__ == "__main__":
     # Evaluate performance
     f1 = compute_macro_f1(y_val, y_pred)
     print(f"Macro F1 Score on validation set: {f1:.4f}")
+    
+    results = train_XGBoost()
+    auc = plot_roc_and_auc(my_best_model, X_val, y_val)
+    print(f"Macro-average AUC: {auc:.4f}")
