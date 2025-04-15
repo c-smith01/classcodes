@@ -44,7 +44,8 @@ class DataLoader:
         self.data_train = None
         self.data_valid = None
 
-        self.data_prep()
+        #self.data_prep()
+        self.encode_all_features()
         self.data_split()
 
         ##print(self.data.head()) # show format of data
@@ -163,16 +164,16 @@ class ClassificationTree:
             values, counts = np.unique(y, return_counts=True)
             return self.Node(prediction=values[np.argmax(counts)])
 
-        #feature_idx, split_val, is_cat = best_split
-        feature_idx, split_val = best_split
+        feature_idx, split_val, is_cat = best_split
+        n = best_split
         left_mask = X[:, feature_idx] <= split_val
         right_mask = ~left_mask
 
         left = self.build_tree(X[left_mask], y[left_mask], depth + 1, max_depth)
         right = self.build_tree(X[right_mask], y[right_mask], depth + 1, max_depth)
 
-        #return self.Node(split=(feature_idx, split_val, False), left=left, right=right)
-        return self.Node(split=(feature_idx, split_val), left=left, right=right)
+        return self.Node(split=(feature_idx, split_val, False), left=left, right=right)
+        #return self.Node(split=(feature_idx, split_val), left=left, right=right)
 
     def search_best_split(self, X: np.ndarray, y: np.ndarray):
         '''
@@ -198,8 +199,10 @@ class ClassificationTree:
                     ig = current_impurity - weighted_imp
                     if ig > best_ig:
                         best_ig = ig
-                        #best_split = (feature_idx, t, False)
-                        best_split = (feature_idx, t)
+                        best_split = (feature_idx, t, False)
+                        #best_split = (feature_idx, t)
+                    # else:
+                    #     best_split = None
         return best_split
     
     def fit(self, X: np.ndarray, y: np.ndarray):
@@ -221,8 +224,8 @@ class ClassificationTree:
     def predict_sample(self, x: np.ndarray, node: Node):
         if node.is_leaf():
             return node.prediction
-        #idx, val, _ = node.split
-        idx, val = node.split
+        idx, val, _ = node.split
+        #idx, val = node.split
         if x[idx] <= val:
             return self.predict_sample(x, node.left)
         else:
