@@ -51,12 +51,14 @@ class DataLoader:
         '''
         df = self.data
         train_set, test_set = df.random_split([0.8, 0.2])   # 80/20 dataset split
+        return train_set, test_set
 
     def data_prep(self) -> None:
         '''
         You are asked to drop any rows with missing values and map categorical variables to numeric values. 
         '''
         data = self.data
+        data = data.dropna()
         return data.dropna()
 
     def extract_features_and_label(self, data: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
