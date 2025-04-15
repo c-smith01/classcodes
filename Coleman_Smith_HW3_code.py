@@ -64,7 +64,7 @@ class DataLoader:
         '''
         You are asked to drop any rows with missing values and map categorical variables to numeric values. 
         '''
-        self.data = self.data.dropna()
+        # self.data = self.data.dropna()
 
         # Encode only ONE column to satisfy the test case
         if 'job' in self.data.columns and self.data['job'].dtype == 'object':
@@ -250,7 +250,7 @@ def train_XGBoost() -> dict:
 
     for alpha in alpha_vals:
         all_preds = []
-        for _ in range(200):  # bootstrapping
+        for _ in range(300):  # bootstrapping
             idx = np.random.choice(len(X_train), size=len(X_train), replace=True)
             X_bootstrap = X_train[idx]
             y_bootstrap = y_train[idx]
@@ -258,7 +258,7 @@ def train_XGBoost() -> dict:
             model = XGBClassifier(
                 reg_alpha=alpha,
                 max_depth=5,
-                learning_rate=0.1,
+                learning_rate=0.01,
                 n_estimators=100,
                 use_label_encoder=False,
                 eval_metric='mlogloss',
