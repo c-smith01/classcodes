@@ -59,7 +59,7 @@ class DataLoader:
         '''
         data = self.data
         data = data.dropna()
-        return data.dropna()
+        return data
 
     def extract_features_and_label(self, data: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         '''
