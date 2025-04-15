@@ -64,14 +64,20 @@ class DataLoader:
         '''
         You are asked to drop any rows with missing values and map categorical variables to numeric values. 
         '''
-        self.data = self.data.dropna()
+        #self.data = self.data.dropna()
 
-        # # Encode only ONE column to satisfy the test case
-        # if 'job' in self.data.columns and self.data['job'].dtype == 'object':
+        # # DO NOT dropna(). Only modify one column: 'job'
+        # if 'job' in self.data.columns:
         #     self.data['job'] = self.data['job'].astype('category').cat.codes
 
+        self.data = self.data.dropna()
+
+        for col in self.data.columns:
+            if self.data[col].dtype == 'object':
+                self.data[col] = self.data[col].astype('category').cat.codes
+
     def encode_all_features(self) -> None:
-        #self.data = self.data.dropna()
+        self.data = self.data.dropna()
 
         for col in self.data.columns:
             if self.data[col].dtype == 'object':
@@ -244,19 +250,21 @@ def train_XGBoost() -> dict:
     X_val, y_val = data_loader.extract_features_and_label(data_loader.data_valid)
 
     alpha_vals = [1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3]
+    lambda_val = 1.0  # L2 regularization strength
     best_f1 = -1
     best_model = None
     best_alpha = None
 
     for alpha in alpha_vals:
         all_preds = []
-        for _ in range(300):  # bootstrapping
+        for _ in range(150):  # bootstrapping
             idx = np.random.choice(len(X_train), size=len(X_train), replace=True)
             X_bootstrap = X_train[idx]
             y_bootstrap = y_train[idx]
 
             model = XGBClassifier(
                 reg_alpha=alpha,
+                reg_lambda=lambda_val,
                 max_depth=6,
                 learning_rate=0.1,  # raised from 0.01
                 n_estimators=150,   # gives enough training rounds
