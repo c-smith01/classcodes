@@ -71,18 +71,18 @@ class DataLoader:
         #     self.data['job'] = self.data['job'].astype('category').cat.codes
 
     def encode_all_features(self) -> None:
-        self.data = self.data.dropna()
+        #self.data = self.data.dropna()
 
         for col in self.data.columns:
             if self.data[col].dtype == 'object':
                 self.data[col] = self.data[col].astype('category').cat.codes
 
-    def full_data_prep(self) -> None:
-        self.data = self.data.dropna()
+    # def full_data_prep(self) -> None:
+    #     self.data = self.data.dropna()
 
-        for col in self.data.columns:
-            if col != 'y' and self.data[col].dtype == 'object':
-                self.data[col] = self.data[col].astype('category').cat.codes
+    #     for col in self.data.columns:
+    #         if col != 'y' and self.data[col].dtype == 'object':
+    #             self.data[col] = self.data[col].astype('category').cat.codes
 
     def extract_features_and_label(self, data: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         '''
