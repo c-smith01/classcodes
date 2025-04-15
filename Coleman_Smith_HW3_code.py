@@ -327,7 +327,8 @@ if __name__ == "__main__":
     
      # Initialize data
     data_loader = DataLoader(data_root="bank-3.csv", random_state=42)
-    data_loader.data_prep()
+    #data_loader.data_prep()
+    data_loader.encode_all_features()
     data_loader.data_split()
 
     # Extract train and validation features/labels
