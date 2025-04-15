@@ -250,7 +250,7 @@ def train_XGBoost() -> dict:
 
     for alpha in alpha_vals:
         all_preds = []
-        for _ in range(100):  # bootstrapping
+        for _ in range(200):  # bootstrapping
             idx = np.random.choice(len(X_train), size=len(X_train), replace=True)
             X_bootstrap = X_train[idx]
             y_bootstrap = y_train[idx]
