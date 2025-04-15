@@ -64,11 +64,11 @@ class DataLoader:
         '''
         You are asked to drop any rows with missing values and map categorical variables to numeric values. 
         '''
-        # self.data = self.data.dropna()
+        self.data = self.data.dropna()
 
-        # Encode only ONE column to satisfy the test case
-        if 'job' in self.data.columns and self.data['job'].dtype == 'object':
-            self.data['job'] = self.data['job'].astype('category').cat.codes
+        # # Encode only ONE column to satisfy the test case
+        # if 'job' in self.data.columns and self.data['job'].dtype == 'object':
+        #     self.data['job'] = self.data['job'].astype('category').cat.codes
 
     def encode_all_features(self) -> None:
         self.data = self.data.dropna()
@@ -262,7 +262,7 @@ def train_XGBoost() -> dict:
                 n_estimators=150,   # gives enough training rounds
                 subsample=0.8,      # improves generalization
                 colsample_bytree=0.8,
-                use_label_encoder=True,
+                use_label_encoder=False,
                 eval_metric='mlogloss',
                 verbosity=0
             )
