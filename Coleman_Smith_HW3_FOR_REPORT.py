@@ -39,9 +39,12 @@ class DataLoader:
         self.random_state = random_state
         np.random.seed(self.random_state)
 
-        self.data = pd.read_csv(data_root)
+        self.data = pd.read_csv(data_root, delimiter=';')
+        self.data.head()
         self.data_train = None
         self.data_valid = None
+
+        #print(self.data.head()) # show format of data
 
     def data_split(self) -> None:
         '''
@@ -122,7 +125,7 @@ class ClassificationTree:
         probs = counts / counts.sum()
         return -np.sum(probs * np.log2(probs + 1e-9))  # entropy
         
-    def build_tree(self, X: np.ndarray, y: np.ndarray) -> None:
+    def build_tree(self, X: np.ndarray, y: np.ndarray, depth=0, max_depth=5) -> Node:
         '''
         Implement the tree building algorithm here. You can recursivly call this function to build the 
         tree. After building the tree, store the root node in self.tree_root.
@@ -331,6 +334,7 @@ if __name__ == "__main__":
     data_loader = DataLoader(data_root="bank-3.csv", random_state=42)
     data_loader.data_prep()
     data_loader.data_split()
+
 
     # Extract train and validation features/labels
     X_train, y_train = data_loader.extract_features_and_label(data_loader.data_train)

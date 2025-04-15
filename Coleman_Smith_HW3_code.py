@@ -40,10 +40,11 @@ class DataLoader:
         np.random.seed(self.random_state)
 
         self.data = pd.read_csv(data_root, delimiter=';')
+        self.data.head()
         self.data_train = None
         self.data_valid = None
 
-        print("Loaded columns:", self.data.columns.tolist())
+        #print(self.data.head()) # show format of data
 
     def data_split(self) -> None:
         '''
@@ -59,15 +60,12 @@ class DataLoader:
         '''
         You are asked to drop any rows with missing values and map categorical variables to numeric values. 
         '''
-        self.data.columns = self.data.columns.str.strip().str.lower()
         self.data = self.data.dropna()
-
         for col in self.data.columns:
-            if col != 'y' and self.data[col].dtype == 'object':
+            if self.data[col].dtype == 'object':
                 self.data[col] = self.data[col].astype('category').cat.codes
-
-        if 'y' in self.data.columns and self.data['y'].dtype == 'object':
-            self.data['y'] = self.data['y'].astype('category')
+                
+        #print("Columns after preprocessing:", self.data.columns.tolist())
 
     def extract_features_and_label(self, data: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         '''
@@ -78,10 +76,7 @@ class DataLoader:
             X_data: np.ndarray of shape (n_samples, n_features) - Extracted features
             y_data: np.ndarray of shape (n_samples,) - Extracted labels
         '''
-        if 'y' not in data.columns:
-            raise ValueError("Missing 'y' column in provided DataFrame!")
-
-        X_data = data.drop(columns='y').to_numpy()
+        X_data = data.drop(columns="y").to_numpy()
         y_data = data['y'].astype('category').cat.codes.to_numpy()
         return X_data, y_data
 
@@ -130,7 +125,7 @@ class ClassificationTree:
         probs = counts / counts.sum()
         return -np.sum(probs * np.log2(probs + 1e-9))  # entropy
         
-    def build_tree(self, X: np.ndarray, y: np.ndarray) -> None:
+    def build_tree(self, X: np.ndarray, y: np.ndarray, depth=0, max_depth=5) -> Node:
         '''
         Implement the tree building algorithm here. You can recursivly call this function to build the 
         tree. After building the tree, store the root node in self.tree_root.
