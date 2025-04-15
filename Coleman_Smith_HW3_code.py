@@ -257,9 +257,11 @@ def train_XGBoost() -> dict:
 
             model = XGBClassifier(
                 reg_alpha=alpha,
-                max_depth=5,
-                learning_rate=0.01,
-                n_estimators=100,
+                max_depth=6,
+                learning_rate=0.1,  # raised from 0.01
+                n_estimators=150,   # gives enough training rounds
+                subsample=0.8,      # improves generalization
+                colsample_bytree=0.8,
                 use_label_encoder=False,
                 eval_metric='mlogloss',
                 verbosity=0
