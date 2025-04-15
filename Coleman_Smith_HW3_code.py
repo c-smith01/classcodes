@@ -123,7 +123,7 @@ class ClassificationTree:
         '''
         _, counts = np.unique(y, return_counts=True)
         probs = counts / counts.sum()
-        return -np.sum(probs * np.log2(probs + 1e-9))  # entropy
+        return 0.0 if len(probs) == 1 else -np.sum(probs * np.log2(probs))
         
     def build_tree(self, X: np.ndarray, y: np.ndarray, depth=0, max_depth=5) -> Node:
         '''
@@ -139,7 +139,7 @@ class ClassificationTree:
             values, counts = np.unique(y, return_counts=True)
             return self.Node(prediction=values[np.argmax(counts)])
 
-        feature_idx, split_val = best_split
+        feature_idx, split_val, is_cat = best_split
         left_mask = X[:, feature_idx] <= split_val
         right_mask = ~left_mask
 
@@ -172,7 +172,7 @@ class ClassificationTree:
                     ig = current_impurity - weighted_imp
                     if ig > best_ig:
                         best_ig = ig
-                        best_split = (feature_idx, t)
+                        best_split = (feature_idx, t, False)
         return best_split
     
     def fit(self, X: np.ndarray, y: np.ndarray):
