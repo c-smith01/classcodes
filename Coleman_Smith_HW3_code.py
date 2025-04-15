@@ -256,7 +256,7 @@ def train_XGBoost() -> dict:
             all_preds.append(f1)
 
         avg_f1 = np.mean(all_preds)
-        print(f"Alpha={alpha}, Avg F1={avg_f1:.4f}")
+        #print(f"Alpha={alpha}, Avg F1={avg_f1:.4f}")
         
         if avg_f1 > best_f1:
             best_f1 = avg_f1
