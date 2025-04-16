@@ -357,49 +357,44 @@ if __name__ == "__main__":
     
     import pandas as pd
     import matplotlib.pyplot as plt
-    import os
 
-    # Load the dataset (semicolon-separated)
+    # Load the dataset
     df = pd.read_csv("bank-3.csv", delimiter=';')
 
-    # Create output folder if needed
-    os.makedirs("histograms", exist_ok=True)
+    # Separate numeric and categorical columns
+    numeric_cols = df.select_dtypes(include='number').columns.tolist()
+    categorical_cols = df.select_dtypes(include='object').columns.tolist()
 
-    # Loop over numeric columns and generate histograms
-    for col in df.select_dtypes(include='number').columns:
-        plt.figure(figsize=(8, 5))
-        plt.hist(df[col], bins=20, edgecolor='black')
-        plt.title(f"Histogram of {col.capitalize()}")
-        plt.xlabel(col)
-        plt.ylabel("Frequency")
-        plt.grid(True)
-        plt.tight_layout()
+    # Combine all columns for EDA (you can adjust this)
+    all_cols = numeric_cols + categorical_cols
+    total_plots = len(all_cols)
+
+    # Set up the grid size based on number of plots
+    cols_per_row = 3
+    n_rows = (total_plots + cols_per_row - 1) // cols_per_row
+
+    # Set figure size (tweak as needed)
+    plt.figure(figsize=(cols_per_row * 5, n_rows * 4))
+
+    # Generate subplots
+    for i, col in enumerate(all_cols):
+        plt.subplot(n_rows, cols_per_row, i + 1)
         
-        # Save to file
-        filename = f"histograms/{col}_histogram.png"
-        plt.savefig(filename)
-        plt.close()  # Prevent memory buildup
+        if col in numeric_cols:
+            plt.hist(df[col].dropna(), bins=20, edgecolor='black')
+            plt.title(f"Histogram of {col}")
+        else:
+            df[col].value_counts().plot(kind='bar', edgecolor='black')
+            plt.title(f"Bar Chart of {col}")
+            plt.xticks(rotation=45, ha='right')
 
-    print("Histograms saved to /histograms/")
-    
-    # Create output folder for categorical plots
-    os.makedirs("bar_charts", exist_ok=True)
-
-    # Loop through categorical (non-numeric) columns
-    for col in df.select_dtypes(include='object').columns:
-        value_counts = df[col].value_counts()
-
-        plt.figure(figsize=(10, 6))
-        value_counts.plot(kind='bar', edgecolor='black')
-        plt.title(f"Bar Chart of {col.capitalize()}")
-        plt.xlabel(col)
-        plt.ylabel("Count")
-        plt.xticks(rotation=45, ha='right')
         plt.tight_layout()
-        
-        # Save the plot
-        filename = f"bar_charts/{col}_bar_chart.png"
-        plt.savefig(filename)
-        plt.close()
 
-    print("Bar charts saved to /bar_charts/")
+    # Save the full figure
+    plt.suptitle("EDA Summary: Histograms & Bar Charts", fontsize=16, y=1.02)
+    plt.tight_layout()
+    plt.savefig("eda_summary.png", bbox_inches='tight')
+    plt.close()
+
+    print("EDA summary saved as eda_summary.png")
+

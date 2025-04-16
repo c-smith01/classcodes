@@ -41,6 +41,9 @@ class DataLoader:
         self.data = pd.read_csv(data_root, delimiter=';')
         self.data_train = None
         self.data_valid = None
+        
+        self.data_prep()
+        self.data_split()
 
     def data_split(self) -> None:
         '''
@@ -56,19 +59,24 @@ class DataLoader:
         '''
         You are asked to drop any rows with missing values and map categorical variables to numeric values. 
         '''
-        # Gradescope expects only one transformation (just this one column)
-        if 'job' in self.data.columns:
-            self.data['job'] = self.data['job'].astype('category').cat.codes
-
-    def encode_all_features(self) -> None:
-        '''
-        Full encoding for actual training (not for Gradescope A.3 test).
-        Drop missing values and convert all categorical features to numeric.
-        '''
+        # # Gradescope expects only one transformation (just this one column)
+        # if 'job' in self.data.columns:
+        #     self.data['job'] = self.data['job'].astype('category').cat.codes
+        
         self.data = self.data.dropna()
         for col in self.data.columns:
             if self.data[col].dtype == 'object':
                 self.data[col] = self.data[col].astype('category').cat.codes
+
+    # def encode_all_features(self) -> None:
+    #     '''
+    #     Full encoding for actual training (not for Gradescope A.3 test).
+    #     Drop missing values and convert all categorical features to numeric.
+    #     '''
+    #     self.data = self.data.dropna()
+    #     for col in self.data.columns:
+    #         if self.data[col].dtype == 'object':
+    #             self.data[col] = self.data[col].astype('category').cat.codes
 
     def extract_features_and_label(self, data: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         '''
@@ -204,7 +212,8 @@ def train_XGBoost() -> dict:
     Train an XGBoost classifier with bootstrapping and alpha tuning.
     '''
     data_loader = DataLoader(data_root="bank-3.csv", random_state=42)
-    data_loader.encode_all_features()
+    data_loader.data_prep()
+    # data_loader.encode_all_features()
     data_loader.data_split()
 
     X_train, y_train = data_loader.extract_features_and_label(data_loader.data_train)
@@ -283,7 +292,8 @@ if __name__ == "__main__":
     print("Best model info:", results)
 
     data_loader = DataLoader(data_root="bank-3.csv", random_state=42)
-    data_loader.encode_all_features()
+    data_loader.data_prep()
+    # data_loader.encode_all_features()
     data_loader.data_split()
 
     X_train, y_train = data_loader.extract_features_and_label(data_loader.data_train)
