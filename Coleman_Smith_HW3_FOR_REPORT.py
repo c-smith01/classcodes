@@ -313,9 +313,6 @@ def plot_roc_and_auc(model, X_val: np.ndarray, y_val: np.ndarray) -> float:
 
     return np.mean(aucs)
 
-
-
-
 '''
 Initialize the following variable with the best model you have found. This model will be used in testing 
 in our pre-built environment.
@@ -351,7 +348,7 @@ if __name__ == "__main__":
     f1 = compute_macro_f1(y_val, y_pred)
     print(f"Macro F1 Score on validation set: {f1:.4f}")
     
-    results = train_XGBoost()
+    #results = train_XGBoost()
     #auc = plot_roc_and_auc(my_best_model, X_val, y_val)
     #print(f"Macro-average AUC: {auc:.4f}")
     
